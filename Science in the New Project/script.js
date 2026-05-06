@@ -1,79 +1,151 @@
+/*
+    Science in the News - Main Script
+    ------------------------------------------------------------
+    Handles:
+    - localStorage progress saving/restoring
+    - tab locking/unlocking
+    - required-field completion checks
+    - Source Matching drag/drop activity
+    - Sentence Builder feedback
+    - chatbot-use follow-up visibility
+    - YouTube video completion gate
+    - rubric scoring
+    - AI advantages/disadvantages sorting activity
+    - copy prompt buttons
+    - collapsible helper panels
+    - testing reset button
+*/
 
-/* To rest the browser cache to reset the tab state to locked run these commands in the browser console:
-    localStorage.removeItem("scienceInTheNewsProgressV1");
-    location.reload();
- */
+/* ============================================================
+    Configuration
+   ============================================================ */
 
+const STORAGE_KEYS = {
+    lesson: "scienceInTheNewsProgressV1",
+    videoGate: "scienceInTheNewsVideoGate",
+    prosConsSort: "scienceInTheNewsProsConsSort"
+};
 
+const VIDEO_CONFIG = {
+    youtubeId: "rwF-X5STYks",
+    requiredProgress: 0.99,       // Treats 99% as full completion to avoid API end-of-video edge cases.
+    requiredWatchSeconds: 120     // Hidden active-play timer: 2 minutes.
+};
 
-const STORAGE_KEY = "scienceInTheNewsProgressV1";
+/* ============================================================
+    Cached DOM Elements
+   ============================================================ */
+
 const form = document.getElementById("lessonForm");
 const tabButtons = [...document.querySelectorAll("[data-tab-button]")];
 const tabPanels = [...document.querySelectorAll("[data-tab]")];
 const statusBoxes = [...document.querySelectorAll("[data-status]")];
 const resetTestingButton = document.getElementById("resetTestingProgress");
 
-if (resetTestingButton) {
-    resetTestingButton.addEventListener("click", () => {
-        const confirmed = confirm(
-            "Reset testing progress? This will clear saved lesson progress and reload the page."
-        );
+/* ============================================================
+    Global State
+   ============================================================ */
 
-        if (!confirmed) return;
+let state = {
+    activeTab: 0,
+    unlockedTabs: [0],
+    values: {}
+};
 
-        localStorage.removeItem("scienceInTheNewsProgressV1");
-        localStorage.removeItem("scienceInTheNewsVideoGate");
-        localStorage.removeItem("scienceInTheNewsChatTimer");
-        location.reload();
-    });
-}
-
-let state = { activeTab: 0, unlockedTabs: [0], values: {} };
 let genaiPlayer;
 let videoProgressTimer;
 let requiredWatchTimer;
-let requiredWatchSeconds = 120;
-let remainingWatchSeconds = requiredWatchSeconds;
+let remainingWatchSeconds = VIDEO_CONFIG.requiredWatchSeconds;
 let watchTimerStarted = false;
 
+/* ============================================================
+    Utility Helpers
+   ============================================================ */
+
+function safeJsonParse(value, fallback = {}) {
+    try {
+        return JSON.parse(value) || fallback;
+    } catch (error) {
+        return fallback;
+    }
+}
+
+function getCheckedValue(name) {
+    return form.querySelector(`[name="${CSS.escape(name)}"]:checked`)?.value || "";
+}
+
+function isFilled(element) {
+    if (element.type === "checkbox") return element.checked;
+    if (element.type === "radio") return Boolean(getCheckedValue(element.name));
+    return String(element.value || "").trim().length > 0;
+}
+
+/* ============================================================
+    Progress Saving and Loading
+   ============================================================ */
+
 function saveState() {
+    if (!form) return;
+
     const values = {};
-    [...form.elements].forEach(el => {
-        if (!el.name) return;
-        if (el.type === "checkbox") {
-            if (!values[el.name]) values[el.name] = [];
-            if (el.checked) values[el.name].push(el.value || "checked");
-        } else if (el.type === "radio") {
-            if (el.checked) values[el.name] = el.value;
-            else if (!(el.name in values)) values[el.name] = "";
-        } else {
-            values[el.name] = el.value;
+
+    [...form.elements].forEach(element => {
+        if (!element.name) return;
+
+        if (element.type === "checkbox") {
+            if (!values[element.name]) values[element.name] = [];
+            if (element.checked) values[element.name].push(element.value || "checked");
+            return;
         }
+
+        if (element.type === "radio") {
+            if (element.checked) values[element.name] = element.value;
+            else if (!(element.name in values)) values[element.name] = "";
+            return;
+        }
+
+        values[element.name] = element.value;
     });
+
     state.values = values;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEYS.lesson, JSON.stringify(state));
 }
 
 function loadState() {
-    try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-        if (saved) state = saved;
-    } catch (e) { }
+    if (!form) return;
+
+    const saved = safeJsonParse(localStorage.getItem(STORAGE_KEYS.lesson), null);
+    if (saved) state = saved;
+
     Object.entries(state.values || {}).forEach(([name, value]) => {
-        const fields = [...form.elements].filter(el => el.name === name);
-        fields.forEach(el => {
-            if (el.type === "checkbox") el.checked = Array.isArray(value) && value.includes(el.value || "checked");
-            else if (el.type === "radio") el.checked = el.value === value;
-            else el.value = value;
+        const fields = [...form.elements].filter(element => element.name === name);
+
+        fields.forEach(element => {
+            if (element.type === "checkbox") {
+                element.checked = Array.isArray(value) && value.includes(element.value || "checked");
+            } else if (element.type === "radio") {
+                element.checked = element.value === value;
+            } else {
+                element.value = value;
+            }
         });
     });
 }
 
-function isFilled(el) {
-    if (el.type === "checkbox") return el.checked;
-    if (el.type === "radio") return !!form.querySelector(`[name="${CSS.escape(el.name)}"]:checked`);
-    return String(el.value || "").trim().length > 0;
+function resetTestingProgress() {
+    const confirmed = confirm(
+        "Reset testing progress? This will clear saved lesson progress and reload the page."
+    );
+
+    if (!confirmed) return;
+
+    Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+    location.reload();
 }
+
+/* ============================================================
+    Required Completion and Tab Locking
+   ============================================================ */
 
 function groupComplete(panel, groupName) {
     const group = panel.querySelector(`[data-required-group="${CSS.escape(groupName)}"]`);
@@ -81,168 +153,21 @@ function groupComplete(panel, groupName) {
 
     const namedFields = [...group.querySelectorAll(`[name="${CSS.escape(groupName)}"]`)];
 
-    // Radio or checkbox group where the input name matches the group name
+    // Radio/checkbox groups where all choices share the group name.
     if (namedFields.length > 0) {
-        const hasCheckable = namedFields.some(el => el.type === "radio" || el.type === "checkbox");
+        const hasCheckable = namedFields.some(element =>
+            element.type === "radio" || element.type === "checkbox"
+        );
 
-        if (hasCheckable) {
-            return namedFields.some(el => el.checked);
-        }
-
+        if (hasCheckable) return namedFields.some(element => element.checked);
         return namedFields.every(isFilled);
     }
 
-    // Wrapper group containing required selects, textareas, inputs, etc.
+    // Wrapper groups that contain required fields with their own names.
     const requiredFields = [...group.querySelectorAll("[data-required], [data-required-check]")];
+    if (requiredFields.length > 0) return requiredFields.every(isFilled);
 
-    if (requiredFields.length > 0) {
-        return requiredFields.every(isFilled);
-    }
-
-    // If a group has no required fields inside, don't block progress.
     return true;
-}
-
-function initializeSourceMatching() {
-    const tokens = [...document.querySelectorAll(".drag-token")];
-    const zones = [...document.querySelectorAll(".drop-zone")];
-    const clearButton = document.getElementById("clearSourceMatches");
-
-    if (!tokens.length || !zones.length) return;
-
-    let selectedValue = null;
-
-    function setFeedback(zone, value) {
-        const feedback = zone.parentElement.querySelector(".match-feedback");
-        const correctAnswer = zone.dataset.correct;
-
-        zone.classList.remove("correct", "incorrect");
-        feedback.classList.remove("correct", "incorrect");
-
-        if (!value) {
-            feedback.textContent = "";
-            return;
-        }
-
-        if (value === correctAnswer) {
-            zone.classList.add("correct");
-            feedback.classList.add("correct");
-            feedback.textContent = "Correct";
-        } else {
-            zone.classList.add("incorrect");
-            feedback.classList.add("incorrect");
-            feedback.textContent = "Try again";
-        }
-    }
-
-    function updateZoneDisplay(zone, value) {
-        const label = zone.querySelector(".drop-zone-text");
-        const input = zone.querySelector('input[type="hidden"]');
-
-        input.value = value || "";
-
-        zone.classList.remove("filled");
-        if (value) {
-            label.textContent = value;
-            zone.classList.add("filled");
-        } else {
-            label.textContent = "Drop type here";
-        }
-
-        setFeedback(zone, value);
-    }
-
-    function clearExistingValue(value) {
-        zones.forEach(zone => {
-            const input = zone.querySelector('input[type="hidden"]');
-            if (input.value === value) {
-                updateZoneDisplay(zone, "");
-            }
-        });
-    }
-
-    function assignValueToZone(zone, value) {
-        if (!value) return;
-
-        clearExistingValue(value);
-        updateZoneDisplay(zone, value);
-
-        saveState();
-        updateUnlocks();
-    }
-
-    function clearSelectedToken() {
-        tokens.forEach(token => token.classList.remove("selected"));
-        selectedValue = null;
-    }
-
-    tokens.forEach(token => {
-        token.addEventListener("dragstart", e => {
-            selectedValue = token.dataset.value;
-            e.dataTransfer.setData("text/plain", selectedValue);
-        });
-
-        token.addEventListener("click", () => {
-            tokens.forEach(t => t.classList.remove("selected"));
-            token.classList.add("selected");
-            selectedValue = token.dataset.value;
-        });
-    });
-
-    zones.forEach(zone => {
-        zone.addEventListener("dragover", e => {
-            e.preventDefault();
-            zone.classList.add("over");
-        });
-
-        zone.addEventListener("dragleave", () => {
-            zone.classList.remove("over");
-        });
-
-        zone.addEventListener("drop", e => {
-            e.preventDefault();
-            zone.classList.remove("over");
-            const droppedValue = e.dataTransfer.getData("text/plain") || selectedValue;
-            assignValueToZone(zone, droppedValue);
-            clearSelectedToken();
-        });
-
-        zone.addEventListener("click", () => {
-            if (selectedValue) {
-                assignValueToZone(zone, selectedValue);
-                clearSelectedToken();
-            }
-        });
-
-        zone.addEventListener("keydown", e => {
-            if ((e.key === "Enter" || e.key === " ") && selectedValue) {
-                e.preventDefault();
-                assignValueToZone(zone, selectedValue);
-                clearSelectedToken();
-            }
-
-            if (e.key === "Backspace" || e.key === "Delete") {
-                updateZoneDisplay(zone, "");
-                saveState();
-                updateUnlocks();
-            }
-        });
-    });
-
-    if (clearButton) {
-        clearButton.addEventListener("click", () => {
-            zones.forEach(zone => updateZoneDisplay(zone, ""));
-            clearSelectedToken();
-            saveState();
-            updateUnlocks();
-        });
-    }
-
-    // Restore saved values after loadState()
-    zones.forEach(zone => {
-        const input = zone.querySelector('input[type="hidden"]');
-        updateZoneDisplay(zone, input.value);
-    });
 }
 
 function tabComplete(index) {
@@ -252,7 +177,7 @@ function tabComplete(index) {
     const requiredGroups = [
         ...new Set(
             [...panel.querySelectorAll("[data-required-group]")]
-                .map(el => el.dataset.requiredGroup)
+                .map(group => group.dataset.requiredGroup)
         )
     ];
 
@@ -267,23 +192,302 @@ function tabComplete(index) {
     const directRequired = [...panel.querySelectorAll("[data-required]")]
         .filter(field => !groupedRequiredFields.has(field));
 
-    const requiredChecks = [...panel.querySelectorAll("[data-required-check]")]
+    const directRequiredChecks = [...panel.querySelectorAll("[data-required-check]")]
         .filter(field => !groupedRequiredFields.has(field));
 
-    const allDirect = directRequired.every(isFilled);
-    const allChecks = requiredChecks.every(isFilled);
-    const allGroups = requiredGroups.every(name => groupComplete(panel, name));
+    const allDirectRequiredComplete = directRequired.every(isFilled);
+    const allDirectChecksComplete = directRequiredChecks.every(isFilled);
+    const allGroupsComplete = requiredGroups.every(groupName => groupComplete(panel, groupName));
 
+    // Tab 3 includes the rubric, which is required but does not use data-required.
     if (index === 2) {
-        const rubricDone = [1, 2, 3, 4, 5].every(num =>
-            !!form.querySelector(`[name="rubric${num}"]:checked`)
+        const rubricComplete = [1, 2, 3, 4, 5].every(num =>
+            Boolean(form.querySelector(`[name="rubric${num}"]:checked`))
         );
 
-        return allDirect && allChecks && allGroups && rubricDone;
+        return allDirectRequiredComplete && allDirectChecksComplete && allGroupsComplete && rubricComplete;
     }
 
-    return allDirect && allChecks && allGroups;
+    return allDirectRequiredComplete && allDirectChecksComplete && allGroupsComplete;
 }
+
+function updateUnlocks() {
+    for (let i = 0; i < tabPanels.length - 1; i++) {
+        if (tabComplete(i) && !state.unlockedTabs.includes(i + 1)) {
+            state.unlockedTabs.push(i + 1);
+        }
+    }
+
+    state.unlockedTabs = [...new Set(state.unlockedTabs)].sort((a, b) => a - b);
+
+    tabButtons.forEach((button, index) => {
+        const unlocked = state.unlockedTabs.includes(index);
+        button.classList.toggle("locked", !unlocked);
+        button.disabled = !unlocked;
+    });
+
+    statusBoxes.forEach(box => {
+        const index = Number(box.dataset.status);
+        const complete = tabComplete(index);
+
+        box.classList.toggle("complete", complete);
+
+        if (complete && index < 3) {
+            box.textContent = `Tab ${index + 1} complete. Tab ${index + 2} is unlocked.`;
+        }
+
+        if (complete && index === 3) {
+            box.textContent = "Lesson complete. You can print or save your work as a PDF.";
+        }
+    });
+
+    saveState();
+}
+
+function showTab(index, shouldScroll = true) {
+    if (!state.unlockedTabs.includes(index)) return;
+
+    state.activeTab = index;
+
+    tabButtons.forEach((button, buttonIndex) => {
+        button.classList.toggle("active", buttonIndex === index);
+    });
+
+    tabPanels.forEach((panel, panelIndex) => {
+        panel.classList.toggle("active", panelIndex === index);
+    });
+
+    saveState();
+
+    if (shouldScroll) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+}
+
+/* ============================================================
+    Source Matching Activity
+   ============================================================ */
+
+function initializeSourceMatching() {
+    const tokens = [...document.querySelectorAll(".drag-token")];
+    const zones = [...document.querySelectorAll(".drop-zone")];
+    const clearButton = document.getElementById("clearSourceMatches");
+
+    if (!tokens.length || !zones.length) return;
+
+    let selectedValue = null;
+
+    function setFeedback(zone, value) {
+        const feedback = zone.parentElement.querySelector(".match-feedback");
+        const correctAnswer = zone.dataset.correct;
+
+        if (!feedback) return;
+
+        zone.classList.remove("correct", "incorrect");
+        feedback.classList.remove("correct", "incorrect");
+
+        if (!value) {
+            feedback.textContent = "";
+            return;
+        }
+
+        const isCorrect = value === correctAnswer;
+        zone.classList.add(isCorrect ? "correct" : "incorrect");
+        feedback.classList.add(isCorrect ? "correct" : "incorrect");
+        feedback.textContent = isCorrect ? "Correct" : "Try again";
+    }
+
+    function updateZoneDisplay(zone, value) {
+        const label = zone.querySelector(".drop-zone-text");
+        const input = zone.querySelector('input[type="hidden"]');
+
+        if (!label || !input) return;
+
+        input.value = value || "";
+        label.textContent = value || "Drop type here";
+        zone.classList.toggle("filled", Boolean(value));
+
+        setFeedback(zone, value);
+    }
+
+    function clearExistingValue(value) {
+        zones.forEach(zone => {
+            const input = zone.querySelector('input[type="hidden"]');
+            if (input?.value === value) updateZoneDisplay(zone, "");
+        });
+    }
+
+    function clearSelectedToken() {
+        tokens.forEach(token => token.classList.remove("selected"));
+        selectedValue = null;
+    }
+
+    function assignValueToZone(zone, value) {
+        if (!value) return;
+
+        clearExistingValue(value);
+        updateZoneDisplay(zone, value);
+        clearSelectedToken();
+        saveState();
+        updateUnlocks();
+    }
+
+    tokens.forEach(token => {
+        token.addEventListener("dragstart", event => {
+            selectedValue = token.dataset.value;
+            event.dataTransfer.setData("text/plain", selectedValue);
+        });
+
+        token.addEventListener("click", () => {
+            tokens.forEach(item => item.classList.remove("selected"));
+            token.classList.add("selected");
+            selectedValue = token.dataset.value;
+        });
+    });
+
+    zones.forEach(zone => {
+        zone.addEventListener("dragover", event => {
+            event.preventDefault();
+            zone.classList.add("over");
+        });
+
+        zone.addEventListener("dragleave", () => zone.classList.remove("over"));
+
+        zone.addEventListener("drop", event => {
+            event.preventDefault();
+            zone.classList.remove("over");
+            assignValueToZone(zone, event.dataTransfer.getData("text/plain") || selectedValue);
+        });
+
+        zone.addEventListener("click", () => assignValueToZone(zone, selectedValue));
+
+        zone.addEventListener("keydown", event => {
+            if ((event.key === "Enter" || event.key === " ") && selectedValue) {
+                event.preventDefault();
+                assignValueToZone(zone, selectedValue);
+            }
+
+            if (event.key === "Backspace" || event.key === "Delete") {
+                updateZoneDisplay(zone, "");
+                saveState();
+                updateUnlocks();
+            }
+        });
+    });
+
+    clearButton?.addEventListener("click", () => {
+        zones.forEach(zone => updateZoneDisplay(zone, ""));
+        clearSelectedToken();
+        saveState();
+        updateUnlocks();
+    });
+
+    // Restore saved hidden input values after loadState().
+    zones.forEach(zone => {
+        const input = zone.querySelector('input[type="hidden"]');
+        updateZoneDisplay(zone, input?.value || "");
+    });
+}
+
+/* ============================================================
+    Sentence Builder Activity
+   ============================================================ */
+
+function initializeSentenceBuilderFeedback() {
+    const checkButton = document.getElementById("checkSentenceBuilder");
+    const selects = [...document.querySelectorAll(".sentence-builder .sentence-select")];
+
+    if (!checkButton || !selects.length) return;
+
+    function clearSentenceFeedback(select) {
+        const sentence = select.closest(".sentence-item");
+        const oldFeedback = sentence?.querySelector(".sentence-feedback");
+
+        select.classList.remove("correct", "incorrect", "needs-answer");
+        oldFeedback?.remove();
+    }
+
+    function addSentenceFeedback(select, type, message) {
+        const sentence = select.closest(".sentence-item");
+        if (!sentence) return;
+
+        clearSentenceFeedback(select);
+        select.classList.add(type);
+
+        const feedback = document.createElement("span");
+        feedback.className = `sentence-feedback ${type}`;
+        feedback.textContent = message;
+        sentence.appendChild(feedback);
+    }
+
+    checkButton.addEventListener("click", () => {
+        selects.forEach(select => {
+            const selectedOption = select.options[select.selectedIndex];
+
+            if (!select.value) {
+                addSentenceFeedback(select, "needs-answer", "Choose an answer before checking.");
+                return;
+            }
+
+            if (selectedOption.dataset.correct === "true") {
+                addSentenceFeedback(select, "correct", "Correct");
+            } else {
+                addSentenceFeedback(
+                    select,
+                    "incorrect",
+                    selectedOption.dataset.feedback || "Try again. Review what this source type usually does."
+                );
+            }
+        });
+
+        saveState();
+        updateUnlocks();
+    });
+
+    selects.forEach(select => {
+        select.addEventListener("change", () => {
+            clearSentenceFeedback(select);
+            saveState();
+            updateUnlocks();
+        });
+    });
+}
+
+/* ============================================================
+    Chatbot Use Follow-Up Question
+   ============================================================ */
+
+function initializeChatbotUseFollowup() {
+    const radios = [...document.querySelectorAll('input[name="chatbotUse"]')];
+    const followup = document.getElementById("chatbotExperienceFollowup");
+    const followupTextarea = document.getElementById("chatbotObservations");
+
+    if (!radios.length || !followup || !followupTextarea) return;
+
+    function updateFollowupVisibility() {
+        const selected = document.querySelector('input[name="chatbotUse"]:checked');
+        const shouldHide = selected && ["heard", "unknown"].includes(selected.value);
+
+        followup.classList.toggle("is-hidden", shouldHide);
+
+        if (shouldHide) {
+            followupTextarea.value = "";
+            followupTextarea.removeAttribute("data-required");
+        } else {
+            followupTextarea.setAttribute("data-required", "");
+        }
+
+        saveState();
+        updateUnlocks();
+    }
+
+    radios.forEach(radio => radio.addEventListener("change", updateFollowupVisibility));
+    updateFollowupVisibility();
+}
+
+/* ============================================================
+    YouTube Video Gate
+   ============================================================ */
 
 function initializeYouTubeVideoGate() {
     const videoInput = document.getElementById("watchedVideo");
@@ -305,7 +509,7 @@ function initializeYouTubeVideoGate() {
 
     window.onYouTubeIframeAPIReady = function () {
         genaiPlayer = new YT.Player("genaiVideo", {
-            videoId: "rwF-X5STYks",
+            videoId: VIDEO_CONFIG.youtubeId,
             playerVars: {
                 rel: 0,
                 modestbranding: 1
@@ -321,13 +525,11 @@ function handleGenAIVideoStateChange(event) {
     if (event.data === YT.PlayerState.PLAYING) {
         startVideoProgressCheck();
         startRequiredWatchTimer();
-    } else {
-        stopVideoProgressCheck();
-
-        // This makes the 90-second timer count active play time only.
-        // Remove this line if you want the timer to keep running after the student pauses.
-        stopRequiredWatchTimer();
+        return;
     }
+
+    stopVideoProgressCheck();
+    stopRequiredWatchTimer(); // Hidden timer only counts active play time.
 
     if (event.data === YT.PlayerState.ENDED) {
         markVideoProgressComplete();
@@ -345,10 +547,7 @@ function startVideoProgressCheck() {
 
         if (!duration || currentTime == null) return;
 
-        const percentWatched = currentTime / duration;
-        const videoStatus = document.getElementById("videoStatus");
-
-        if (percentWatched >= 0.95) {
+        if (currentTime / duration >= VIDEO_CONFIG.requiredProgress) {
             markVideoProgressComplete();
             stopVideoProgressCheck();
         }
@@ -356,28 +555,20 @@ function startVideoProgressCheck() {
 }
 
 function stopVideoProgressCheck() {
-    if (videoProgressTimer) {
-        clearInterval(videoProgressTimer);
-        videoProgressTimer = null;
-    }
+    if (!videoProgressTimer) return;
+    clearInterval(videoProgressTimer);
+    videoProgressTimer = null;
 }
 
 function startRequiredWatchTimer() {
     const timerInput = document.getElementById("videoTimerComplete");
 
-    if (timerInput?.value === "complete") return;
-    if (watchTimerStarted) return;
+    if (timerInput?.value === "complete" || watchTimerStarted) return;
 
     watchTimerStarted = true;
 
     requiredWatchTimer = setInterval(() => {
         remainingWatchSeconds--;
-
-        const timerStatus = document.getElementById("videoTimerStatus");
-
-        if (timerStatus) {
-            timerStatus.textContent = `Keep watching: ${remainingWatchSeconds} seconds remaining.`;
-        }
 
         if (remainingWatchSeconds <= 0) {
             markRequiredWatchTimerComplete();
@@ -404,7 +595,7 @@ function markVideoProgressComplete() {
     if (!videoInput || !videoStatus) return;
 
     videoInput.value = "complete";
-    videoStatus.textContent = "Video progress complete.";
+    videoStatus.textContent = "Video complete. You can continue.";
     videoStatus.classList.add("complete");
 
     saveState();
@@ -413,11 +604,9 @@ function markVideoProgressComplete() {
 
 function markRequiredWatchTimerComplete() {
     const timerInput = document.getElementById("videoTimerComplete");
-
     if (!timerInput) return;
 
     timerInput.value = "complete";
-
     saveVideoGateProgress();
     saveState();
     updateUnlocks();
@@ -425,12 +614,11 @@ function markRequiredWatchTimerComplete() {
 
 function saveVideoGateProgress() {
     const timerInput = document.getElementById("videoTimerComplete");
-
     if (!timerInput) return;
 
-    const existing = JSON.parse(localStorage.getItem("scienceInTheNewsVideoGate") || "{}");
+    const existing = safeJsonParse(localStorage.getItem(STORAGE_KEYS.videoGate), {});
 
-    localStorage.setItem("scienceInTheNewsVideoGate", JSON.stringify({
+    localStorage.setItem(STORAGE_KEYS.videoGate, JSON.stringify({
         ...existing,
         remainingWatchSeconds,
         timerComplete: timerInput.value === "complete"
@@ -439,220 +627,364 @@ function saveVideoGateProgress() {
 
 function loadVideoGateProgress() {
     const timerInput = document.getElementById("videoTimerComplete");
-
     if (!timerInput) return;
 
-    try {
-        const saved = JSON.parse(localStorage.getItem("scienceInTheNewsVideoGate") || "{}");
+    const saved = safeJsonParse(localStorage.getItem(STORAGE_KEYS.videoGate), {});
 
-        if (typeof saved.remainingWatchSeconds === "number") {
-            remainingWatchSeconds = Math.max(0, saved.remainingWatchSeconds);
-        }
+    if (typeof saved.remainingWatchSeconds === "number") {
+        remainingWatchSeconds = Math.max(0, saved.remainingWatchSeconds);
+    }
 
-        if (saved.timerComplete || remainingWatchSeconds <= 0) {
-            timerInput.value = "complete";
-        }
-    } catch (e) {
-        remainingWatchSeconds = requiredWatchSeconds;
+    if (saved.timerComplete || remainingWatchSeconds <= 0) {
+        timerInput.value = "complete";
     }
 }
 
-let chatTimerInterval;
-const requiredChatSeconds = 8 * 60;
-
-function initializeChatConversationTimer() {
-    const copyButton = document.getElementById("copyHowItWritesPrompt");
-    const timerInput = document.getElementById("chatConversationDone");
-    const timerStatus = document.getElementById("chatTimerStatus");
-
-    if (!copyButton || !timerInput || !timerStatus) return;
-
-    const saved = loadChatTimerProgress();
-
-    if (timerInput.value === "complete" || saved.complete) {
-        markChatTimerComplete();
-        return;
-    }
-
-    if (saved.startedAt) {
-        updateChatTimerFromStart(saved.startedAt);
-    }
-
-    copyButton.addEventListener("click", () => {
-        startChatConversationTimer();
-    });
-}
-
-function startChatConversationTimer() {
-    const timerInput = document.getElementById("chatConversationDone");
-    const timerStatus = document.getElementById("chatTimerStatus");
-
-    if (!timerInput || !timerStatus) return;
-    if (timerInput.value === "complete") return;
-
-    const saved = loadChatTimerProgress();
-
-    // Prevent restarting the timer every time the student clicks Copy prompt.
-    if (saved.startedAt) {
-        updateChatTimerFromStart(saved.startedAt);
-        return;
-    }
-
-    const startedAt = Date.now();
-
-    localStorage.setItem("scienceInTheNewsChatTimer", JSON.stringify({
-        startedAt,
-        complete: false
-    }));
-
-    timerStatus.textContent = "Conversation timer is running. Keep working with your chatbot.";
-
-    runChatTimer(startedAt);
-}
-
-function loadChatTimerProgress() {
-    try {
-        return JSON.parse(localStorage.getItem("scienceInTheNewsChatTimer") || "{}");
-    } catch (e) {
-        return {};
-    }
-}
-
-function updateChatTimerFromStart(startedAt) {
-    const elapsedSeconds = Math.floor((Date.now() - startedAt) / 1000);
-
-    if (elapsedSeconds >= requiredChatSeconds) {
-        markChatTimerComplete();
-    } else {
-        const timerStatus = document.getElementById("chatTimerStatus");
-
-        if (timerStatus) {
-            timerStatus.textContent = "Conversation timer is running. Keep working with your chatbot.";
-        }
-
-        runChatTimer(startedAt);
-    }
-}
-
-function runChatTimer(startedAt) {
-    clearInterval(chatTimerInterval);
-
-    chatTimerInterval = setInterval(() => {
-        const elapsedSeconds = Math.floor((Date.now() - startedAt) / 1000);
-
-        if (elapsedSeconds >= requiredChatSeconds) {
-            clearInterval(chatTimerInterval);
-            markChatTimerComplete();
-        }
-    }, 1000);
-}
-
-function markChatTimerComplete() {
-    const timerInput = document.getElementById("chatConversationDone");
-    const timerStatus = document.getElementById("chatTimerStatus");
-
-    if (!timerInput || !timerStatus) return;
-
-    timerInput.value = "complete";
-    timerStatus.textContent = "Conversation timer complete. You can continue.";
-    timerStatus.classList.add("complete");
-
-    localStorage.setItem("scienceInTheNewsChatTimer", JSON.stringify({
-        startedAt: null,
-        complete: true
-    }));
-
-    saveState();
-    updateUnlocks();
-}
-
-function updateUnlocks() {
-    for (let i = 0; i < tabPanels.length - 1; i++) {
-        if (tabComplete(i) && !state.unlockedTabs.includes(i + 1)) state.unlockedTabs.push(i + 1);
-    }
-    state.unlockedTabs = [...new Set(state.unlockedTabs)].sort((a, b) => a - b);
-    tabButtons.forEach((button, i) => {
-        const unlocked = state.unlockedTabs.includes(i);
-        button.classList.toggle("locked", !unlocked);
-        button.disabled = !unlocked;
-    });
-    statusBoxes.forEach(box => {
-        const i = Number(box.dataset.status);
-        const complete = tabComplete(i);
-        box.classList.toggle("complete", complete);
-        if (complete && i < 3) box.textContent = `Tab ${i + 1} complete. Tab ${i + 2} is unlocked.`;
-        if (complete && i === 3) box.textContent = "Lesson complete. You can print or save your work as a PDF.";
-    });
-    saveState();
-}
-
-function showTab(index, shouldScroll = true) {
-    if (!state.unlockedTabs.includes(index)) return;
-
-    state.activeTab = index;
-
-    tabButtons.forEach((b, i) => b.classList.toggle("active", i === index));
-    tabPanels.forEach((p, i) => p.classList.toggle("active", i === index));
-
-    saveState();
-
-    if (shouldScroll) {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-}
+/* ============================================================
+    Rubric Scoring
+   ============================================================ */
 
 function updateRubricScore() {
+    const scoreOutput = document.getElementById("rubricScore");
+
+    if (!scoreOutput) return;
+
     let total = 0;
-    let answered = 0;
+
     for (let i = 1; i <= 5; i++) {
         const selected = form.querySelector(`[name="rubric${i}"]:checked`);
-        if (selected) { total += Number(selected.value); answered++; }
+
+        if (selected) {
+            total += Number(selected.value);
+        }
     }
-    document.getElementById("rubricScore").textContent = total;
-    const overall = document.getElementById("rubricOverall");
-    if (answered < 5) overall.textContent = "Not complete yet";
-    else if (total >= 17) overall.textContent = "Nailed it";
-    else if (total >= 13) overall.textContent = "Pretty Good";
-    else if (total >= 9) overall.textContent = "Needs Improvement";
-    else overall.textContent = "Not Credible";
+
+    scoreOutput.textContent = total;
 }
 
-tabButtons.forEach((button, i) => {
-    button.addEventListener("click", () => showTab(i, true));
-});
+/* ============================================================
+    AI Advantages / Disadvantages Sort Activity
+   ============================================================ */
 
-form.addEventListener("input", () => { updateRubricScore(); updateUnlocks(); });
-form.addEventListener("change", () => { updateRubricScore(); updateUnlocks(); });
+function initializeProsConsSort() {
+    const activity = document.getElementById("aiProsConsActivity");
+    if (!activity) return;
 
-document.querySelectorAll("[data-copy]").forEach(button => {
-    button.addEventListener("click", async () => {
-        const target = document.getElementById(button.dataset.copy);
-        try {
-            await navigator.clipboard.writeText(target.textContent.trim());
-            button.textContent = "Copied!";
-            setTimeout(() => button.textContent = "Copy prompt", 1400);
-        } catch (e) {
-            alert("Copy did not work in this browser. Highlight the prompt and copy it manually.");
-        }
+    const tokens = [...activity.querySelectorAll(".category-token")];
+    const zones = [...activity.querySelectorAll(".category-drop-zone")];
+    const completeInput = document.getElementById("aiProsConsComplete");
+    const clearButton = document.getElementById("clearProsConsSort");
+
+    let selectedTokenValue = null;
+
+    function getSavedSort() {
+        return safeJsonParse(localStorage.getItem(STORAGE_KEYS.prosConsSort), {});
+    }
+
+    function saveSort() {
+        const sortState = {};
+
+        zones.forEach(zone => {
+            sortState[zone.dataset.category] = [...zone.querySelectorAll(".placed-category-token")]
+                .map(item => ({
+                    value: item.dataset.value,
+                    correct: item.dataset.correct
+                }));
+        });
+
+        localStorage.setItem(STORAGE_KEYS.prosConsSort, JSON.stringify(sortState));
+    }
+
+    function updateCompletion() {
+        const placedCount = activity.querySelectorAll(".placed-category-token").length;
+        if (completeInput) completeInput.value = placedCount === tokens.length ? "complete" : "";
+
+        saveSort();
+        saveState();
+        updateUnlocks();
+    }
+
+    function updateEmptyText(zone) {
+        const emptyText = zone.querySelector(".empty-category-text");
+        const hasItems = zone.querySelectorAll(".placed-category-token").length > 0;
+        if (emptyText) emptyText.style.display = hasItems ? "none" : "block";
+    }
+
+    function updateTokenVisibility() {
+        const placedValues = [...activity.querySelectorAll(".placed-category-token")]
+            .map(item => item.dataset.value);
+
+        tokens.forEach(token => {
+            token.classList.toggle("is-placed", placedValues.includes(token.dataset.value));
+        });
+    }
+
+    function removePlacedToken(value) {
+        activity.querySelectorAll(".placed-category-token").forEach(item => {
+            if (item.dataset.value === value) item.remove();
+        });
+    }
+
+    function createPlacedToken(value, correctCategory, droppedCategory) {
+        const button = document.createElement("button");
+        const isCorrect = correctCategory === droppedCategory;
+
+        button.type = "button";
+        button.className = `placed-category-token ${isCorrect ? "correct" : "incorrect"}`;
+        button.draggable = true;
+        button.dataset.value = value;
+        button.dataset.correct = correctCategory;
+        button.innerHTML = `
+            <span>${value}</span>
+            <span class="feedback">${isCorrect ? "Correct" : "Try again"}</span>
+        `;
+
+        button.addEventListener("dragstart", event => {
+            selectedTokenValue = value;
+            event.dataTransfer.setData("text/plain", value);
+        });
+
+        // Click an already placed item to return it to the word bank.
+        button.addEventListener("click", () => {
+            removePlacedToken(value);
+            updateTokenVisibility();
+            zones.forEach(updateEmptyText);
+            updateCompletion();
+        });
+
+        return button;
+    }
+
+    function placeTokenInZone(value, zone) {
+        if (!value || !zone) return;
+
+        const originalToken = tokens.find(token => token.dataset.value === value);
+        if (!originalToken) return;
+
+        removePlacedToken(value);
+
+        const placedToken = createPlacedToken(
+            value,
+            originalToken.dataset.correct,
+            zone.dataset.category
+        );
+
+        zone.appendChild(placedToken);
+
+        selectedTokenValue = null;
+        tokens.forEach(token => token.classList.remove("selected"));
+
+        updateTokenVisibility();
+        zones.forEach(updateEmptyText);
+        updateCompletion();
+    }
+
+    tokens.forEach(token => {
+        token.addEventListener("dragstart", event => {
+            selectedTokenValue = token.dataset.value;
+            event.dataTransfer.setData("text/plain", selectedTokenValue);
+        });
+
+        token.addEventListener("click", () => {
+            tokens.forEach(item => item.classList.remove("selected"));
+            token.classList.add("selected");
+            selectedTokenValue = token.dataset.value;
+        });
     });
-});
 
-document.querySelectorAll("[data-toggle]").forEach(button => {
-    button.addEventListener("click", () => {
-        const panel = document.getElementById(button.dataset.toggle);
-        const isOpen = panel.classList.toggle("open");
-        button.setAttribute("aria-expanded", String(isOpen));
-        if (button.dataset.toggle === "helpPanel") {
-            const video = document.getElementById("howToVideo");
-            if (video) isOpen ? video.play().catch(() => { }) : video.pause();
-        }
+    zones.forEach(zone => {
+        zone.addEventListener("dragover", event => {
+            event.preventDefault();
+            zone.classList.add("over");
+        });
+
+        zone.addEventListener("dragleave", () => zone.classList.remove("over"));
+
+        zone.addEventListener("drop", event => {
+            event.preventDefault();
+            zone.classList.remove("over");
+            placeTokenInZone(event.dataTransfer.getData("text/plain") || selectedTokenValue, zone);
+        });
+
+        zone.addEventListener("click", () => placeTokenInZone(selectedTokenValue, zone));
+
+        zone.addEventListener("keydown", event => {
+            if ((event.key === "Enter" || event.key === " ") && selectedTokenValue) {
+                event.preventDefault();
+                placeTokenInZone(selectedTokenValue, zone);
+            }
+        });
     });
-});
 
-loadState();
-initializeChatConversationTimer();
-initializeSourceMatching();
-initializeYouTubeVideoGate();
-updateRubricScore();
-updateUnlocks();
-showTab(state.unlockedTabs.includes(state.activeTab) ? state.activeTab : 0, false);
+    clearButton?.addEventListener("click", () => {
+        activity.querySelectorAll(".placed-category-token").forEach(item => item.remove());
+        tokens.forEach(token => token.classList.remove("selected", "is-placed"));
+        selectedTokenValue = null;
+        if (completeInput) completeInput.value = "";
+
+        localStorage.removeItem(STORAGE_KEYS.prosConsSort);
+        zones.forEach(updateEmptyText);
+        saveState();
+        updateUnlocks();
+    });
+
+    function restoreSavedSort() {
+        const saved = getSavedSort();
+
+        Object.entries(saved).forEach(([category, items]) => {
+            const zone = zones.find(item => item.dataset.category === category);
+            if (!zone || !Array.isArray(items)) return;
+
+            items.forEach(item => placeTokenInZone(item.value, zone));
+        });
+
+        updateTokenVisibility();
+        zones.forEach(updateEmptyText);
+        updateCompletion();
+    }
+
+    restoreSavedSort();
+}
+
+/* ============================================================
+    Generic UI Handlers
+   ============================================================ */
+
+function initializeTabs() {
+    tabButtons.forEach((button, index) => {
+        button.addEventListener("click", () => showTab(index, true));
+    });
+}
+
+function initializeFormListeners() {
+    if (!form) return;
+
+    form.addEventListener("input", () => {
+        updateRubricScore();
+        updateUnlocks();
+    });
+
+    form.addEventListener("change", () => {
+        updateRubricScore();
+        updateUnlocks();
+    });
+}
+
+function initializeCopyButtons() {
+    document.querySelectorAll("[data-copy]").forEach(button => {
+        button.addEventListener("click", async () => {
+            const target = document.getElementById(button.dataset.copy);
+            if (!target) return;
+
+            try {
+                await navigator.clipboard.writeText(target.textContent.trim());
+                const originalText = button.textContent;
+                button.textContent = "Copied!";
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 1400);
+            } catch (error) {
+                alert("Copy did not work in this browser. Highlight the prompt and copy it manually.");
+            }
+        });
+    });
+}
+
+function initializeTogglePanels() {
+    document.querySelectorAll("[data-toggle]").forEach(button => {
+        button.addEventListener("click", () => {
+            const panel = document.getElementById(button.dataset.toggle);
+            if (!panel) return;
+
+            const isOpen = panel.classList.toggle("open");
+            button.setAttribute("aria-expanded", String(isOpen));
+
+            if (button.dataset.toggle === "helpPanel") {
+                const video = document.getElementById("howToVideo");
+                if (!video) return;
+
+                if (isOpen) video.play().catch(() => { });
+                else video.pause();
+            }
+        });
+    });
+}
+
+function initializeTestingReset() {
+    resetTestingButton?.addEventListener("click", resetTestingProgress);
+}
+
+function initializeSummaryComparisonAutofill() {
+    const studentSummarySource = document.getElementById("studentSummary");
+    const aiSummarySource = document.getElementById("aiSummaryDraft");
+
+    const studentSummaryComparison = document.getElementById("studentSummaryComparison");
+    const aiSummaryComparison = document.getElementById("aiSummaryComparison");
+
+    if (
+        !studentSummarySource ||
+        !aiSummarySource ||
+        !studentSummaryComparison ||
+        !aiSummaryComparison
+    ) {
+        return;
+    }
+
+    function syncSummaryComparisonFields() {
+        studentSummaryComparison.value = studentSummarySource.value;
+        aiSummaryComparison.value = aiSummarySource.value;
+
+        saveState();
+        updateUnlocks();
+    }
+
+    studentSummarySource.addEventListener("input", syncSummaryComparisonFields);
+    aiSummarySource.addEventListener("input", syncSummaryComparisonFields);
+
+    syncSummaryComparisonFields();
+}
+
+function initializeOriginalSummaryAutofill() {
+    const source = document.getElementById("studentSummary");
+    const destination = document.getElementById("originalSummaryForRevision");
+
+    if (!source || !destination) return;
+
+    function syncOriginalSummary() {
+        destination.value = source.value;
+        saveState();
+        updateUnlocks();
+    }
+
+    source.addEventListener("input", syncOriginalSummary);
+    syncOriginalSummary();
+}
+
+/* ============================================================
+    Startup
+   ============================================================ */
+
+function initializeLesson() {
+    loadState();
+    loadVideoGateProgress();
+
+    initializeTestingReset();
+    initializeTabs();
+    initializeFormListeners();
+    initializeCopyButtons();
+    initializeTogglePanels();
+
+    initializeChatbotUseFollowup();
+    initializeSentenceBuilderFeedback();
+    initializeSourceMatching();
+    initializeProsConsSort();
+    initializeSummaryComparisonAutofill();
+    initializeOriginalSummaryAutofill();
+    initializeYouTubeVideoGate();
+
+    updateRubricScore();
+    updateUnlocks();
+    showTab(state.unlockedTabs.includes(state.activeTab) ? state.activeTab : 0, false);
+}
+
+initializeLesson();
