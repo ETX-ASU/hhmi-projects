@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Created by SonoranByte for ETX at ASU" />
+    <meta name="description"
+        content="Learn how generative AI works, test an AI-generated science news summary, and decide how to use AI as a collaborator without giving up your own judgment." />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+    <title>Science in the News</title>
+</head>
+
+<body>
+    <header class="hero">
+        <div class="wrap hero-grid">
+            <div>
+                <h1>Science in the News</h1>
+                <p>Learn how generative AI works, test an AI-generated science news summary, and decide how to use AI as
+                    a collaborator without giving up your own judgment.</p>
+            </div>
+            <div class="hero-art" aria-hidden="true">
+                <svg viewBox="0 0 520 320" role="img">
+                    <rect x="55" y="55" width="280" height="190" rx="24" fill="white" opacity="0.95" />
+                    <rect x="82" y="88" width="215" height="20" rx="10" fill="#098D94" opacity="0.8" />
+                    <rect x="82" y="126" width="175" height="16" rx="8" fill="#00A34F" opacity="0.85" />
+                    <rect x="82" y="158" width="225" height="16" rx="8" fill="#098D94" opacity="0.35" />
+                    <rect x="82" y="190" width="145" height="16" rx="8" fill="#00A34F" opacity="0.55" />
+                    <circle cx="365" cy="92" r="44" fill="#00A34F" />
+                    <path d="M352 92 h26 M365 79 v26" stroke="white" stroke-width="10" stroke-linecap="round" />
+                    <path d="M332 188 C375 155, 435 164, 456 214 C412 249, 361 236, 332 188Z" fill="white"
+                        opacity="0.9" />
+                    <circle cx="397" cy="204" r="16" fill="#098D94" />
+                </svg>
+            </div>
+        </div>
+    </header>
+
+    <main class="wrap">
+        <div class="testing-tools">
+            <button type="button" class="testing-reset-button" id="resetTestingProgress">
+                Reset Testing Progress
+            </button>
+        </div>
+        <nav class="tabs" aria-label="Lesson tabs">
+            <button class="tab-button active" data-tab-button="0">1. What is Gen AI?</button>
+            <button class="tab-button locked" data-tab-button="1">2. How does GenAI Work?</button>
+            <button class="tab-button locked" data-tab-button="2">3. Make the GenAI Summary</button>
+            <button class="tab-button locked" data-tab-button="3">4. AI as a Collaborator</button>
+        </nav>
+
+        <form id="lessonForm">
+            <div class="print-only">
+                <h1>Science in the News: Student Responses</h1>
+                <p>This printout includes the student’s completed responses and selected answers.</p>
+            </div>
+
+            <article class="tab-panel active" data-tab="0">
+                <section class="card two-col">
+                    <div>
+                        <h2>This has your name on it!</h2>
+                        <p>You’ve been asked to write a short science explainer for a student website on the news
+                            article you chose earlier. You can use generative AI, but your name is on it. Your
+                            credibility is on the line!</p>
+                    </div>
+                    <div class="callout teal">
+                        <h3>Your goal</h3>
+                        <p>Use AI carefully. Check what it says. Keep control of the final writing decisions.</p>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <h2>Your News Article Summary</h2>
+                    <p>You’ll use a self-written summary about the science news article you completed recently.</p>
+                    <label for="studentSummary">Find it and paste it here:</label>
+                    <textarea id="studentSummary" name="studentSummary" data-required
+                        placeholder="Paste your earlier science news article summary here."></textarea>
+                    <label for="articleLink">Paste the original news article link here:</label>
+                    <input id="articleLink" name="articleLink" type="url" placeholder="https://..." data-required />
+                </section>
+
+                <section class="card">
+                    <h2>Types of Scientific Sources</h2>
+                    <div class="source-grid">
+                        <div class="info-tile"><strong>Primary</strong><br />Shares research data and findings with
+                            scientists for evaluation, replication, and further development of the work.</div>
+                        <div class="info-tile"><strong>Secondary</strong><br />Explains the current state of a research
+                            area with key audiences, including scientists, policymakers, and the public.</div>
+                        <div class="info-tile"><strong>Tertiary</strong><br />Provides a broad overview of scientific
+                            breakthroughs to the general public.</div>
+                    </div>
+
+                    <div class="sentence-builder" data-required-group="sentenceBuilder">
+                        <h3>Sentence Builder Activity</h3>
+                        <p class="callout teal">Fill in the blanks to make each statement accurate.</p>
+                        <div class="sentences">
+                            <p>Peer-reviewed scholarly journal articles are a common type of
+                                <select class="inline-select" name="sourceSentence1" data-required>
+                                    <option value="">Choose...</option>
+                                    <option>primary</option>
+                                    <option>secondary</option>
+                                    <option>tertiary</option>
+                                </select> scientific resource.
+                            </p>
+                            <p>Secondary sources
+                                <select class="inline-select" name="sourceSentence2" data-required>
+                                    <option value="">Choose...</option>
+                                    <option>interpret</option>
+                                    <option>replicate</option>
+                                    <option>ignore</option>
+                                </select> original research and provide analysis or explanation of the findings.
+                            </p>
+                            <p>Tertiary resources can be useful for gaining
+                                <select class="inline-select" name="sourceSentence3" data-required>
+                                    <option value="">Choose...</option>
+                                    <option>detailed</option>
+                                    <option>background</option>
+                                    <option>experimental</option>
+                                </select> knowledge on a topic of interest and identifying relevant primary and
+                                secondary
+                                sources.
+                            </p>
+                            <p>Tertiary sources
+                                <select class="inline-select" name="sourceSentence4" data-required>
+                                    <option value="">Choose...</option>
+                                    <option>accurately</option>
+                                    <option>do not always accurately</option>
+                                </select> represent original research studies.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="matching-activity">
+                        <h3>Source Matching Activity</h3>
+                        <fieldset class="drag-match-activity">
+                            <p class="drag-instructions callout teal">
+                                Drag each source type from the word bank to the correct resource. You can also click a
+                                source type,
+                                then click a drop zone.
+                            </p>
+
+                            <div class="word-bank" aria-label="Word bank">
+                                <button type="button" class="drag-token" draggable="true"
+                                    data-value="Primary">Primary</button>
+                                <button type="button" class="drag-token" draggable="true"
+                                    data-value="Secondary">Secondary</button>
+                                <button type="button" class="drag-token" draggable="true"
+                                    data-value="Tertiary">Tertiary</button>
+                            </div>
+
+                            <div class="drag-match-list">
+                                <div class="drag-match-row">
+                                    <div class="definition-card">
+                                        <h4>The original research article</h4>
+                                        <p>This is the first place the research is published.</p>
+                                    </div>
+
+                                    <div class="drop-zone-card">
+                                        <div class="drop-zone" data-target="matchResearch" data-correct="Primary"
+                                            tabindex="0"
+                                            aria-label="Drop source type for the original research article">
+                                            <span class="drop-zone-text">Drop type here</span>
+                                            <input type="hidden" id="matchResearch" name="matchResearch"
+                                                data-required />
+                                        </div>
+                                        <div class="match-feedback" aria-live="polite"></div>
+                                    </div>
+                                </div>
+
+                                <div class="drag-match-row">
+                                    <div class="definition-card">
+                                        <h4>The original news article you wrote a summary of</h4>
+                                        <p>This interprets research findings for a broader audience.</p>
+                                    </div>
+
+                                    <div class="drop-zone-card">
+                                        <div class="drop-zone" data-target="matchNewsArticle" data-correct="Secondary"
+                                            tabindex="0" aria-label="Drop source type for the original news article">
+                                            <span class="drop-zone-text">Drop type here</span>
+                                            <input type="hidden" id="matchNewsArticle" name="matchNewsArticle"
+                                                data-required />
+                                        </div>
+                                        <div class="match-feedback" aria-live="polite"></div>
+                                    </div>
+                                </div>
+
+                                <div class="drag-match-row">
+                                    <div class="definition-card">
+                                        <h4>Your summary of the news article</h4>
+                                        <p>This gives a broad explanation for a general audience.</p>
+                                    </div>
+
+                                    <div class="drop-zone-card">
+                                        <div class="drop-zone" data-target="matchStudentSummary" data-correct="Tertiary"
+                                            tabindex="0" aria-label="Drop source type for your summary">
+                                            <span class="drop-zone-text">Drop type here</span>
+                                            <input type="hidden" id="matchStudentSummary" name="matchStudentSummary"
+                                                data-required />
+                                        </div>
+                                        <div class="match-feedback" aria-live="polite"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="button" class="secondary-button" id="clearSourceMatches">Clear
+                                Matches</button>
+                        </fieldset>
+                    </div>
+
+                    <fieldset data-required-group="summarySourceType">
+                        <legend>What kind of source is your news article summary?</legend>
+                        <label class="option"><input type="radio" name="summarySourceType" value="Primary" />
+                            Primary</label>
+                        <label class="option"><input type="radio" name="summarySourceType" value="Secondary" />
+                            Secondary</label>
+                        <label class="option"><input type="radio" name="summarySourceType" value="Tertiary" />
+                            Tertiary</label>
+                    </fieldset>
+
+                    <fieldset data-required-group="credibilityTraits">
+                        <legend>What characteristics of your news article science summary would build trust with
+                            readers? Select all that apply.</legend>
+                        <label class="option"><input type="checkbox" name="credibilityTraits" value="Clear evidence" />
+                            Clear evidence</label>
+                        <label class="option"><input type="checkbox" name="credibilityTraits"
+                                value="Reliable sources" /> Reliable sources</label>
+                        <label class="option"><input type="checkbox" name="credibilityTraits"
+                                value="Easy to understand" /> Easy to understand</label>
+                        <label class="option"><input type="checkbox" name="credibilityTraits"
+                                value="Personal opinions" /> Personal opinions</label>
+                        <label class="option"><input type="checkbox" name="credibilityTraits"
+                                value="Scientific jargon" /> Scientific jargon</label>
+                        <label class="option"><input type="checkbox" name="credibilityTraits"
+                                value="Vague statements" /> Vague statements</label>
+                        <label class="option"><input type="checkbox" name="credibilityTraits" value="Confident tone" />
+                            Confident tone</label>
+                    </fieldset>
+                </section>
+
+                <section class="card">
+                    <h2>What is Generative AI?</h2>
+                    <fieldset data-required-group="aiDefinition">
+                        <legend>Which of the following would you use to describe artificial intelligence (AI)?</legend>
+                        <label class="option"><input type="radio" name="aiDefinition" value="storage" /> A program that
+                            collects and stores data in their computer without processing it.</label>
+                        <label class="option"><input type="radio" name="aiDefinition" value="website" /> A website that
+                            is used to look up information on the internet.</label>
+                        <label class="option"><input type="radio" name="aiDefinition" value="machine" /> A type of
+                            mechanical device that moves using electricity and gears with wires connecting it to data
+                            sources.</label>
+                        <label class="option"><input type="radio" name="aiDefinition" value="thinkingTasks" /> A
+                            computer system that performs tasks that usually require human thinking.</label>
+                    </fieldset>
+
+                    <fieldset data-required-group="chatbotUse">
+                        <legend>How have you previously used GenAI chatbots like ChatGPT, Gemini, etc.?</legend>
+                        <label class="option"><input type="checkbox" name="chatbotUse" value="regularly" /> I use
+                            chatbots regularly to get help with tasks like writing, researching, or answering
+                            questions.</label>
+                        <label class="option"><input type="checkbox" name="chatbotUse" value="tried" /> I have tried
+                            using chatbots a few times, but I am still figuring out how useful they are.</label>
+                        <label class="option"><input type="checkbox" name="chatbotUse" value="heard" /> I have heard of
+                            chatbots, but I have not used them myself.</label>
+                        <label class="option"><input type="checkbox" name="chatbotUse" value="unknown" /> I do not know
+                            what chatbots are or how they work.</label>
+                    </fieldset>
+
+                    <label for="chatbotObservations">What worked well when you used chatbots? What didn’t work
+                        well?</label>
+                    <textarea id="chatbotObservations" name="chatbotObservations" data-required></textarea>
+
+                    <h3>Watch: Generative AI explained</h3>
+                    <p class="callout teal">Watch the video, then answer the questions below.</p>
+                    <div class="video-embed">
+                        <div id="genaiVideo"></div>
+                    </div>
+
+                    <div class="video-status" id="videoStatus">
+                        Watch the video to continue.
+                    </div>
+
+                    <input type="hidden" id="watchedVideo" name="watchedVideo" data-required value="" />
+                    <input type="hidden" id="videoTimerComplete" name="videoTimerComplete" data-required value="" />
+
+                    <fieldset data-required-group="genaiDefinition">
+                        <legend>Generative Artificial Intelligence is a form of AI that _________________?</legend>
+                        <label class="option"><input type="radio" name="genaiDefinition" value="creates" /> creates new
+                            content based on patterns learned.</label>
+                        <label class="option"><input type="radio" name="genaiDefinition" value="stores" /> stores and
+                            retrieves information without making anything new.</label>
+                        <label class="option"><input type="radio" name="genaiDefinition" value="steps" /> follows exact
+                            step-by-step instructions without learning.</label>
+                        <label class="option"><input type="radio" name="genaiDefinition" value="typed" /> only gives
+                            answers that humans have typed in before.</label>
+                    </fieldset>
+
+                    <fieldset data-required-group="promptFunction">
+                        <legend>What are the functions of prompts in generative AI systems?</legend>
+                        <label class="option"><input type="radio" name="promptFunction" value="faster" /> They make the
+                            system run faster than usual.</label>
+                        <label class="option"><input type="radio" name="promptFunction" value="guide" /> They are inputs
+                            that guide the AI’s output.</label>
+                        <label class="option"><input type="radio" name="promptFunction" value="errors" /> They are used
+                            to fix system errors that arise.</label>
+                        <label class="option"><input type="radio" name="promptFunction" value="vocab" /> They limit the
+                            AI’s vocabulary storage.</label>
+                    </fieldset>
+
+                    <div class="completion-status" data-status="0">Complete everything in this tab to unlock Tab 2.
+                    </div>
+                </section>
+            </article>
+
+            <article class="tab-panel" data-tab="1">
+                <section class="card">
+                    <h2>Open your Chatbot</h2>
+                    <p>When you wrote your news article summary, you made choices about words, tone, and meaning. AI
+                        does something similar, but in a very different way. Let’s see how AI would build the first
+                        sentence about your topic.</p>
+                    <div class="callout teal"><strong>For the rest of this lesson, you’ll need your chatbot
+                            open.</strong> Split your screen with this lesson and your chatbot.</div>
+
+                    <div class="workspace-widget">
+                        <h3>Choose Your AI Workspace</h3>
+                        <p>Drag your chosen AI tile to the far right edge of your browser window, or open it in a new
+                            tab and arrange your screen.</p>
+                        <button class="toggle-button" type="button" data-toggle="helpPanel" aria-expanded="false">Show
+                            me how</button>
+                        <button class="toggle-button" type="button" data-toggle="keyboardPanel"
+                            aria-expanded="false">Keyboard instructions</button>
+                        <div class="toggle-panel" id="helpPanel">
+                            <p>Watch this short demo. It loops automatically, and you can pause or scrub it with the
+                                built-in controls.</p>
+                            <div class="video-wrap">
+                                <video id="howToVideo" controls loop muted playsinline preload="metadata">
+                                    <source src="./assets/drag_example.mov" type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                            <p><small>Replace <code>drag example.mov</code> with your actual demo video
+                                    filename.</small></p>
+                        </div>
+                        <div class="toggle-panel" id="keyboardPanel">
+                            <ol>
+                                <li>Press <kbd>Tab</kbd> until your chosen AI option is highlighted.</li>
+                                <li>Press <kbd>Enter</kbd> to open it in a new tab.</li>
+                                <li>Switch between tabs with <kbd>Ctrl</kbd> + <kbd>Tab</kbd> on Windows or
+                                    <kbd>Control</kbd> + <kbd>Tab</kbd> on Mac.
+                                </li>
+                                <li>Use your browser or operating system split-screen controls to place the chatbot next
+                                    to this lesson.</li>
+                            </ol>
+                        </div>
+                        <div class="ai-grid">
+                            <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer"
+                                class="ai-tile">Google Gemini</a>
+                            <a href="https://chatgpt.com" target="_blank" rel="noopener noreferrer"
+                                class="ai-tile">ChatGPT</a>
+                            <a href="https://claude.ai" target="_blank" rel="noopener noreferrer"
+                                class="ai-tile">Claude</a>
+                            <a href="https://copilot.microsoft.com/" target="_blank" rel="noopener noreferrer"
+                                class="ai-tile">Copilot</a>
+                            <a href="https://www.google.com/" target="_blank" rel="noopener noreferrer"
+                                class="ai-tile">Other</a>
+                        </div>
+                    </div>
+                    <label class="option"><input type="checkbox" name="openedChatbot" data-required-check /> I opened my
+                        chatbot and arranged my workspace.</label>
+                </section>
+
+                <section class="card">
+                    <h2>How Does it Write?</h2>
+                    <p>To learn about how GenAI works, have a conversation with it.</p>
+                    <div class="prompt-box" id="promptHowItWrites">I’m learning how AI chatbots generate sentences. I
+                        already wrote a summary about this science news article: [link to article]
+
+                        Here's the first sentence of my summary: [the first sentence of your summary]
+
+                        I do NOT want help improving my sentence. Instead, I want to understand how YOU generate
+                        sentences. Ask me short, interactive questions one at a time that help me figure out:
+                        - how I wrote my sentence
+                        - how you would write the sentence (spend the most time here!)
+                        - how your process is different from mine
+
+                        Keep the focus on how GenAI works. Do not rewrite my sentence unless I ask. End by writing your
+                        own one-sentence summary so I can compare. This should be about a 10 minute conversation.</div>
+                    <button type="button" class="copy-button" id="copyHowItWritesPrompt" data-copy="promptHowItWrites">
+                        Copy prompt
+                    </button>
+                    <div class="activity-timer-card">
+                        <p>
+                            Copy the prompt above using the Copy Prompt button above and paste it into your chatbot and
+                            begin
+                            the conversation. Continue the conversation until the timer is complete.
+                        </p>
+                    </div>
+                    <div class="activity-timer-status" id="chatTimerStatus" aria-live="polite">
+                        Timer has not started yet.
+                    </div>
+
+                    <input type="hidden" id="chatConversationDone" name="chatConversationDone" data-required value="" />
+                </section>
+
+                <section class="card">
+                    <h2>Compare the Sentences</h2>
+                    <label for="aiSentence">What is the sentence AI came up with?</label>
+                    <textarea id="aiSentence" name="aiSentence" class="short-textarea" data-required></textarea>
+                    <label for="studentFirstSentence">What is your first full sentence from your earlier news article
+                        summary?</label>
+                    <textarea id="studentFirstSentence" name="studentFirstSentence" class="short-textarea"
+                        data-required></textarea>
+
+                    <fieldset data-required-group="sentenceDirection">
+                        <legend>Compare the sentences. What direction did the AI sentence take in relation to your
+                            sentence? Select all that apply.</legend>
+                        <label class="option"><input type="checkbox" name="sentenceDirection" value="more accurate" />
+                            Became more accurate</label>
+                        <label class="option"><input type="checkbox" name="sentenceDirection" value="simplified" />
+                            Became simplified</label>
+                        <label class="option"><input type="checkbox" name="sentenceDirection" value="exaggerated" />
+                            Became exaggerated</label>
+                        <label class="option"><input type="checkbox" name="sentenceDirection" value="unclear" /> Became
+                            unclear</label>
+                    </fieldset>
+
+                    <fieldset data-required-group="wholeArticlePrediction">
+                        <legend>If AI builds one sentence this way, what do you think happens when it summarizes an
+                            entire article? Select all that apply.</legend>
+                        <label class="option"><input type="checkbox" name="wholeArticlePrediction"
+                                value="Mostly accurate" /> Mostly accurate</label>
+                        <label class="option"><input type="checkbox" name="wholeArticlePrediction"
+                                value="Sometimes misleading" /> Sometimes misleading</label>
+                        <label class="option"><input type="checkbox" name="wholeArticlePrediction"
+                                value="Completely reliable" /> Completely reliable</label>
+                        <label class="option"><input type="checkbox" name="wholeArticlePrediction"
+                                value="Completely inaccurate" /> Completely inaccurate</label>
+                        <label class="option"><input type="checkbox" name="wholeArticlePrediction"
+                                value="Mostly unreliable" /> Mostly unreliable</label>
+                    </fieldset>
+
+                    <div class="callout">Now that you are more familiar with how GenAI works, let’s use it to write a
+                        summary of a science news article.</div>
+                    <div class="completion-status" data-status="1">Complete everything in this tab to unlock Tab 3.
+                    </div>
+                </section>
+            </article>
+
+            <article class="tab-panel" data-tab="2">
+                <section class="card">
+                    <h2>AI Writes the Summary</h2>
+                    <p>Copy the prompt below and replace the bracketed text with the information for the original news
+                        article.</p>
+                    <div class="prompt-box" id="promptAISummary">In my science class, I am exploring the different types
+                        of scientific sources of information. Summarize this “[copy and paste the link of the original
+                        news article]” news article. The text should be aimed at the general public. In the reference
+                        section, include at least five (5) resources with links, from a mixture of tertiary and other
+                        scientific sources, such as primary research and review articles. The article should be
+                        summarized in 350 words or fewer. Do not include identifying information about the source type
+                        in the body of the text.</div>
+                    <button type="button" class="copy-button" data-copy="promptAISummary">Copy prompt</button>
+                    <label for="aiSummary">Paste the summary GenAI created below:</label>
+                    <textarea id="aiSummary" name="aiSummary" class="large-textarea" data-required></textarea>
+                </section>
+
+                <section class="card">
+                    <h2>Analyze the Chatbot Summary</h2>
+                    <div class="callout teal">
+                        <p><strong>Use lateral reading</strong> to check the references in the chatbot-generated summary
+                            article to verify whether they exist.</p>
+                        <ol>
+                            <li>Open each link. Copy the title and search for it in Google or Google Scholar.</li>
+                            <li>Confirm the source: Does the link lead to a real, relevant page? What information does
+                                it provide?</li>
+                            <li>Evaluate credibility: Who is the author? Do they have expertise? Any clear bias or
+                                conflicts of interest?</li>
+                            <li>Check sourcing: Is the original primary source included?</li>
+                        </ol>
+                    </div>
+                    <label for="lateralNotes">Take notes on what you discovered for each link.</label>
+                    <textarea id="lateralNotes" name="lateralNotes" class="large-textarea" data-required></textarea>
+
+                    <h3>Grade the AI Summary</h3>
+                    <div class="rubric-wrap">
+                        <table class="rubric" aria-label="AI summary grading rubric">
+                            <thead>
+                                <tr>
+                                    <th>Criteria</th>
+                                    <th>4 - Excellent</th>
+                                    <th>3 - Good</th>
+                                    <th>2 - Some Issues</th>
+                                    <th>1 - Needs Work</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="criteria">Covers the main ideas</td>
+                                    <td><label><input type="radio" name="rubric1" value="4" />All big ideas are included
+                                            and clear.</label></td>
+                                    <td><label><input type="radio" name="rubric1" value="3" />Most big ideas are
+                                            there.</label></td>
+                                    <td><label><input type="radio" name="rubric1" value="2" />Only a few ideas are
+                                            included.</label></td>
+                                    <td><label><input type="radio" name="rubric1" value="1" />Misses most big
+                                            ideas.</label></td>
+                                </tr>
+                                <tr>
+                                    <td class="criteria">Clear and easy to read</td>
+                                    <td><label><input type="radio" name="rubric2" value="4" />Well written and easy to
+                                            understand.</label></td>
+                                    <td><label><input type="radio" name="rubric2" value="3" />Mostly clear, some awkward
+                                            parts.</label></td>
+                                    <td><label><input type="radio" name="rubric2" value="2" />Some parts are confusing
+                                            or vague.</label></td>
+                                    <td><label><input type="radio" name="rubric2" value="1" />Hard to follow or
+                                            unclear.</label></td>
+                                </tr>
+                                <tr>
+                                    <td class="criteria">Missing information</td>
+                                    <td><label><input type="radio" name="rubric3" value="4" />No important information
+                                            is left out.</label></td>
+                                    <td><label><input type="radio" name="rubric3" value="3" />One thing is
+                                            missing.</label></td>
+                                    <td><label><input type="radio" name="rubric3" value="2" />Some important stuff is
+                                            left out or off.</label></td>
+                                    <td><label><input type="radio" name="rubric3" value="1" />Major info is
+                                            missing.</label></td>
+                                </tr>
+                                <tr>
+                                    <td class="criteria">Use of evidence</td>
+                                    <td><label><input type="radio" name="rubric4" value="4" />Mentions studies, data, or
+                                            experts.</label></td>
+                                    <td><label><input type="radio" name="rubric4" value="3" />Mentions some evidence of
+                                            studies/data.</label></td>
+                                    <td><label><input type="radio" name="rubric4" value="2" />Vague or weak reference to
+                                            studies/data.</label></td>
+                                    <td><label><input type="radio" name="rubric4" value="1" />No evidence of
+                                            studies/data included.</label></td>
+                                </tr>
+                                <tr>
+                                    <td class="criteria">Source Credibility</td>
+                                    <td><label><input type="radio" name="rubric5" value="4" />Uses reliable sources and
+                                            cites the original news article.</label></td>
+                                    <td><label><input type="radio" name="rubric5" value="3" />Sources are reliable, but
+                                            do not include the original news article.</label></td>
+                                    <td><label><input type="radio" name="rubric5" value="2" />At least two sources are
+                                            not reliable.</label></td>
+                                    <td><label><input type="radio" name="rubric5" value="1" />All sources are
+                                            questionable or unknown.</label></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="score-box">
+                        <div class="score-card">Total score: <span id="rubricScore">0</span> / 20</div>
+                        <div class="score-card">Overall: <span id="rubricOverall">Not complete yet</span></div>
+                    </div>
+
+                    <h3>Improve one AI sentence</h3>
+                    <p>Remember, you are the editor and your name will be on it. Think about how the GenAI summary could
+                        be improved.</p>
+                    <label for="weakAISentence">Pick a sentence that you think could be improved. Paste that original AI
+                        sentence:</label>
+                    <textarea id="weakAISentence" name="weakAISentence" class="short-textarea" data-required></textarea>
+                    <fieldset data-required-group="sentenceWeakness">
+                        <legend>Why could it be improved? Select all that apply.</legend>
+                        <label class="option"><input type="checkbox" name="sentenceWeakness"
+                                value="Misses most big ideas" /> Misses most big ideas.</label>
+                        <label class="option"><input type="checkbox" name="sentenceWeakness"
+                                value="Hard to follow or unclear" /> Hard to follow or unclear.</label>
+                        <label class="option"><input type="checkbox" name="sentenceWeakness"
+                                value="Major info is missing" /> Major info is missing.</label>
+                        <label class="option"><input type="checkbox" name="sentenceWeakness" value="No evidence" /> No
+                            evidence of studies/data included.</label>
+                        <label class="option"><input type="checkbox" name="sentenceWeakness"
+                                value="Questionable sources" /> All sources are questionable or unknown.</label>
+                    </fieldset>
+                    <div class="prompt-box" id="promptReviseSentence">Revise this sentence: [Paste the GenAI sentence
+                        that could be improved]
+
+                        The issue is: [What is wrong or weak? Be specific: unclear wording, missing detail, too complex,
+                        slightly inaccurate, etc.]
+
+                        Improve it by: [What should change? e.g., simplify wording, make it more accurate, add key
+                        detail, remove exaggeration, etc.]
+
+                        Keep the meaning accurate to the original article.</div>
+                    <button type="button" class="copy-button" data-copy="promptReviseSentence">Copy prompt</button>
+                    <label for="newAISentence">Paste the new AI sentence:</label>
+                    <textarea id="newAISentence" name="newAISentence" class="short-textarea" data-required></textarea>
+                    <div class="completion-status" data-status="2">Complete everything in this tab to unlock Tab 4.
+                    </div>
+                </section>
+            </article>
+
+            <article class="tab-panel" data-tab="3">
+                <section class="card">
+                    <h2>A Powerful Tool</h2>
+                    <p>One of the most powerful uses of AI is as a tool to help you grow your skills. Instead of copying
+                        what it writes, you can use it to test your ideas, get feedback, and refine your thinking.</p>
+                    <p>In this activity, you’ll use AI to improve your own summary by making it clearer, more accurate,
+                        and more effective.</p>
+                </section>
+
+                <section class="card">
+                    <h2>Revising Your News Article Summary</h2>
+                    <p>Paste this into your chatbot.</p>
+                    <div class="prompt-box" id="promptImproveOwnSummary">Here is my summary of the science news article
+                        mentioned earlier: [Paste your summary]
+
+                        Do NOT rewrite this for me. Instead, ask me 2–3 questions that will help me improve it.</div>
+                    <button type="button" class="copy-button" data-copy="promptImproveOwnSummary">Copy prompt</button>
+                    <div class="callout">Notice GenAI isn’t here to replace your thinking. It’s there to push it
+                        further. If it gives you a full rewrite, don’t use it. Bring it back to questions.</div>
+                    <label for="aiSuggestions">Copy and paste the suggestions or questions the chatbot gave you.</label>
+                    <textarea id="aiSuggestions" name="aiSuggestions" data-required></textarea>
+                    <label for="updatedSummary">Now update your summary with these suggestions in mind.</label>
+                    <textarea id="updatedSummary" name="updatedSummary" class="large-textarea" data-required></textarea>
+                </section>
+
+                <section class="card">
+                    <h2>Final Thoughts</h2>
+                    <p>If you want to close the split screen, feel free to do so. Now that you’ve worked with AI, it’s
+                        time to reflect.</p>
+                    <p>Think about how the AI supported your writing and where you had to rely on your own judgment.</p>
+
+                    <fieldset data-required-group="noticedSummaries">
+                        <legend>What did you notice about AI-generated summaries? Select all that apply.</legend>
+                        <label class="option"><input type="checkbox" name="noticedSummaries" value="always accurate" />
+                            AI summaries are always accurate</label>
+                        <label class="option"><input type="checkbox" name="noticedSummaries" value="sound correct" /> AI
+                            summaries can sound correct even when they are slightly wrong</label>
+                        <label class="option"><input type="checkbox" name="noticedSummaries" value="simplify" /> AI
+                            summaries can simplify complex ideas</label>
+                        <label class="option"><input type="checkbox" name="noticedSummaries"
+                                value="leave out details" /> AI summaries may leave out important details</label>
+                        <label class="option"><input type="checkbox" name="noticedSummaries" value="always trusted" />
+                            AI summaries should always be trusted without checking</label>
+                    </fieldset>
+
+                    <fieldset data-required-group="feedbackChanged">
+                        <legend>When you gave feedback to the AI, what changed? Select all that apply.</legend>
+                        <label class="option"><input type="checkbox" name="feedbackChanged" value="clearer" /> The
+                            summary became clearer</label>
+                        <label class="option"><input type="checkbox" name="feedbackChanged" value="accurate" /> The
+                            summary became more accurate</label>
+                        <label class="option"><input type="checkbox" name="feedbackChanged" value="directions" /> The
+                            summary followed your directions more closely</label>
+                        <label class="option"><input type="checkbox" name="feedbackChanged" value="ignored" /> The AI
+                            ignored your input</label>
+                        <label class="option"><input type="checkbox" name="feedbackChanged" value="perfect" /> The
+                            summary automatically became perfect</label>
+                    </fieldset>
+
+                    <fieldset data-required-group="feedbackTells">
+                        <legend>What does giving feedback to a chatbot tell you about how AI works? Select all that
+                            apply.</legend>
+                        <label class="option"><input type="checkbox" name="feedbackTells" value="clear instructions" />
+                            AI improves when given clear instructions</label>
+                        <label class="option"><input type="checkbox" name="feedbackTells"
+                                value="perfect understanding" /> AI understands the article perfectly on its own</label>
+                        <label class="option"><input type="checkbox" name="feedbackTells" value="guided" /> AI responds
+                            to how you guide it</label>
+                        <label class="option"><input type="checkbox" name="feedbackTells" value="no human" /> AI does
+                            not need human input</label>
+                        <label class="option"><input type="checkbox" name="feedbackTells" value="different results" />
+                            AI can produce different results from the same task</label>
+                    </fieldset>
+
+                    <h3>Advantages and Disadvantages of AI</h3>
+                    <p>Sort each item as an advantage or disadvantage.</p>
+                    <div class="advantages-grid">
+                        <div class="info-tile"><strong>Accessibility</strong><select name="sort_accessibility"
+                                data-required>
+                                <option value="">Choose...</option>
+                                <option>Advantage</option>
+                                <option>Disadvantage</option>
+                            </select></div>
+                        <div class="info-tile"><strong>Simplify complex topics</strong><select name="sort_simplify"
+                                data-required>
+                                <option value="">Choose...</option>
+                                <option>Advantage</option>
+                                <option>Disadvantage</option>
+                            </select></div>
+                        <div class="info-tile"><strong>Quick exchange</strong><select name="sort_quick" data-required>
+                                <option value="">Choose...</option>
+                                <option>Advantage</option>
+                                <option>Disadvantage</option>
+                            </select></div>
+                        <div class="info-tile"><strong>Clear communication</strong><select name="sort_clear"
+                                data-required>
+                                <option value="">Choose...</option>
+                                <option>Advantage</option>
+                                <option>Disadvantage</option>
+                            </select></div>
+                        <div class="info-tile"><strong>Enhanced creativity</strong><select name="sort_creativity"
+                                data-required>
+                                <option value="">Choose...</option>
+                                <option>Advantage</option>
+                                <option>Disadvantage</option>
+                            </select></div>
+                        <div class="info-tile"><strong>Various communication formats</strong><select name="sort_formats"
+                                data-required>
+                                <option value="">Choose...</option>
+                                <option>Advantage</option>
+                                <option>Disadvantage</option>
+                            </select></div>
+                        <div class="info-tile"><strong>Inaccurate information / hallucinations</strong><select
+                                name="sort_hallucinations" data-required>
+                                <option value="">Choose...</option>
+                                <option>Advantage</option>
+                                <option>Disadvantage</option>
+                            </select></div>
+                        <div class="info-tile"><strong>Biased outputs</strong><select name="sort_bias" data-required>
+                                <option value="">Choose...</option>
+                                <option>Advantage</option>
+                                <option>Disadvantage</option>
+                            </select></div>
+                        <div class="info-tile"><strong>Unclear sources</strong><select name="sort_sources"
+                                data-required>
+                                <option value="">Choose...</option>
+                                <option>Advantage</option>
+                                <option>Disadvantage</option>
+                            </select></div>
+                        <div class="info-tile"><strong>Copyright concerns</strong><select name="sort_copyright"
+                                data-required>
+                                <option value="">Choose...</option>
+                                <option>Advantage</option>
+                                <option>Disadvantage</option>
+                            </select></div>
+                        <div class="info-tile"><strong>Spread of misinformation</strong><select
+                                name="sort_misinformation" data-required>
+                                <option value="">Choose...</option>
+                                <option>Advantage</option>
+                                <option>Disadvantage</option>
+                            </select></div>
+                        <div class="info-tile"><strong>Overreliance on AI</strong><select name="sort_overreliance"
+                                data-required>
+                                <option value="">Choose...</option>
+                                <option>Advantage</option>
+                                <option>Disadvantage</option>
+                            </select></div>
+                        <div class="info-tile"><strong>Loss of summarizing skills</strong><select name="sort_skills"
+                                data-required>
+                                <option value="">Choose...</option>
+                                <option>Advantage</option>
+                                <option>Disadvantage</option>
+                            </select></div>
+                    </div>
+
+                    <fieldset data-required-group="studentRole">
+                        <legend>When you used AI to improve your own summary, what should be your role? Select all that
+                            apply.</legend>
+                        <label class="option"><input type="checkbox" name="studentRole" value="final decisions" /> I
+                            make the final decisions about what to change</label>
+                        <label class="option"><input type="checkbox" name="studentRole" value="copy" /> I copy what the
+                            AI wrote without thinking</label>
+                        <label class="option"><input type="checkbox" name="studentRole" value="rethink" /> I use AI
+                            feedback to rethink my ideas</label>
+                        <label class="option"><input type="checkbox" name="studentRole" value="check" /> I check whether
+                            the suggestions were accurate</label>
+                        <label class="option"><input type="checkbox" name="studentRole" value="all work" /> I let the AI
+                            do all the work</label>
+                    </fieldset>
+
+                    <fieldset data-required-group="aiToolStatement">
+                        <legend>Which statement best describes AI as a tool?</legend>
+                        <label class="option"><input type="radio" name="aiToolStatement" value="do work" /> AI should do
+                            the hard work so I don’t have to think</label>
+                        <label class="option"><input type="radio" name="aiToolStatement" value="always accurate" /> AI
+                            is always accurate, so I can trust it completely</label>
+                        <label class="option"><input type="radio" name="aiToolStatement" value="helps thinking" /> AI is
+                            a tool that helps me improve my thinking and writing</label>
+                        <label class="option"><input type="radio" name="aiToolStatement" value="replaces" /> AI replaces
+                            the need to understand the topic</label>
+                    </fieldset>
+
+                    <fieldset data-required-group="strongUses">
+                        <legend>Which of the following are strong ways to use AI for writing? Select all that apply.
+                        </legend>
+                        <label class="option"><input type="checkbox" name="strongUses" value="feedback" /> Asking for
+                            feedback on your ideas</label>
+                        <label class="option"><input type="checkbox" name="strongUses" value="copy paste" /> Copying and
+                            pasting the AI’s response as your final answer</label>
+                        <label class="option"><input type="checkbox" name="strongUses" value="explain" /> Asking the AI
+                            to explain confusing parts</label>
+                        <label class="option"><input type="checkbox" name="strongUses" value="revising" /> Revising your
+                            work based on AI suggestions</label>
+                        <label class="option"><input type="checkbox" name="strongUses" value="replace thinking" />
+                            Letting AI replace your thinking</label>
+                    </fieldset>
+                </section>
+
+                <section class="card footer-actions">
+                    <h2>You stayed in control.</h2>
+                    <p>Throughout this activity, you guided AI, evaluated its accuracy, and used it to strengthen your
+                        own thinking and writing. AI can be a helpful tool, but it works best when you stay in control.
+                        Because it builds sentences based on patterns and probabilities, it can sound confident while
+                        still missing details or making small mistakes. That’s why it’s important to read AI-generated
+                        summaries critically, checking for accuracy, clarity, and completeness.</p>
+                    <p>The real strength of AI isn’t just how powerful it is, but how you use it. When used well, AI can
+                        help sharpen your ideas, not replace them.</p>
+                    <button class="print-button" type="button" onclick="window.print()">Print to PDF</button>
+                    <div class="completion-status" data-status="3">Complete everything in this tab, then print or save
+                        your work.</div>
+                </section>
+            </article>
+        </form>
+    </main>
+</body>
+
+</html>
