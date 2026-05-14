@@ -169,12 +169,10 @@
                                                 <select class="inline-select sentence-select" name="sourceSentence1"
                                                       data-required>
                                                       <option value="">Choose...</option>
-                                                      <option value="Primary"
-                                                            data-feedback="Primary sources usually present original research, data, or findings. This sentence is asking about resources that give broad background knowledge.">
+                                                      <option value="Primary">
                                                             Primary
                                                       </option>
-                                                      <option value="Secondary"
-                                                            data-feedback="Secondary sources explain or analyze original research. They can be helpful, but this sentence is specifically describing broad background resources.">
+                                                      <option value="Secondary">
                                                             Secondary
                                                       </option>
                                                       <option value="Tertiary" data-correct="true">
@@ -194,12 +192,10 @@
                                                       <option value="primary" data-correct="true">
                                                             primary
                                                       </option>
-                                                      <option value="secondary"
-                                                            data-feedback="Secondary sources interpret, explain, or analyze original research. Peer-reviewed scholarly journal articles often report the original study itself.">
+                                                      <option value="secondary">
                                                             secondary
                                                       </option>
-                                                      <option value="tertiary"
-                                                            data-feedback="Tertiary sources provide broad overviews or background information. Peer-reviewed scholarly journal articles are usually more detailed and original than tertiary sources.">
+                                                      <option value="tertiary">
                                                             tertiary
                                                       </option>
                                                 </select>
@@ -210,26 +206,28 @@
                                                 <select class="inline-select sentence-select" name="sourceSentence3"
                                                       data-required>
                                                       <option value="">Choose...</option>
-                                                      <option value="Primary"
-                                                            data-feedback="Primary sources present original research. This sentence is describing sources that interpret original research, not sources that first report it.">
+                                                      <option value="Primary">
                                                             Primary
                                                       </option>
                                                       <option value="Secondary" data-correct="true">
                                                             Secondary
                                                       </option>
-                                                      <option value="Tertiary"
-                                                            data-feedback="Tertiary sources provide broad background summaries. This sentence is about sources that analyze or explain original research, which is different.">
+                                                      <option value="Tertiary">
                                                             Tertiary
                                                       </option>
                                                 </select>
                                                 sources interpret original research and provide analysis or explanation
                                                 of the findings.
                                           </p>
+                                          <div class="sentence-check-row">
+                                                <button type="button" class="secondary-button"
+                                                      id="checkSentenceBuilder">
+                                                      Check Answers
+                                                </button>
+                                                <span class="sentence-feedback" id="sentenceBuilderFeedback"
+                                                      aria-live="polite"></span>
+                                          </div>
                                     </div>
-
-                                    <button type="button" class="secondary-button" id="checkSentenceBuilder">
-                                          Check Answers
-                                    </button>
                               </div>
 
                               <!-- Source Matching Activity -->
@@ -272,7 +270,6 @@
                                                                   <input type="hidden" id="matchResearch"
                                                                         name="matchResearch" data-required />
                                                             </div>
-                                                            <div class="match-feedback" aria-live="polite"></div>
                                                       </div>
                                                 </div>
 
@@ -291,7 +288,6 @@
                                                                   <input type="hidden" id="matchNewsArticle"
                                                                         name="matchNewsArticle" data-required />
                                                             </div>
-                                                            <div class="match-feedback" aria-live="polite"></div>
                                                       </div>
                                                 </div>
 
@@ -310,14 +306,22 @@
                                                                   <input type="hidden" id="matchStudentSummary"
                                                                         name="matchStudentSummary" data-required />
                                                             </div>
-                                                            <div class="match-feedback" aria-live="polite"></div>
                                                       </div>
                                                 </div>
                                           </div>
 
-                                          <button type="button" class="secondary-button" id="clearSourceMatches">
-                                                Clear Matches
-                                          </button>
+                                          <div class="source-matching-actions">
+                                                <button type="button" class="secondary-button" id="checkSourceMatches">
+                                                      Check Answers
+                                                </button>
+
+                                                <button type="button" class="secondary-button" id="clearSourceMatches">
+                                                      Clear Matches
+                                                </button>
+
+                                                <span class="source-matching-feedback" id="sourceMatchingFeedback"
+                                                      aria-live="polite"></span>
+                                          </div>
                                     </fieldset>
                               </div>
 
@@ -333,17 +337,21 @@
 
                                           <fieldset data-required-group="summarySourceType">
                                                 <label class="option">
-                                                      <input type="radio" name="summarySourceType" value="Primary" />
+                                                      <input type="radio" name="summarySourceType" value="Primary"
+                                                            data-feedback="Not quite. A primary source presents original research or firsthand data. Your summary is not the original research." />
                                                       Primary
                                                 </label>
 
                                                 <label class="option">
-                                                      <input type="radio" name="summarySourceType" value="Secondary" />
+                                                      <input type="radio" name="summarySourceType" value="Secondary"
+                                                            data-feedback="Not quite. A secondary source explains or interprets primary research. The news article is secondary, but your summary is one step further removed." />
                                                       Secondary
                                                 </label>
 
                                                 <label class="option">
-                                                      <input type="radio" name="summarySourceType" value="Tertiary" />
+                                                      <input type="radio" name="summarySourceType" value="Tertiary"
+                                                            data-correct="true"
+                                                            data-feedback="Correct. Your summary is a tertiary source because it simplifies and organizes information from another source for a general audience." />
                                                       Tertiary
                                                 </label>
                                           </fieldset>

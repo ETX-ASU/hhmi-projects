@@ -371,29 +371,29 @@ function initializeSourceMatching() {
     const tokens = [...document.querySelectorAll(".drag-token")];
     const zones = [...document.querySelectorAll(".drop-zone")];
     const clearButton = document.getElementById("clearSourceMatches");
+    const checkButton = document.getElementById("checkSourceMatches");
+    const feedback = document.getElementById("sourceMatchingFeedback");
 
     if (!tokens.length || !zones.length) return;
 
     let selectedValue = null;
 
-    function setFeedback(zone, value) {
-        const feedback = zone.parentElement.querySelector(".match-feedback");
-        const correctAnswer = zone.dataset.correct;
+    function clearSourceMatchingFeedback() {
+        zones.forEach(zone => {
+            zone.classList.remove("correct", "incorrect", "needs-answer");
+        });
 
+        if (feedback) {
+            feedback.textContent = "";
+            feedback.className = "source-matching-feedback";
+        }
+    }
+
+    function setSourceMatchingFeedback(type, message) {
         if (!feedback) return;
 
-        zone.classList.remove("correct", "incorrect");
-        feedback.classList.remove("correct", "incorrect");
-
-        if (!value) {
-            feedback.textContent = "";
-            return;
-        }
-
-        const isCorrect = value === correctAnswer;
-        zone.classList.add(isCorrect ? "correct" : "incorrect");
-        feedback.classList.add(isCorrect ? "correct" : "incorrect");
-        feedback.textContent = isCorrect ? "Correct" : "Try again";
+        feedback.className = `source-matching-feedback ${type}`;
+        feedback.textContent = message;
     }
 
     function updateZoneDisplay(zone, value) {
@@ -406,7 +406,7 @@ function initializeSourceMatching() {
         label.textContent = value || "Drop type here";
         zone.classList.toggle("filled", Boolean(value));
 
-        setFeedback(zone, value);
+        clearSourceMatchingFeedback();
     }
 
     function clearExistingValue(value) {
@@ -474,9 +474,55 @@ function initializeSourceMatching() {
         });
     });
 
+    checkButton?.addEventListener("click", () => {
+        let unansweredCount = 0;
+        let correctCount = 0;
+
+        zones.forEach(zone => {
+            const input = zone.querySelector('input[type="hidden"]');
+            const value = input?.value || "";
+
+            zone.classList.remove("correct", "incorrect", "needs-answer");
+
+            if (!value) {
+                unansweredCount += 1;
+                zone.classList.add("needs-answer");
+                return;
+            }
+
+            if (value === zone.dataset.correct) {
+                correctCount += 1;
+                zone.classList.add("correct");
+            } else {
+                zone.classList.add("incorrect");
+            }
+        });
+
+        if (unansweredCount > 0) {
+            setSourceMatchingFeedback(
+                "needs-answer",
+                `Match every source before checking. ${unansweredCount} ${unansweredCount === 1 ? "source still needs" : "sources still need"} an answer.`
+            );
+        } else if (correctCount === zones.length) {
+            setSourceMatchingFeedback(
+                "correct",
+                "Nice work! You correctly matched each type of source. The original research article is a primary source, the news article is a secondary source because it explains that research, and your summary acts as a tertiary source by simplifying and organizing the information."
+            );
+        } else {
+            setSourceMatchingFeedback(
+                "incorrect",
+                "It might help to review all three source types again. Reread the primary, secondary, and tertiary sources definitions. Think about how each one builds on the other and try again."
+            );
+        }
+
+        saveState();
+        updateUnlocks();
+    });
+
     clearButton?.addEventListener("click", () => {
         zones.forEach(zone => updateZoneDisplay(zone, ""));
         clearSelectedToken();
+        clearSourceMatchingFeedback();
         saveState();
         updateUnlocks();
     });
@@ -494,50 +540,67 @@ function initializeSourceMatching() {
 
 function initializeSentenceBuilderFeedback() {
     const checkButton = document.getElementById("checkSentenceBuilder");
+    const feedback = document.getElementById("sentenceBuilderFeedback");
     const selects = [...document.querySelectorAll(".sentence-builder .sentence-select")];
 
-    if (!checkButton || !selects.length) return;
+    if (!checkButton || !feedback || !selects.length) return;
 
-    function clearSentenceFeedback(select) {
-        const sentence = select.closest(".sentence-item");
-        const oldFeedback = sentence?.querySelector(".sentence-feedback");
+    function clearSentenceFeedback() {
+        selects.forEach(select => {
+            select.classList.remove("correct", "incorrect", "needs-answer");
+        });
 
-        select.classList.remove("correct", "incorrect", "needs-answer");
-        oldFeedback?.remove();
+        feedback.textContent = "";
+        feedback.className = "sentence-feedback";
     }
 
-    function addSentenceFeedback(select, type, message) {
-        const sentence = select.closest(".sentence-item");
-        if (!sentence) return;
-
-        clearSentenceFeedback(select);
-        select.classList.add(type);
-
-        const feedback = document.createElement("span");
+    function setSentenceFeedback(type, message) {
         feedback.className = `sentence-feedback ${type}`;
         feedback.textContent = message;
-        sentence.appendChild(feedback);
     }
 
     checkButton.addEventListener("click", () => {
-        selects.forEach(select => {
+        const corrections = [];
+        let unansweredCount = 0;
+        let correctCount = 0;
+
+        selects.forEach((select, index) => {
             const selectedOption = select.options[select.selectedIndex];
+            select.classList.remove("correct", "incorrect", "needs-answer");
 
             if (!select.value) {
-                addSentenceFeedback(select, "needs-answer", "Choose an answer before checking.");
+                unansweredCount += 1;
+                select.classList.add("needs-answer");
                 return;
             }
 
             if (selectedOption.dataset.correct === "true") {
-                addSentenceFeedback(select, "correct", "Correct");
+                correctCount += 1;
+                select.classList.add("correct");
             } else {
-                addSentenceFeedback(
-                    select,
-                    "incorrect",
-                    selectedOption.dataset.feedback || "Try again. Review what this source type usually does."
+                select.classList.add("incorrect");
+                corrections.push(
+                    `${index + 1}. ${selectedOption.dataset.feedback || "Review what this source type usually does."}`
                 );
             }
         });
+
+        if (unansweredCount > 0) {
+            setSentenceFeedback(
+                "needs-answer",
+                `Choose an answer for every sentence before checking. ${unansweredCount} ${unansweredCount === 1 ? "sentence still needs" : "sentences still need"} an answer.`
+            );
+        } else if (correctCount === selects.length) {
+            setSentenceFeedback(
+                "correct",
+                "Nice work! You correctly identified how each type of scientific source is used. Tertiary sources help build background knowledge, primary sources present original research, and secondary sources analyze and interpret that research. This understanding will help you choose the right sources when reading and writing about science."
+            );
+        } else {
+            setSentenceFeedback(
+                "incorrect",
+                "It might help to review all three source types again. Reread the primary, secondary, and tertiary sources definitions. Focus on their purpose: presenting original research, analyzing research, or providing background information. Then try again."
+            );
+        }
 
         saveState();
         updateUnlocks();
@@ -545,7 +608,7 @@ function initializeSentenceBuilderFeedback() {
 
     selects.forEach(select => {
         select.addEventListener("change", () => {
-            clearSentenceFeedback(select);
+            clearSentenceFeedback();
             saveState();
             updateUnlocks();
         });
@@ -966,13 +1029,27 @@ function initializeProsConsSort() {
 const CHECK_ANSWER_CONFIG = {
     summarySourceType: {
         correct: ["Tertiary"],
-        correctFeedback: "Correct! Your summary is a tertiary source because it explains information for a general audience.",
-        incorrectFeedback: "Try again. Think about which source type gives a broad explanation for readers."
+        correctFeedback: "Correct. Your summary is a tertiary source because it simplifies and organizes information from another source for a general audience.",
+        feedbackByAnswer: {
+            Primary: "Not quite. A primary source presents original research or firsthand data. Your summary is not the original research.",
+            Secondary: "Not quite. A secondary source explains or interprets primary research. The news article is secondary, but your summary is one step further removed.",
+            Tertiary: "Correct. Your summary is a tertiary source because it simplifies and organizes information from another source for a general audience."
+        },
+        incorrectFeedback: "Try again."
     },
     credibilityTraits: {
         correct: ["Clear evidence", "Reliable sources", "Easy to understand"],
-        correctFeedback: "Correct! These traits help readers trust a science summary.",
-        incorrectFeedback: "Try again. Choose traits that build trust instead of opinions, vague claims, or unnecessary jargon."
+        correctFeedback: "Nice work. Credibility comes from clear evidence, reliable sources, and writing that is easy to understand. This is your goal. Now, can AI do this?",
+        missingFeedback: {
+            "Clear evidence": "Your summary needs specific, accurate details from the research.",
+            "Reliable sources": "Credibility depends on where the information comes from.",
+            "Easy to understand": "A credible summary should be accessible."
+        },
+        addedFeedback: {
+            "Personal opinions": "Personal opinions reduce credibility.",
+            "Scientific jargon": "Too much jargon can confuse readers."
+        },
+        incorrectFeedback: "Please try again."
     },
     aiDefinition: {
         correct: ["thinkingTasks"],
@@ -1106,11 +1183,45 @@ function initializeCheckAnswerButtons() {
             }
 
             const isCorrect = arraysMatch(selectedValues, config.correct);
+            const selectedAnswer = selectedValues[0];
+
+            let message =
+                config.feedbackByAnswer?.[selectedAnswer] ||
+                (isCorrect ? config.correctFeedback : config.incorrectFeedback);
+
+            if (!isCorrect && (config.missingFeedback || config.addedFeedback)) {
+                const missingCorrectAnswers = config.correct.filter(
+                    answer => !selectedValues.includes(answer)
+                );
+
+                const addedIncorrectAnswers = selectedValues.filter(
+                    answer => !config.correct.includes(answer)
+                );
+
+                const feedbackParts = [];
+
+                missingCorrectAnswers.forEach(answer => {
+                    if (config.missingFeedback?.[answer]) {
+                        feedbackParts.push(config.missingFeedback[answer]);
+                    }
+                });
+
+                addedIncorrectAnswers.forEach(answer => {
+                    if (config.addedFeedback?.[answer]) {
+                        feedbackParts.push(config.addedFeedback[answer]);
+                    }
+                });
+
+                if (feedbackParts.length > 0) {
+                    message = `${feedbackParts.join(" ")} ${config.incorrectFeedback || ""}`.trim();
+                }
+            }
+
             addGroupFeedback(
                 fieldset,
                 isCorrect ? "correct" : "incorrect",
-                isCorrect ? config.correctFeedback : config.incorrectFeedback
-            );
+                message
+            );;
 
             saveState();
             updateUnlocks();

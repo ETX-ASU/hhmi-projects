@@ -486,10 +486,21 @@ fieldset.answer-needs-answer {
     outline-offset: 2px;
 }
 
+.sentence-check-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 12px;
+}
+
 .sentence-feedback {
-    display: block;
-    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.5rem;
     font-weight: 800;
+    line-height: 1.4;
+    max-width: 760px;
 }
 
 .sentence-feedback.correct {
@@ -502,6 +513,18 @@ fieldset.answer-needs-answer {
 
 .sentence-feedback.needs-answer {
     color: var(--warning);
+}
+
+.source-matching-feedback.correct {
+    color: #15803d;
+}
+
+.source-matching-feedback.incorrect {
+    color: #b91c1c;
+}
+
+.source-matching-feedback.needs-answer {
+    color: #a16207;
 }
 
 /* ============================================================
