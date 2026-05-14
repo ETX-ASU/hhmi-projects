@@ -392,6 +392,53 @@ fieldset {
     font-size: 1rem;
 }
 
+
+.check-answer-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 12px;
+}
+
+fieldset.answer-correct {
+    border-radius: 14px;
+    outline: 3px solid rgba(21, 128, 61, 0.2);
+    outline-offset: 6px;
+}
+
+fieldset.answer-incorrect {
+    border-radius: 14px;
+    outline: 3px solid rgba(217, 45, 32, 0.2);
+    outline-offset: 6px;
+}
+
+fieldset.answer-needs-answer {
+    border-radius: 14px;
+    outline: 3px solid rgba(247, 144, 9, 0.2);
+    outline-offset: 6px;
+}
+
+.check-answer-feedback {
+    margin: 8px 0 0;
+    font-weight: 800;
+}
+
+.check-answer-feedback.correct {
+    color: var(--green);
+}
+
+.check-answer-feedback.incorrect {
+    color: var(--danger);
+}
+
+.check-answer-feedback.needs-answer {
+    color: var(--warning);
+}
+
+.check-answer-feedback.neutral {
+    color: var(--teal);
+}
+
 /* ============================================================
     Sentence Builder Activity
    ============================================================ */

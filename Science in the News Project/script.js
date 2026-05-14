@@ -958,6 +958,172 @@ function initializeProsConsSort() {
     restoreSavedSort();
 }
 
+
+/* ============================================================
+    Multiple Choice / Multiple Select Answer Checks
+   ============================================================ */
+
+const CHECK_ANSWER_CONFIG = {
+    summarySourceType: {
+        correct: ["Tertiary"],
+        correctFeedback: "Correct! Your summary is a tertiary source because it explains information for a general audience.",
+        incorrectFeedback: "Try again. Think about which source type gives a broad explanation for readers."
+    },
+    credibilityTraits: {
+        correct: ["Clear evidence", "Reliable sources", "Easy to understand"],
+        correctFeedback: "Correct! These traits help readers trust a science summary.",
+        incorrectFeedback: "Try again. Choose traits that build trust instead of opinions, vague claims, or unnecessary jargon."
+    },
+    aiDefinition: {
+        correct: ["thinkingTasks"],
+        correctFeedback: "Correct! AI systems perform tasks that usually require human thinking.",
+        incorrectFeedback: "Try again. Look for the choice that focuses on tasks usually connected to human thinking."
+    },
+    genaiDefinition: {
+        correct: ["creates"],
+        correctFeedback: "Correct! Generative AI creates new content based on learned patterns.",
+        incorrectFeedback: "Try again. Generative AI is known for creating new content."
+    },
+    promptFunction: {
+        correct: ["guide"],
+        correctFeedback: "Correct! Prompts are inputs that guide what the AI produces.",
+        incorrectFeedback: "Try again. A prompt tells the AI what kind of output to create."
+    },
+    summaryTruths: {
+        correct: ["may contain errors", "may omit details", "depends on prompt"],
+        correctFeedback: "Correct! AI summaries can be useful, but they still need human checking.",
+        incorrectFeedback: "Try again. Choose the statements that show AI summaries can help but are not automatically perfect."
+    },
+    noticedSummaries: {
+        correct: ["sound correct", "simplify", "leave out details"],
+        correctFeedback: "Correct! AI summaries can be helpful, but they still need review.",
+        incorrectFeedback: "Try again. Avoid choices that say AI summaries are always accurate or should always be trusted."
+    },
+    feedbackChanged: {
+        correct: ["clearer", "accurate", "directions"],
+        correctFeedback: "Correct! Feedback can help AI revise toward your goals.",
+        incorrectFeedback: "Try again. Select changes that usually happen when feedback gives clearer direction."
+    },
+    feedbackTells: {
+        correct: ["clear instructions", "guided", "different results"],
+        correctFeedback: "Correct! AI output changes based on the guidance you provide.",
+        incorrectFeedback: "Try again. Focus on how human guidance affects AI responses."
+    },
+    studentRole: {
+        correct: ["final decisions", "rethink", "check"],
+        correctFeedback: "Correct! You should stay in charge, rethink ideas, and check accuracy.",
+        incorrectFeedback: "Try again. Choose the options where the student stays responsible for the work."
+    },
+    aiToolStatement: {
+        correct: ["helps thinking"],
+        correctFeedback: "Correct! AI is a tool that can support your thinking and writing.",
+        incorrectFeedback: "Try again. AI should support your learning, not replace your understanding."
+    },
+    strongUses: {
+        correct: ["feedback", "explain", "revising"],
+        correctFeedback: "Correct! These are strong ways to use AI while keeping your own thinking involved.",
+        incorrectFeedback: "Try again. Choose uses that help you improve your own work instead of replacing your thinking."
+    }
+};
+
+const CHECK_ANSWER_NO_KEY_FEEDBACK = "Answer saved. This question is based on your own work or experience, so there is no single correct answer to check.";
+
+function initializeCheckAnswerButtons() {
+    if (!form) return;
+
+    const excludedNames = new Set(["openedChatbot"]);
+    const groupedNames = [
+        ...new Set(
+            [...form.querySelectorAll('input[type="radio"], input[type="checkbox"]')]
+                .map(input => input.name)
+                .filter(Boolean)
+                .filter(name => !excludedNames.has(name))
+                .filter(name => !name.startsWith("rubric"))
+        )
+    ];
+
+    function getGroupInputs(name) {
+        return [...form.querySelectorAll(`input[name="${CSS.escape(name)}"]`)]
+            .filter(input => input.type === "radio" || input.type === "checkbox");
+    }
+
+    function getSelectedValues(inputs) {
+        return inputs.filter(input => input.checked).map(input => input.value || "checked");
+    }
+
+    function arraysMatch(selectedValues, correctValues) {
+        if (selectedValues.length !== correctValues.length) return false;
+
+        const selected = [...selectedValues].sort();
+        const correct = [...correctValues].sort();
+
+        return selected.every((value, index) => value === correct[index]);
+    }
+
+    function clearGroupFeedback(fieldset) {
+        fieldset.classList.remove("answer-correct", "answer-incorrect", "answer-needs-answer", "answer-neutral");
+        fieldset.querySelector(".check-answer-feedback")?.remove();
+    }
+
+    function addGroupFeedback(fieldset, type, message) {
+        clearGroupFeedback(fieldset);
+        fieldset.classList.add(`answer-${type}`);
+
+        const feedback = document.createElement("p");
+        feedback.className = `check-answer-feedback ${type}`;
+        feedback.setAttribute("role", "status");
+        feedback.textContent = message;
+        fieldset.appendChild(feedback);
+    }
+
+    groupedNames.forEach(name => {
+        const inputs = getGroupInputs(name);
+        if (inputs.length < 2) return;
+
+        const fieldset = inputs[0].closest("fieldset");
+        if (!fieldset || fieldset.querySelector(".check-answer-button")) return;
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "secondary-button check-answer-button";
+        button.textContent = "Check My Answer";
+        button.dataset.checkAnswerGroup = name;
+
+        button.addEventListener("click", () => {
+            const selectedValues = getSelectedValues(inputs);
+            const config = CHECK_ANSWER_CONFIG[name];
+
+            if (selectedValues.length === 0) {
+                addGroupFeedback(fieldset, "needs-answer", "Choose an answer before checking.");
+                return;
+            }
+
+            if (!config) {
+                addGroupFeedback(fieldset, "neutral", CHECK_ANSWER_NO_KEY_FEEDBACK);
+                saveState();
+                updateUnlocks();
+                return;
+            }
+
+            const isCorrect = arraysMatch(selectedValues, config.correct);
+            addGroupFeedback(
+                fieldset,
+                isCorrect ? "correct" : "incorrect",
+                isCorrect ? config.correctFeedback : config.incorrectFeedback
+            );
+
+            saveState();
+            updateUnlocks();
+        });
+
+        inputs.forEach(input => {
+            input.addEventListener("change", () => clearGroupFeedback(fieldset));
+        });
+
+        fieldset.appendChild(button);
+    });
+}
+
 /* ============================================================
     Generic UI Handlers
    ============================================================ */
@@ -1088,6 +1254,7 @@ function initializeLesson() {
 
     initializeChatbotUseFollowup();
     initializeSentenceBuilderFeedback();
+    initializeCheckAnswerButtons();
     initializeSourceMatching();
     initializeProsConsSort();
     initializeSummaryComparisonAutofill();
