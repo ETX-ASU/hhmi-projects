@@ -28,8 +28,8 @@ const STORAGE_KEYS = {
 
 const VIDEO_CONFIG = {
     youtubeId: "rwF-X5STYks",
-    requiredProgress: 0.5,       // Treats 99% as full completion to avoid API end-of-video edge cases.
-    requiredWatchSeconds: 2     // Hidden active-play timer: 2 minutes.
+    requiredProgress: 0.99,       // Treats 99% as full completion to avoid API end-of-video edge cases.
+    requiredWatchSeconds: 120     // Hidden active-play timer: 2 minutes.
 };
 
 /* ============================================================
@@ -144,8 +144,10 @@ function resetTestingProgress() {
 }
 
 /* ============================================================
-    Testing
+    Testing Helper
+    Run debugTabRequirements(0), debugTabRequirements(1), etc.
    ============================================================ */
+
 function debugTabRequirements(tabIndex = state.activeTab) {
     const panel = tabPanels[tabIndex];
 
@@ -295,7 +297,7 @@ function tabComplete(index) {
     const allDirectChecksComplete = directRequiredChecks.every(isFilled);
     const allGroupsComplete = requiredGroups.every(groupName => groupComplete(panel, groupName));
 
-    // Tab 3 includes the rubric, which is required but does not use data-required.
+    // Tab 3, index 2, includes the rubric, which is required but does not use data-required.
     if (index === 2) {
         const rubricComplete = [1, 2, 3, 4, 5].every(num =>
             Boolean(form.querySelector(`[name="rubric${num}"]:checked`))
@@ -325,14 +327,15 @@ function updateUnlocks() {
     statusBoxes.forEach(box => {
         const index = Number(box.dataset.status);
         const complete = tabComplete(index);
+        const isLastTab = index === tabPanels.length - 1;
 
         box.classList.toggle("complete", complete);
 
-        if (complete && index < 3) {
+        if (complete && !isLastTab) {
             box.textContent = `Tab ${index + 1} complete. Tab ${index + 2} is unlocked.`;
         }
 
-        if (complete && index === 3) {
+        if (complete && isLastTab) {
             box.textContent = "Lesson complete. You can print or save your work as a PDF.";
         }
     });
@@ -712,12 +715,11 @@ function saveVideoGateProgress() {
     const timerInput = document.getElementById("videoTimerComplete");
     if (!timerInput) return;
 
-    const existing = safeJsonParse(localStorage.getItem(STORAGE_KEYS.videoGate), {});
-
     localStorage.setItem(STORAGE_KEYS.videoGate, JSON.stringify({
-        ...existing,
         remainingWatchSeconds,
-        timerComplete: timerInput.value === "complete"
+        timerComplete: timerInput.value === "complete",
+        requiredWatchSeconds: VIDEO_CONFIG.requiredWatchSeconds,
+        requiredProgress: VIDEO_CONFIG.requiredProgress
     }));
 }
 
@@ -726,6 +728,20 @@ function loadVideoGateProgress() {
     if (!timerInput) return;
 
     const saved = safeJsonParse(localStorage.getItem(STORAGE_KEYS.videoGate), {});
+
+    const configChanged =
+        saved.requiredWatchSeconds !== undefined &&
+        (
+            saved.requiredWatchSeconds !== VIDEO_CONFIG.requiredWatchSeconds ||
+            saved.requiredProgress !== VIDEO_CONFIG.requiredProgress
+        );
+
+    if (configChanged) {
+        remainingWatchSeconds = VIDEO_CONFIG.requiredWatchSeconds;
+        timerInput.value = "";
+        localStorage.removeItem(STORAGE_KEYS.videoGate);
+        return;
+    }
 
     if (typeof saved.remainingWatchSeconds === "number") {
         remainingWatchSeconds = Math.max(0, saved.remainingWatchSeconds);
