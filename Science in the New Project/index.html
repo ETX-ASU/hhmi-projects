@@ -97,17 +97,17 @@
                 <!-- Introduction -->
                 <section class="card two-col">
                     <div>
-                        <h2>This has your name on it!</h2>
+                        <h2>This Has Your Name On It!</h2>
                         <p>
                             You’ve been asked to write a short science explainer for a student website
                             on the news article you chose earlier. You can use generative AI, but your
-                            name is on it. Your credibility is on the line!
+                            name is on it. <strong>Your credibility is on the line!</strong>
                         </p>
                     </div>
 
-                    <div class="callout teal">
-                        <h3>Your goal</h3>
-                        <p>Use AI carefully. Check what it says. Keep control of the final writing decisions.</p>
+                    <div>
+                        <img src="./assets/placeholder.svg" alt="Illustration representing source types"
+                            class="question-image" />
                     </div>
                 </section>
 
@@ -134,7 +134,8 @@
                 <!-- Source Types -->
                 <section class="card">
                     <h2>Types of Scientific Sources</h2>
-
+                    <p class="callout">What kind of source is your summary? There are different types of sources of
+                        information. </p>
                     <div class="source-grid">
                         <div class="info-tile">
                             <strong>Primary</strong><br />
@@ -305,27 +306,42 @@
                     </div>
 
                     <!-- Summary Source Type -->
-                    <h4 class="callout teal">What kind of source is your news article summary?</h4>
-                    <fieldset data-required-group="summarySourceType">
-                        <label class="option">
-                            <input type="radio" name="summarySourceType" value="Primary" />
-                            Primary
-                        </label>
-                        <label class="option">
-                            <input type="radio" name="summarySourceType" value="Secondary" />
-                            Secondary
-                        </label>
-                        <label class="option">
-                            <input type="radio" name="summarySourceType" value="Tertiary" />
-                            Tertiary
-                        </label>
-                    </fieldset>
+                    <div class="image-question-row image-left">
+                        <div class="question-image-wrap">
+                            <img src="./assets/placeholder.svg" alt="Illustration representing source types"
+                                class="question-image" />
+                        </div>
+
+                        <div class="question-content">
+                            <p class="callout teal">What kind of source is your news article summary?</p>
+
+                            <fieldset data-required-group="summarySourceType">
+                                <label class="option">
+                                    <input type="radio" name="summarySourceType" value="Primary" />
+                                    Primary
+                                </label>
+
+                                <label class="option">
+                                    <input type="radio" name="summarySourceType" value="Secondary" />
+                                    Secondary
+                                </label>
+
+                                <label class="option">
+                                    <input type="radio" name="summarySourceType" value="Tertiary" />
+                                    Tertiary
+                                </label>
+                            </fieldset>
+                        </div>
+                    </div>
+
 
                     <!-- Credibility Traits -->
-                    <h4 class="callout teal">
+                    <p class="callout">Given that your summary news article is a tertiary source, how do you build
+                        credibility as a science editor?</p>
+                    <p class="callout teal">
                         What characteristics of your news article science summary would build trust with readers?
                         Select all that apply.
-                    </h4>
+                    </p>
                     <fieldset data-required-group="credibilityTraits">
                         <label class="option">
                             <input type="checkbox" name="credibilityTraits" value="Clear evidence" />
@@ -369,10 +385,12 @@
             <article class="tab-panel" data-tab="1">
                 <section class="card">
                     <h2>What is Generative AI?</h2>
+                    <p class="callout">In order to know how to use GenAI effectively, we need to know what it is and how
+                        it works.</p>
 
-                    <h4 class="callout teal">
+                    <p class="callout teal">
                         Which of the following would you use to describe artificial intelligence (AI)?
-                    </h4>
+                    </p>
                     <fieldset data-required-group="aiDefinition">
                         <label class="option">
                             <input type="radio" name="aiDefinition" value="storage" />
@@ -393,9 +411,9 @@
                         </label>
                     </fieldset>
 
-                    <h4 class="callout teal">
+                    <p class="callout teal">
                         How have you previously used GenAI chatbots like ChatGPT, Gemini, etc.?
-                    </h4>
+                    </p>
                     <fieldset data-required-group="chatbotUse">
                         <label class="option">
                             <input type="radio" name="chatbotUse" value="regularly" />
@@ -416,15 +434,25 @@
                         </label>
                     </fieldset>
 
-                    <div id="chatbotExperienceFollowup">
-                        <label for="chatbotObservations">
-                            What worked well when you used chatbots? What didn’t work well?
-                        </label>
-                        <textarea id="chatbotObservations" name="chatbotObservations" data-required></textarea>
+                    <div id="chatbotExperienceFollowup" class="image-question-row image-right">
+                        <div class="question-content">
+                            <label for="chatbotObservations" class="callout teal">
+                                What worked well when you used chatbots? What didn’t work well?
+                            </label>
+
+                            <textarea id="chatbotObservations" name="chatbotObservations" data-required
+                                placeholder="Describe what worked well, what was confusing, or what did not work as expected."></textarea>
+                        </div>
+
+                        <div class="question-image-wrap">
+                            <img src="./assets/placeholder.svg"
+                                alt="Illustration of a student reflecting on chatbot use" class="question-image" />
+                        </div>
                     </div>
 
+
                     <h3>Generative AI Explained</h3>
-                    <h4 class="callout teal">Watch the video, then answer the questions below.</h4>
+                    <p class="callout teal">Watch the video, then answer the questions below.</p>
 
                     <div class="video-embed">
                         <div id="genaiVideo"></div>
@@ -437,9 +465,9 @@
                     <input type="hidden" id="watchedVideo" name="watchedVideo" data-required value="" />
                     <input type="hidden" id="videoTimerComplete" name="videoTimerComplete" data-required value="" />
 
-                    <h4 class="callout teal">
+                    <p class="callout teal">
                         Generative Artificial Intelligence is a form of AI that _________________?
-                    </h4>
+                    </p>
                     <fieldset data-required-group="genaiDefinition">
                         <label class="option">
                             <input type="radio" name="genaiDefinition" value="creates" />
@@ -459,9 +487,9 @@
                         </label>
                     </fieldset>
 
-                    <h4 class="callout teal">
+                    <p class="callout teal">
                         What are the functions of prompts in generative AI systems?
-                    </h4>
+                    </p>
                     <fieldset data-required-group="promptFunction">
                         <label class="option">
                             <input type="radio" name="promptFunction" value="faster" />
