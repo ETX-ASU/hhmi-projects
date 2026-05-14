@@ -144,6 +144,104 @@ function resetTestingProgress() {
 }
 
 /* ============================================================
+    Testing Helper
+    Run debugTabRequirements(0), debugTabRequirements(1), etc.
+   ============================================================ */
+
+function debugTabRequirements(tabIndex = state.activeTab) {
+    const panel = tabPanels[tabIndex];
+
+    if (!panel) {
+        console.warn(`No tab panel found for tab index ${tabIndex}.`);
+        return;
+    }
+
+    const incomplete = [];
+
+    const requiredGroups = [
+        ...new Set(
+            [...panel.querySelectorAll("[data-required-group]")]
+                .map(group => group.dataset.requiredGroup)
+        )
+    ];
+
+    requiredGroups.forEach(groupName => {
+        const group = panel.querySelector(`[data-required-group="${CSS.escape(groupName)}"]`);
+        const namedFields = [...group.querySelectorAll(`[name="${CSS.escape(groupName)}"]`)];
+        const requiredFields = [...group.querySelectorAll("[data-required], [data-required-check]")];
+
+        let complete = true;
+
+        if (namedFields.length > 0) {
+            const hasCheckable = namedFields.some(field =>
+                field.type === "radio" || field.type === "checkbox"
+            );
+
+            if (hasCheckable) {
+                complete = namedFields.some(field => field.checked);
+            } else {
+                complete = namedFields.every(isFilled);
+            }
+        } else if (requiredFields.length > 0) {
+            complete = requiredFields.every(isFilled);
+        }
+
+        if (!complete) {
+            incomplete.push({
+                type: "group",
+                name: groupName,
+                message: `Required group "${groupName}" is incomplete.`
+            });
+        }
+    });
+
+    const groupedRequiredFields = new Set();
+
+    panel.querySelectorAll("[data-required-group]").forEach(group => {
+        group.querySelectorAll("[data-required], [data-required-check]").forEach(field => {
+            groupedRequiredFields.add(field);
+        });
+    });
+
+    const directRequired = [
+        ...panel.querySelectorAll("[data-required], [data-required-check]")
+    ].filter(field => !groupedRequiredFields.has(field));
+
+    directRequired.forEach(field => {
+        if (!isFilled(field)) {
+            incomplete.push({
+                type: "field",
+                name: field.name || field.id || "(unnamed field)",
+                id: field.id || "",
+                tag: field.tagName.toLowerCase(),
+                message: `Required field "${field.name || field.id || "(unnamed field)"}" is incomplete.`
+            });
+        }
+    });
+
+    if (tabIndex === 2) {
+        for (let i = 1; i <= 5; i++) {
+            if (!form.querySelector(`[name="rubric${i}"]:checked`)) {
+                incomplete.push({
+                    type: "rubric",
+                    name: `rubric${i}`,
+                    message: `Rubric row ${i} is incomplete.`
+                });
+            }
+        }
+    }
+
+    if (incomplete.length === 0) {
+        console.log(`✅ Tab ${tabIndex + 1} is complete.`);
+    } else {
+        console.table(incomplete);
+        console.warn(`❌ Tab ${tabIndex + 1} has ${incomplete.length} incomplete requirement(s).`);
+    }
+
+    return incomplete;
+}
+
+/* ============================================================
     Required Completion and Tab Locking
    ============================================================ */
 
@@ -199,7 +297,7 @@ function tabComplete(index) {
     const allDirectChecksComplete = directRequiredChecks.every(isFilled);
     const allGroupsComplete = requiredGroups.every(groupName => groupComplete(panel, groupName));
 
-    // Tab 3 includes the rubric, which is required but does not use data-required.
+    // Tab 3, index 2, includes the rubric, which is required but does not use data-required.
     if (index === 2) {
         const rubricComplete = [1, 2, 3, 4, 5].every(num =>
             Boolean(form.querySelector(`[name="rubric${num}"]:checked`))
@@ -229,14 +327,15 @@ function updateUnlocks() {
     statusBoxes.forEach(box => {
         const index = Number(box.dataset.status);
         const complete = tabComplete(index);
+        const isLastTab = index === tabPanels.length - 1;
 
         box.classList.toggle("complete", complete);
 
-        if (complete && index < 3) {
+        if (complete && !isLastTab) {
             box.textContent = `Tab ${index + 1} complete. Tab ${index + 2} is unlocked.`;
         }
 
-        if (complete && index === 3) {
+        if (complete && isLastTab) {
             box.textContent = "Lesson complete. You can print or save your work as a PDF.";
         }
     });
@@ -616,12 +715,11 @@ function saveVideoGateProgress() {
     const timerInput = document.getElementById("videoTimerComplete");
     if (!timerInput) return;
 
-    const existing = safeJsonParse(localStorage.getItem(STORAGE_KEYS.videoGate), {});
-
     localStorage.setItem(STORAGE_KEYS.videoGate, JSON.stringify({
-        ...existing,
         remainingWatchSeconds,
-        timerComplete: timerInput.value === "complete"
+        timerComplete: timerInput.value === "complete",
+        requiredWatchSeconds: VIDEO_CONFIG.requiredWatchSeconds,
+        requiredProgress: VIDEO_CONFIG.requiredProgress
     }));
 }
 
@@ -630,6 +728,20 @@ function loadVideoGateProgress() {
     if (!timerInput) return;
 
     const saved = safeJsonParse(localStorage.getItem(STORAGE_KEYS.videoGate), {});
+
+    const configChanged =
+        saved.requiredWatchSeconds !== undefined &&
+        (
+            saved.requiredWatchSeconds !== VIDEO_CONFIG.requiredWatchSeconds ||
+            saved.requiredProgress !== VIDEO_CONFIG.requiredProgress
+        );
+
+    if (configChanged) {
+        remainingWatchSeconds = VIDEO_CONFIG.requiredWatchSeconds;
+        timerInput.value = "";
+        localStorage.removeItem(STORAGE_KEYS.videoGate);
+        return;
+    }
 
     if (typeof saved.remainingWatchSeconds === "number") {
         remainingWatchSeconds = Math.max(0, saved.remainingWatchSeconds);
