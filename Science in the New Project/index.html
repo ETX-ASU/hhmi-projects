@@ -157,7 +157,7 @@
                     <!-- Sentence Builder Activity -->
                     <div class="sentence-builder" data-required-group="sentenceBuilder">
                         <h3>Sentence Builder Activity</h3>
-                        <h4 class="callout teal">Fill in the blanks to make each statement accurate.</h4>
+                        <p class="callout teal">Fill in the blanks to make each statement accurate.</p>
 
                         <div class="sentences">
                             <p class="sentence-item">
@@ -227,10 +227,10 @@
                         <h3>Source Matching Activity</h3>
 
                         <fieldset class="drag-match-activity">
-                            <h4 class="drag-instructions callout teal">
+                            <p class="drag-instructions callout teal">
                                 Drag each source type from the word bank to the correct resource.
                                 You can also click a source type, then click a drop zone.
-                            </h4>
+                            </p>
 
                             <div class="word-bank" aria-label="Word bank">
                                 <button type="button" class="drag-token" draggable="true" data-value="Primary">
@@ -305,7 +305,7 @@
                     </div>
 
                     <!-- Summary Source Type -->
-                    <h4 class="callout teal">What kind of source is your news article summary?</h4>
+                    <p class="callout teal">What kind of source is your news article summary?</p>
                     <fieldset data-required-group="summarySourceType">
                         <label class="option">
                             <input type="radio" name="summarySourceType" value="Primary" />
@@ -322,10 +322,10 @@
                     </fieldset>
 
                     <!-- Credibility Traits -->
-                    <h4 class="callout teal">
+                    <p class="callout teal">
                         What characteristics of your news article science summary would build trust with readers?
                         Select all that apply.
-                    </h4>
+                    </p>
                     <fieldset data-required-group="credibilityTraits">
                         <label class="option">
                             <input type="checkbox" name="credibilityTraits" value="Clear evidence" />
@@ -370,9 +370,9 @@
                 <section class="card">
                     <h2>What is Generative AI?</h2>
 
-                    <h4 class="callout teal">
+                    <p class="callout teal">
                         Which of the following would you use to describe artificial intelligence (AI)?
-                    </h4>
+                    </p>
                     <fieldset data-required-group="aiDefinition">
                         <label class="option">
                             <input type="radio" name="aiDefinition" value="storage" />
@@ -393,9 +393,9 @@
                         </label>
                     </fieldset>
 
-                    <h4 class="callout teal">
+                    <p class="callout teal">
                         How have you previously used GenAI chatbots like ChatGPT, Gemini, etc.?
-                    </h4>
+                    </p>
                     <fieldset data-required-group="chatbotUse">
                         <label class="option">
                             <input type="radio" name="chatbotUse" value="regularly" />
@@ -417,14 +417,14 @@
                     </fieldset>
 
                     <div id="chatbotExperienceFollowup">
-                        <label for="chatbotObservations">
+                        <label for="chatbotObservations" class="callout teal">
                             What worked well when you used chatbots? What didn’t work well?
                         </label>
-                        <textarea id="chatbotObservations" name="chatbotObservations" data-required></textarea>
+                        <textarea id="chatbotObservations" name="chatbotObservations"></textarea>
                     </div>
 
                     <h3>Generative AI Explained</h3>
-                    <h4 class="callout teal">Watch the video, then answer the questions below.</h4>
+                    <p class="callout teal">Watch the video, then answer the questions below.</p>
 
                     <div class="video-embed">
                         <div id="genaiVideo"></div>
@@ -437,9 +437,9 @@
                     <input type="hidden" id="watchedVideo" name="watchedVideo" data-required value="" />
                     <input type="hidden" id="videoTimerComplete" name="videoTimerComplete" data-required value="" />
 
-                    <h4 class="callout teal">
+                    <p class="callout teal">
                         Generative Artificial Intelligence is a form of AI that _________________?
-                    </h4>
+                    </p>
                     <fieldset data-required-group="genaiDefinition">
                         <label class="option">
                             <input type="radio" name="genaiDefinition" value="creates" />
@@ -459,9 +459,9 @@
                         </label>
                     </fieldset>
 
-                    <h4 class="callout teal">
+                    <p class="callout teal">
                         What are the functions of prompts in generative AI systems?
-                    </h4>
+                    </p>
                     <fieldset data-required-group="promptFunction">
                         <label class="option">
                             <input type="radio" name="promptFunction" value="faster" />
@@ -501,8 +501,9 @@
                     </p>
 
                     <div class="callout teal">
-                        <strong>For the rest of this lesson, you’ll need your chatbot open.</strong>
-                        Split your screen with this lesson and your chatbot.
+                        <p>For the rest of this lesson, you’ll need your chatbot open.
+                            Split your screen with this lesson and your chatbot.
+                        </p>
                     </div>
 
                     <div class="workspace-widget">

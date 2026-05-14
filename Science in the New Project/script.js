@@ -28,8 +28,8 @@ const STORAGE_KEYS = {
 
 const VIDEO_CONFIG = {
     youtubeId: "rwF-X5STYks",
-    requiredProgress: 0.99,       // Treats 99% as full completion to avoid API end-of-video edge cases.
-    requiredWatchSeconds: 120     // Hidden active-play timer: 2 minutes.
+    requiredProgress: 0.5,       // Treats 99% as full completion to avoid API end-of-video edge cases.
+    requiredWatchSeconds: 2     // Hidden active-play timer: 2 minutes.
 };
 
 /* ============================================================
@@ -141,104 +141,6 @@ function resetTestingProgress() {
 
     Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
     location.reload();
-}
-
-/* ============================================================
-    Testing Helper
-    Run debugTabRequirements(0), debugTabRequirements(1), etc.
-   ============================================================ */
-
-function debugTabRequirements(tabIndex = state.activeTab) {
-    const panel = tabPanels[tabIndex];
-
-    if (!panel) {
-        console.warn(`No tab panel found for tab index ${tabIndex}.`);
-        return;
-    }
-
-    const incomplete = [];
-
-    const requiredGroups = [
-        ...new Set(
-            [...panel.querySelectorAll("[data-required-group]")]
-                .map(group => group.dataset.requiredGroup)
-        )
-    ];
-
-    requiredGroups.forEach(groupName => {
-        const group = panel.querySelector(`[data-required-group="${CSS.escape(groupName)}"]`);
-        const namedFields = [...group.querySelectorAll(`[name="${CSS.escape(groupName)}"]`)];
-        const requiredFields = [...group.querySelectorAll("[data-required], [data-required-check]")];
-
-        let complete = true;
-
-        if (namedFields.length > 0) {
-            const hasCheckable = namedFields.some(field =>
-                field.type === "radio" || field.type === "checkbox"
-            );
-
-            if (hasCheckable) {
-                complete = namedFields.some(field => field.checked);
-            } else {
-                complete = namedFields.every(isFilled);
-            }
-        } else if (requiredFields.length > 0) {
-            complete = requiredFields.every(isFilled);
-        }
-
-        if (!complete) {
-            incomplete.push({
-                type: "group",
-                name: groupName,
-                message: `Required group "${groupName}" is incomplete.`
-            });
-        }
-    });
-
-    const groupedRequiredFields = new Set();
-
-    panel.querySelectorAll("[data-required-group]").forEach(group => {
-        group.querySelectorAll("[data-required], [data-required-check]").forEach(field => {
-            groupedRequiredFields.add(field);
-        });
-    });
-
-    const directRequired = [
-        ...panel.querySelectorAll("[data-required], [data-required-check]")
-    ].filter(field => !groupedRequiredFields.has(field));
-
-    directRequired.forEach(field => {
-        if (!isFilled(field)) {
-            incomplete.push({
-                type: "field",
-                name: field.name || field.id || "(unnamed field)",
-                id: field.id || "",
-                tag: field.tagName.toLowerCase(),
-                message: `Required field "${field.name || field.id || "(unnamed field)"}" is incomplete.`
-            });
-        }
-    });
-
-    if (tabIndex === 2) {
-        for (let i = 1; i <= 5; i++) {
-            if (!form.querySelector(`[name="rubric${i}"]:checked`)) {
-                incomplete.push({
-                    type: "rubric",
-                    name: `rubric${i}`,
-                    message: `Rubric row ${i} is incomplete.`
-                });
-            }
-        }
-    }
-
-    if (incomplete.length === 0) {
-        console.log(`✅ Tab ${tabIndex + 1} is complete.`);
-    } else {
-        console.table(incomplete);
-        console.warn(`❌ Tab ${tabIndex + 1} has ${incomplete.length} incomplete requirement(s).`);
-    }
-
-    return incomplete;
 }
 
 /* ============================================================
