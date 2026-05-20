@@ -3,8 +3,8 @@
 
 <head>
       <!-- ======================================================
-        Basic Page Setup
-        ====================================================== -->
+      Basic Page Setup
+      ====================================================== -->
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta name="author" content="Created by SonoranByte for ETX at ASU" />
@@ -19,8 +19,8 @@
 
 <body>
       <!-- ======================================================
-        Hero Header
-        ====================================================== -->
+      Hero Header
+      ====================================================== -->
       <header class="hero">
             <div class="wrap hero-grid">
                   <div>
@@ -92,17 +92,16 @@
                   </div>
 
                   <!-- ==================================================
-                TAB 1: You are the Editor
-                ================================================== -->
+            TAB 1: You are the Editor
+            ================================================== -->
                   <article class="tab-panel active" data-tab="0">
                         <!-- Introduction -->
                         <section class="card two-col">
                               <div>
                                     <h2>This Has Your Name On It!</h2>
                                     <p>
-                                          You’ve been asked to write a short science explainer for a student website
-                                          on the news article you chose earlier. You can use generative AI, but your
-                                          name is on it. <strong>Your credibility is on the line!</strong>
+                                          You’ve been asked to write a short science explainer for a student website on
+                                          the <em>Science News</em> article you selected earlier.
                                     </p>
                               </div>
 
@@ -117,29 +116,24 @@
                               <h2>Your News Article Summary</h2>
 
                               <p class="callout">
-                                    You’ll use a self-written summary about the science news article you completed
-                                    recently.
+                                    You'll be using your summary of the <em>Science News</em> article you previously
+                                    wrote.
                               </p>
 
                               <label for="studentSummary" class="callout teal">
-                                    Find and paste your summary here:
+                                    Find your summary and paste the whole thing here:
                               </label>
                               <textarea id="studentSummary" name="studentSummary" data-required
-                                    placeholder="Paste your earlier science news article summary here."></textarea>
-
+                                    placeholder="Add your summary here."></textarea>
+                              <p class="callout">
+                                    Now, share the link to the article you summarized.
+                              </p>
                               <label for="articleLink" class="callout teal">
-                                    Paste the original news article link here:
+                                    Paste the link to the <em>Science News</em> article here:
                               </label>
-                              <input id="articleLink" name="articleLink" type="url" placeholder="https://..."
-                                    data-required />
-                        </section>
-
-                        <!-- Source Types -->
-                        <section class="card">
-                              <h2>Types of Scientific Sources</h2>
-                              <p class="callout">What kind of source is your summary? There are different types of
-                                    sources of
-                                    information. </p>
+                              <input id="articleLink" name="articleLink" type="url"
+                                    placeholder="Paste the link to the article here." data-required />
+                              <p class="callout">There are different types of sources of information. </p>
                               <div class="source-grid">
                                     <div class="info-tile">
                                           <strong>Primary</strong><br />
@@ -158,7 +152,6 @@
                                           Provides a broad overview of scientific breakthroughs to the general public.
                                     </div>
                               </div>
-
                               <!-- Sentence Builder Activity -->
                               <div class="sentence-builder" data-required-group="sentenceBuilder">
                                     <h3>Sentence Builder Activity</h3>
@@ -229,143 +222,121 @@
                                           </div>
                                     </div>
                               </div>
-
                               <!-- Source Matching Activity -->
                               <div class="matching-activity">
                                     <h3>Source Matching Activity</h3>
-
-                                    <fieldset class="drag-match-activity">
-                                          <h4 class="drag-instructions callout teal">
-                                                Drag each source type from the word bank to the correct resource.
-                                                You can also click a source type, then click a drop zone.
-                                          </h4>
-
-                                          <div class="word-bank" aria-label="Word bank">
-                                                <button type="button" class="drag-token" draggable="true"
-                                                      data-value="Primary">
-                                                      Primary
-                                                </button>
-                                                <button type="button" class="drag-token" draggable="true"
-                                                      data-value="Secondary">
-                                                      Secondary
-                                                </button>
-                                                <button type="button" class="drag-token" draggable="true"
-                                                      data-value="Tertiary">
-                                                      Tertiary
-                                                </button>
+                                    <div class="image-question-row image-left">
+                                          <div class="question-image-wrap">
+                                                <img src="./assets/placeholder.svg"
+                                                      alt="Illustration representing source types"
+                                                      class="question-image" />
                                           </div>
+                                          <fieldset class="drag-match-activity">
+                                                <h4 class="drag-instructions callout teal">
+                                                      Drag each source type from the word bank to the correct resource.
+                                                      You can also click a source type, then click a drop zone.
+                                                </h4>
 
-                                          <div class="drag-match-list">
-                                                <div class="drag-match-row">
-                                                      <div class="definition-card">
-                                                            <h4>The original research article</h4>
-                                                            <p>This is the first place the research is published.</p>
+                                                <div class="word-bank" aria-label="Word bank">
+                                                      <button type="button" class="drag-token" draggable="true"
+                                                            data-value="Primary">
+                                                            Primary
+                                                      </button>
+                                                      <button type="button" class="drag-token" draggable="true"
+                                                            data-value="Secondary">
+                                                            Secondary
+                                                      </button>
+                                                      <button type="button" class="drag-token" draggable="true"
+                                                            data-value="Tertiary">
+                                                            Tertiary
+                                                      </button>
+                                                </div>
+
+                                                <div class="drag-match-list">
+                                                      <div class="drag-match-row">
+                                                            <div class="definition-card">
+                                                                  <h4>The original research article</h4>
+                                                                  <p>This is the first place the research is published.
+                                                                  </p>
+                                                            </div>
+
+                                                            <div class="drop-zone-card">
+                                                                  <div class="drop-zone" data-target="matchResearch"
+                                                                        data-correct="Primary" tabindex="0"
+                                                                        aria-label="Drop source type for the original research article">
+                                                                        <span class="drop-zone-text">Drop type
+                                                                              here</span>
+                                                                        <input type="hidden" id="matchResearch"
+                                                                              name="matchResearch" data-required />
+                                                                  </div>
+                                                            </div>
                                                       </div>
 
-                                                      <div class="drop-zone-card">
-                                                            <div class="drop-zone" data-target="matchResearch"
-                                                                  data-correct="Primary" tabindex="0"
-                                                                  aria-label="Drop source type for the original research article">
-                                                                  <span class="drop-zone-text">Drop type here</span>
-                                                                  <input type="hidden" id="matchResearch"
-                                                                        name="matchResearch" data-required />
+                                                      <div class="drag-match-row">
+                                                            <div class="definition-card">
+                                                                  <h4>The original news article you wrote a summary of
+                                                                  </h4>
+                                                                  <p>This interprets research findings for a broader
+                                                                        audience.
+                                                                  </p>
+                                                            </div>
+
+                                                            <div class="drop-zone-card">
+                                                                  <div class="drop-zone" data-target="matchNewsArticle"
+                                                                        data-correct="Secondary" tabindex="0"
+                                                                        aria-label="Drop source type for the original news article">
+                                                                        <span class="drop-zone-text">Drop type
+                                                                              here</span>
+                                                                        <input type="hidden" id="matchNewsArticle"
+                                                                              name="matchNewsArticle" data-required />
+                                                                  </div>
+                                                            </div>
+                                                      </div>
+
+                                                      <div class="drag-match-row">
+                                                            <div class="definition-card">
+                                                                  <h4>Your summary of the news article</h4>
+                                                                  <p>This gives a broad explanation for a general
+                                                                        audience.
+                                                                  </p>
+                                                            </div>
+
+                                                            <div class="drop-zone-card">
+                                                                  <div class="drop-zone"
+                                                                        data-target="matchStudentSummary"
+                                                                        data-correct="Tertiary" tabindex="0"
+                                                                        aria-label="Drop source type for your summary">
+                                                                        <span class="drop-zone-text">Drop type
+                                                                              here</span>
+                                                                        <input type="hidden" id="matchStudentSummary"
+                                                                              name="matchStudentSummary"
+                                                                              data-required />
+                                                                  </div>
                                                             </div>
                                                       </div>
                                                 </div>
 
-                                                <div class="drag-match-row">
-                                                      <div class="definition-card">
-                                                            <h4>The original news article you wrote a summary of</h4>
-                                                            <p>This interprets research findings for a broader audience.
-                                                            </p>
-                                                      </div>
+                                                <div class="source-matching-actions">
+                                                      <button type="button" class="secondary-button"
+                                                            id="checkSourceMatches">
+                                                            Check Answers
+                                                      </button>
 
-                                                      <div class="drop-zone-card">
-                                                            <div class="drop-zone" data-target="matchNewsArticle"
-                                                                  data-correct="Secondary" tabindex="0"
-                                                                  aria-label="Drop source type for the original news article">
-                                                                  <span class="drop-zone-text">Drop type here</span>
-                                                                  <input type="hidden" id="matchNewsArticle"
-                                                                        name="matchNewsArticle" data-required />
-                                                            </div>
-                                                      </div>
+                                                      <button type="button" class="secondary-button"
+                                                            id="clearSourceMatches">
+                                                            Clear Matches
+                                                      </button>
+
+                                                      <span class="source-matching-feedback" id="sourceMatchingFeedback"
+                                                            aria-live="polite"></span>
                                                 </div>
-
-                                                <div class="drag-match-row">
-                                                      <div class="definition-card">
-                                                            <h4>Your summary of the news article</h4>
-                                                            <p>This gives a broad explanation for a general audience.
-                                                            </p>
-                                                      </div>
-
-                                                      <div class="drop-zone-card">
-                                                            <div class="drop-zone" data-target="matchStudentSummary"
-                                                                  data-correct="Tertiary" tabindex="0"
-                                                                  aria-label="Drop source type for your summary">
-                                                                  <span class="drop-zone-text">Drop type here</span>
-                                                                  <input type="hidden" id="matchStudentSummary"
-                                                                        name="matchStudentSummary" data-required />
-                                                            </div>
-                                                      </div>
-                                                </div>
-                                          </div>
-
-                                          <div class="source-matching-actions">
-                                                <button type="button" class="secondary-button" id="checkSourceMatches">
-                                                      Check Answers
-                                                </button>
-
-                                                <button type="button" class="secondary-button" id="clearSourceMatches">
-                                                      Clear Matches
-                                                </button>
-
-                                                <span class="source-matching-feedback" id="sourceMatchingFeedback"
-                                                      aria-live="polite"></span>
-                                          </div>
-                                    </fieldset>
-                              </div>
-
-                              <!-- Summary Source Type -->
-                              <div class="image-question-row image-left">
-                                    <div class="question-image-wrap">
-                                          <img src="./assets/placeholder.svg"
-                                                alt="Illustration representing source types" class="question-image" />
-                                    </div>
-
-                                    <div class="question-content">
-                                          <p class="callout teal">What kind of source is your news article summary?</p>
-
-                                          <fieldset data-required-group="summarySourceType">
-                                                <label class="option">
-                                                      <input type="radio" name="summarySourceType" value="Primary"
-                                                            data-feedback="Not quite. A primary source presents original research or firsthand data. Your summary is not the original research." />
-                                                      Primary
-                                                </label>
-
-                                                <label class="option">
-                                                      <input type="radio" name="summarySourceType" value="Secondary"
-                                                            data-feedback="Not quite. A secondary source explains or interprets primary research. The news article is secondary, but your summary is one step further removed." />
-                                                      Secondary
-                                                </label>
-
-                                                <label class="option">
-                                                      <input type="radio" name="summarySourceType" value="Tertiary"
-                                                            data-correct="true"
-                                                            data-feedback="Correct. Your summary is a tertiary source because it simplifies and organizes information from another source for a general audience." />
-                                                      Tertiary
-                                                </label>
                                           </fieldset>
                                     </div>
                               </div>
-
-
-                              <!-- Credibility Traits -->
-                              <p class="callout">Given that your summary news article is a tertiary source, how do you
-                                    build
+                              <p class="callout">Given that your summary is a tertiary source, how do you build
                                     credibility as a science editor?</p>
                               <p class="callout teal">
-                                    What characteristics of your news article science summary would build trust with
-                                    readers?
+                                    What characteristics of your summary would build credibility with readers?
                                     Select all that apply.
                               </p>
                               <fieldset data-required-group="credibilityTraits">
@@ -398,6 +369,18 @@
                                           Confident tone
                                     </label>
                               </fieldset>
+                        </section>
+
+                        <section class="card footer-actions">
+                              <h2>Onto Step 2!</h2>
+
+                              <p class="callout">
+                                    Let's investigate AI to see how it can help you develop science article summaries!
+                              </p>
+
+                              <p>Keep in mind that in the end your name is on it.</p>
+                              <p><strong>Your credibility is on the line!</strong></p>
+                              <p>Select the next tab to move on.</p>
 
                               <div class="completion-status" data-status="0">
                                     Complete everything in this tab to unlock Tab 2.
@@ -406,8 +389,8 @@
                   </article>
 
                   <!-- ==================================================
-                TAB 2: What is GenAI?
-                ================================================== -->
+            TAB 2: What is GenAI?
+            ================================================== -->
                   <article class="tab-panel" data-tab="1">
                         <section class="card">
                               <h2>What is Generative AI?</h2>
@@ -465,25 +448,6 @@
                                     </label>
                               </fieldset>
 
-                              <div id="chatbotExperienceFollowup" class="image-question-row image-right">
-                                    <div class="question-content">
-                                          <label for="chatbotObservations" class="callout teal">
-                                                What worked well when you used chatbots? What didn’t work well?
-                                          </label>
-
-                                          <textarea id="chatbotObservations" name="chatbotObservations" data-required
-                                                placeholder="Describe what worked well, what was confusing, or what did not work as expected."></textarea>
-                                    </div>
-
-                                    <div class="question-image-wrap">
-                                          <img src="./assets/placeholder.svg"
-                                                alt="Illustration of a student reflecting on chatbot use"
-                                                class="question-image" />
-                                    </div>
-                              </div>
-
-
-                              <h3>Generative AI Explained</h3>
                               <p class="callout teal">Watch the video, then answer the questions below.</p>
 
                               <div class="video-embed">
@@ -542,38 +506,62 @@
                                     </label>
                               </fieldset>
 
-                              <div class="completion-status" data-status="1">
-                                    Complete everything in this tab to unlock Tab 3.
-                              </div>
+                              <section class="card footer-actions">
+                                    <h2>Onto Step 3!</h2>
+
+                                    <p class="callout">
+                                          Now that you're more familiar with GenAI, let's dig into how it works! Select
+                                          the next tab to move on.
+                                    </p>
+                                    <div class="completion-status" data-status="1">
+                                          Complete everything in this tab to unlock Tab 2.
+                                    </div>
+                              </section>
                         </section>
                   </article>
 
                   <!-- ==================================================
-                TAB 3: How does GenAI Work?
-                ================================================== -->
+                  TAB 3: How does GenAI Work?
+                  ================================================== -->
                   <article class="tab-panel" data-tab="2">
+                        <section class="card two-col">
+                              <div>
+                                    <h2>How does GenAI Work?</h2>
+                                    <p>When you wrote your summary, you made choices about words, tone, and meaning. AI
+                                          does something similar, but in a very different way.</p>
+                                    <p class="callout">Let’s see how AI would generate a summary of the <em>Science
+                                                News</em> article
+                                          you
+                                          selected. </p>
+                              </div>
+
+                              <div>
+                                    <img src="./assets/placeholder.svg" alt="Illustration representing source types"
+                                          class="question-image" />
+                              </div>
+                        </section>
                         <!-- Open Chatbot -->
                         <section class="card">
                               <h2>Open your Chatbot</h2>
-                              <p>
-                                    When you wrote your news article summary, you made choices about words, tone, and
-                                    meaning.
-                                    AI does something similar, but in a very different way. Let’s see how AI would
-                                    generate a
-                                    summary of the news article you selected.
-                              </p>
+                              <p class="callout">
+                                    For the rest of this lesson, you'll need your chatbot open. You'll be splitting your
+                                    screen with this lesson and your chatbot.</p>
 
-                              <div class="callout teal">
-                                    <strong>For the rest of this lesson, you’ll need your chatbot open.</strong>
-                                    Split your screen with this lesson and your chatbot.
-                              </div>
+                              <p class="callout teal">Follow the instructions to open your chatbot in split screen mode.
+                              </p>
 
                               <div class="workspace-widget">
                                     <h3>Choose Your AI Workspace</h3>
-                                    <p>
-                                          Drag your chosen AI tile to the far right edge of your browser window,
-                                          or open it in a new tab and arrange your screen.
-                                    </p>
+                                    <ul>
+                                          <li><strong>If you are using a mobile device</strong>, such as a tablet or
+                                                smartphone, open
+                                                your chatbot in a separate tab for this activity.</li>
+                                          <li><strong>If you are not using a mobile device</strong>, drag your chosen AI
+                                                tile to the
+                                                far right edge of your browser window, or open it in a new tab and
+                                                arrange your screen.
+                                          </li>
+                                    </ul>
 
                                     <button class="toggle-button" type="button" data-toggle="helpPanel"
                                           aria-expanded="false">
@@ -1150,8 +1138,8 @@
                   </article>
 
                   <!-- ==================================================
-                TAB 4: AI as a Tool
-                ================================================== -->
+                  TAB 4: AI as a Tool
+                  ================================================== -->
                   <article class="tab-panel" data-tab="3">
                         <section class="card">
                               <h2>A Powerful Tool</h2>
@@ -1255,8 +1243,8 @@
                   </article>
 
                   <!-- ==================================================
-                TAB 5: Final Thoughts
-                ================================================== -->
+                  TAB 5: Final Thoughts
+                  ================================================== -->
                   <article class="tab-panel" data-tab="4">
                         <section class="card">
                               <h2>Final Thoughts</h2>

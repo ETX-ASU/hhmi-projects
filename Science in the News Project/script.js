@@ -29,7 +29,7 @@ const STORAGE_KEYS = {
 const VIDEO_CONFIG = {
     youtubeId: "rwF-X5STYks",
     requiredProgress: 0.99,       // Treats 99% as full completion to avoid API end-of-video edge cases.
-    requiredWatchSeconds: 120     // Hidden active-play timer: 2 minutes.
+    requiredWatchSeconds: 5     // Hidden active-play timer: 2 minutes.
 };
 
 /* ============================================================
@@ -1047,23 +1047,43 @@ const CHECK_ANSWER_CONFIG = {
         },
         addedFeedback: {
             "Personal opinions": "Personal opinions reduce credibility.",
-            "Scientific jargon": "Too much jargon can confuse readers."
+            "Scientific jargon": "Too much jargon can confuse readers.",
+            "Vague statements": "Statements that are generalized can create misconceptions.",
+            "Confident tone": "Confidence doesn't mean the content is accurate."
         },
         incorrectFeedback: "Please try again."
     },
     aiDefinition: {
         correct: ["thinkingTasks"],
         correctFeedback: "Correct! AI systems perform tasks that usually require human thinking.",
-        incorrectFeedback: "Try again. Look for the choice that focuses on tasks usually connected to human thinking."
+        feedbackByAnswer: {
+            storage: "Please try again. This is close to something computers can do, but AI does more than collect or store data.It processes and analyzes information.",
+            website: "Please try again. A website or search engine can help people find information, and some websites may use AI. However, AI goes beyond searching.",
+            machine: "Please try again. This sounds more like a robot or a machine. Some robots use AI, but AI does not have to be a physical device. AI can also exist as software inside a computer, phone, app, or website.",
+            thinkingTasks: "Correct! AI systems perform tasks that usually require human thinking."
+        },
+        incorrectFeedback: "Try again."
     },
     genaiDefinition: {
         correct: ["creates"],
         correctFeedback: "Correct! Generative AI creates new content based on learned patterns.",
+        feedbackByAnswer: {
+            creates: "Correct! Generative AI creates new content based on learned patterns.",
+            stores: "Please try again. Some technology stores and retrieves information, but generative AI creates something new using patterns learned from data.",
+            steps: "Please try again. This describes a more traditional computer program. Generative AI learns by example. It does not follow only basic automation or fixed instructions.",
+            typed: "Please try again. Generative AI can generate new responses based on patterns in the data it was trained on. It does not only repeat answers humans have typed before."
+        },
         incorrectFeedback: "Try again. Generative AI is known for creating new content."
     },
     promptFunction: {
         correct: ["guide"],
-        correctFeedback: "Correct! Prompts are inputs that guide what the AI produces.",
+        correctFeedback: "You got it. Prompts are user inputs that tell the AI what to generate. They can be questions, statements, or instructions. ",
+        feedbackByAnswer: {
+            faster: "Please try again. Prompts do not influence system speed. The speed at which the system runs is determined by factors such as its memory and storage capacity. ",
+            guide: "You got it. Prompts are user inputs that tell the AI what to generate. They can be questions, statements, or instructions. ",
+            errors: "Please try again. Prompts are not used to fix errors. System errors are generally monitored, analyzed, and corrected by humans. ",
+            vocab: "Please try again. Prompts cannot limit vocabulary; they initiate the generation process. Therefore, as new datasets are added, the system’s vocabulary is expected to grow."
+        },
         incorrectFeedback: "Try again. A prompt tells the AI what kind of output to create."
     },
     summaryTruths: {
@@ -1103,7 +1123,7 @@ const CHECK_ANSWER_CONFIG = {
     }
 };
 
-const CHECK_ANSWER_NO_KEY_FEEDBACK = "Answer saved. This question is based on your own work or experience, so there is no single correct answer to check.";
+const CHECK_ANSWER_NO_KEY_FEEDBACK = "Good to know!";
 
 function initializeCheckAnswerButtons() {
     if (!form) return;
@@ -1171,7 +1191,7 @@ function initializeCheckAnswerButtons() {
             const config = CHECK_ANSWER_CONFIG[name];
 
             if (selectedValues.length === 0) {
-                addGroupFeedback(fieldset, "needs-answer", "Choose an answer before checking.");
+                addGroupFeedback(fieldset, "needs-answer", "Please select an option, even if you haven't used a chatbot!");
                 return;
             }
 
