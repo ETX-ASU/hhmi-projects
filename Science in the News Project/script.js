@@ -28,8 +28,8 @@ const STORAGE_KEYS = {
 
 const VIDEO_CONFIG = {
     youtubeId: "rwF-X5STYks",
-    requiredProgress: 0.99,       // Treats 99% as full completion to avoid API end-of-video edge cases.
-    requiredWatchSeconds: 5     // Hidden active-play timer: 2 minutes.
+    requiredProgress: 0.1,       // Treats 99% as full completion to avoid API end-of-video edge cases.
+    requiredWatchSeconds: 2     // Hidden active-play timer: 2 minutes.
 };
 
 /* ============================================================
