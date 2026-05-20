@@ -837,6 +837,15 @@ function updateRubricScore() {
     scoreOutput.textContent = total;
 }
 
+function getRubricOverallRatingFromScore() {
+    const score = Number(document.getElementById("rubricScore")?.textContent || 0);
+
+    if (score >= 17 && score <= 20) return "nailed it";
+    if (score >= 13 && score <= 16) return "pretty good";
+    if (score >= 9 && score <= 12) return "needs improvement";
+    return "not credible";
+}
+
 /* ============================================================
     AI Advantages / Disadvantages Sort Activity
    ============================================================ */
@@ -1092,14 +1101,31 @@ const CHECK_ANSWER_CONFIG = {
         incorrectFeedback: "Try again. Choose the statements that show AI summaries can help but are not automatically perfect."
     },
     noticedSummaries: {
-        correct: ["sound correct", "simplify", "leave out details"],
-        correctFeedback: "Correct! AI summaries can be helpful, but they still need review.",
-        incorrectFeedback: "Try again. Avoid choices that say AI summaries are always accurate or should always be trusted."
+        correct: ["clearInstructions", "guideIt", "samePrompt"],
+        correctFeedback: "Nice work. Think about how your feedback changed the AI’s response and what that reveals about how it works. AI can misinterpret feedback or apply it incorrectly, especially if the request is unclear.",
+        missingFeedback: {
+            "clear instructions": "Consider what happened when you gave more specific feedback. Did the response change? What does that suggest?",
+            guideIt: "Think about your role in the interaction. Did the AI change based on what you said or asked?",
+            samePrompt: "Think about whether the AI always gives the exact same response. What did you notice?"
+        },
+        addedFeedback: {
+            appliesFeedback: "AI does not always understand and correctly apply all feedback.",
+            improveResponses: "AI still needs human input to refine and improve responses."
+        },
+        incorrectFeedback: "Please try again."
     },
     feedbackChanged: {
-        correct: ["clearer", "accurate", "directions"],
-        correctFeedback: "Correct! Feedback can help AI revise toward your goals.",
-        incorrectFeedback: "Try again. Select changes that usually happen when feedback gives clearer direction."
+        correct: ["decision", "feedback", "accurate"],
+        correctFeedback: "Nice work. Think about how you stayed in control of your writing while using AI to support your thinking.",
+        missingFeedback: {
+            decision: "Reflect on who is responsible for the final version of your summary. Who decides what stays or changes?",
+            feedback: "Consider how the AI helped you reflect. Did it change how you thought about your writing?",
+            accurate: "Think about reliability. Did you need to verify what the AI suggested?"
+        },
+        addedFeedback: {
+            copy: "Think about your role. Are you using AI to think, or letting it think for you?"
+        },
+        incorrectFeedback: "Please try again."
     },
     feedbackTells: {
         correct: ["clear instructions", "guided", "different results"],
@@ -1120,6 +1146,54 @@ const CHECK_ANSWER_CONFIG = {
         correct: ["feedback", "explain", "revising"],
         correctFeedback: "Correct! These are strong ways to use AI while keeping your own thinking involved.",
         incorrectFeedback: "Try again. Choose uses that help you improve your own work instead of replacing your thinking."
+    },
+    aiSummaryOverallRating: {
+        dynamicCorrect: getRubricOverallRatingFromScore,
+        correctFeedback: "You're right!",
+        incorrectFeedback: "The total score doesn't fit in that range. Please try again."
+    },
+    sentenceWeakness: {
+        anySelectionIsCorrect: true,
+        correctFeedback: "Thanks for identifying areas that could be improved. Use your choices to guide your revision.",
+        incorrectFeedback: "Even if it's really strong, if you had to pick a category to work on, what would it be?"
+    },
+    summaryDirection: {
+        anySelectionIsCorrect: true,
+        correctFeedback: "Thank you for sharing.",
+        incorrectFeedback: "Please share at least one of your observations."
+    },
+
+    aiToolStatement: {
+        correct: ["helps thinking"],
+        correctFeedback: "Nice work. AI is most powerful when it supports your thinking, helps you revise ideas, and strengthens your understanding.",
+        feedbackByAnswer: {
+            "helps thinking": "Nice work. AI is most powerful when it supports your thinking, helps you revise ideas, and strengthens your understanding.",
+            "replaces understanding": "Please try again. AI should support your learning, not replace your understanding.",
+            "does hard work": "Think about your role when using AI. Should you still review and evaluate the results?",
+            "always accurate": "Reflect on what you learned about AI summaries. Are they always fully accurate?"
+        },
+        incorrectFeedback: "Try again. AI should support your learning, not replace your understanding."
+    },
+    scienceNewsEvaluation: {
+        correct: ["original source"],
+        correctFeedback: "Correct. Checking the original scientific source helps to verify the claims and understand the original context of the information shared. It is important in ensuring accuracy, preventing the spread of misinformation, and identifying any bias.",
+        feedbackByAnswer: {
+            headline: "Please try again. News article headlines can be misleading and used as clickbait, to promote financial gain, increase user engagement, push a specific narrative, or meet the pressures of the 24-hour news cycle.",
+            "original source": "Correct. Checking the original scientific source helps to verify the claims and understand the original context of the information shared. It is important in ensuring accuracy, preventing the spread of misinformation, and identifying any bias.",
+            "sounds interesting": "Please try again. Prioritizing emotional engagement with a news article over the facts is harmful. It can lead to misinformation, cognitive bias, and engagement in misleading arguments.",
+            likes: "Please try again. Popularity on the internet is not proof that information is reliable because posts can spread quickly even when they contain mistakes, exaggerations, or false claims."
+        },
+        incorrectFeedback: "Please try again."
+    },
+    aiSummaryReadingApproach: {
+        correct: ["question claims"],
+        correctFeedback: "Nice work. This is a strong approach. You are engaging with the content while staying alert. Questioning claims and verifying details helps you avoid accepting false or incomplete information.",
+        feedbackByAnswer: {
+            "sounds clear": "Please try again. Clear writing can be misleading. AI-generated content is often polished, even when it contains errors or made-up information. Clarity alone is not a reliable signal of accuracy.",
+            "question claims": "Nice work. This is a strong approach. You are engaging with the content while staying alert. Questioning claims and verifying details helps you avoid accepting false or incomplete information.",
+            "ignore without sources": "Please try again. Sources are helpful, but their presence alone does not guarantee accuracy. Some AI-generated content includes incorrect or fabricated references, so it is better to evaluate both the content and the sources."
+        },
+        incorrectFeedback: "Please try again."
     }
 };
 
@@ -1166,11 +1240,27 @@ function initializeCheckAnswerButtons() {
         clearGroupFeedback(fieldset);
         fieldset.classList.add(`answer-${type}`);
 
-        const feedback = document.createElement("p");
+        const feedback = document.createElement("span");
         feedback.className = `check-answer-feedback ${type}`;
         feedback.setAttribute("role", "status");
         feedback.textContent = message;
-        fieldset.appendChild(feedback);
+
+        const button = fieldset.querySelector(".check-answer-button");
+
+        if (button) {
+            let row = fieldset.querySelector(".check-answer-row");
+
+            if (!row) {
+                row = document.createElement("div");
+                row.className = "check-answer-row";
+                button.parentNode.insertBefore(row, button);
+                row.appendChild(button);
+            }
+
+            row.appendChild(feedback);
+        } else {
+            fieldset.appendChild(feedback);
+        }
     }
 
     groupedNames.forEach(name => {
@@ -1191,7 +1281,11 @@ function initializeCheckAnswerButtons() {
             const config = CHECK_ANSWER_CONFIG[name];
 
             if (selectedValues.length === 0) {
-                addGroupFeedback(fieldset, "needs-answer", "Please select an option, even if you haven't used a chatbot!");
+                addGroupFeedback(
+                    fieldset,
+                    "needs-answer",
+                    config?.incorrectFeedback || "Please select an option before checking."
+                );
                 return;
             }
 
@@ -1202,7 +1296,13 @@ function initializeCheckAnswerButtons() {
                 return;
             }
 
-            const isCorrect = arraysMatch(selectedValues, config.correct);
+            const correctValues = config.dynamicCorrect
+                ? [config.dynamicCorrect()]
+                : (config.correct || []);
+
+            const isCorrect = config.anySelectionIsCorrect
+                ? selectedValues.length > 0
+                : arraysMatch(selectedValues, correctValues);
             const selectedAnswer = selectedValues[0];
 
             let message =
@@ -1369,6 +1469,284 @@ function initializeOriginalSummaryAutofill() {
     syncOriginalSummary();
 }
 
+function initializeArticleLinkTextAutofill() {
+    const source = document.getElementById("articleLink");
+    const destination = document.getElementById("selectedArticleLinkText");
+
+    if (!source || !destination) return;
+
+    function syncArticleLinkText() {
+        const link = source.value.trim();
+
+        if (link) {
+            destination.textContent = link;
+        } else {
+            destination.textContent = "Not entered yet.";
+        }
+    }
+
+    source.addEventListener("input", syncArticleLinkText);
+    syncArticleLinkText();
+}
+
+function initializeSummaryNotesFeedback() {
+    const notes = document.getElementById("aiSummaryNotes");
+    const checkButton = document.getElementById("checkSummaryNotes");
+    const feedback = document.getElementById("summaryNotesFeedback");
+
+    if (!notes || !checkButton || !feedback) return;
+
+    function clearNotesFeedback() {
+        feedback.textContent = "";
+        feedback.className = "notes-feedback";
+    }
+
+    function setNotesFeedback(type, message) {
+        feedback.className = `notes-feedback ${type}`;
+        feedback.textContent = message;
+    }
+
+    checkButton.addEventListener("click", () => {
+        const notesText = notes.value.trim();
+
+        if (!notesText) {
+            setNotesFeedback(
+                "needs-answer",
+                "Please add in your notes from your review."
+            );
+            return;
+        }
+
+        setNotesFeedback(
+            "correct",
+            "Thanks!"
+        );
+
+        saveState();
+        updateUnlocks();
+    });
+
+    notes.addEventListener("input", () => {
+        clearNotesFeedback();
+        saveState();
+        updateUnlocks();
+    });
+}
+
+function initializeRevisionPromptFeedback() {
+    const revisionPrompt = document.getElementById("revisionPrompt");
+    const checkButton = document.getElementById("checkRevisionPrompt");
+    const feedback = document.getElementById("revisionPromptFeedback");
+
+    if (!revisionPrompt || !checkButton || !feedback) return;
+
+    function clearRevisionFeedback() {
+        feedback.textContent = "";
+        feedback.className = "revision-feedback";
+    }
+
+    function setRevisionFeedback(type, message) {
+        feedback.className = `revision-feedback ${type}`;
+        feedback.textContent = message;
+    }
+
+    checkButton.addEventListener("click", () => {
+        const revisionText = revisionPrompt.value.trim();
+
+        if (!revisionText) {
+            setRevisionFeedback(
+                "needs-answer",
+                "Please paste in the revised AI summary."
+            );
+            return;
+        }
+
+        setRevisionFeedback(
+            "correct",
+            "Received!"
+        );
+
+        saveState();
+        updateUnlocks();
+    });
+
+    revisionPrompt.addEventListener("input", () => {
+        clearRevisionFeedback();
+        saveState();
+        updateUnlocks();
+    });
+}
+
+function initializeReflectionFeedback() {
+    const checkButton = document.getElementById("checkReflectionResponses");
+    const feedback = document.getElementById("reflectionFeedback");
+
+    const reflectionFields = [
+        document.getElementById("studentOrganizationReflection"),
+        document.getElementById("aiOrganizationReflection"),
+        document.getElementById("combinedStrengthsReflection")
+    ];
+
+    if (!checkButton || !feedback || reflectionFields.some(field => !field)) return;
+
+    function clearReflectionFeedback() {
+        feedback.textContent = "";
+        feedback.className = "reflection-feedback";
+    }
+
+    function setReflectionFeedback(type, message) {
+        feedback.className = `reflection-feedback ${type}`;
+        feedback.textContent = message;
+    }
+
+    checkButton.addEventListener("click", () => {
+        const emptyFields = reflectionFields.filter(field => !field.value.trim());
+
+        if (emptyFields.length > 0) {
+            setReflectionFeedback(
+                "needs-answer",
+                `Please answer all reflection questions before submitting. ${emptyFields.length} ${emptyFields.length === 1 ? "question still needs" : "questions still need"} a response.`
+            );
+            return;
+        }
+
+        setReflectionFeedback(
+            "correct",
+            "Reflections submitted. Nice work comparing your summary with the AI summary and thinking about how to strengthen the final version."
+        );
+
+        saveState();
+        updateUnlocks();
+    });
+
+    reflectionFields.forEach(field => {
+        field.addEventListener("input", () => {
+            clearReflectionFeedback();
+            saveState();
+            updateUnlocks();
+        });
+    });
+}
+
+function initializeFinalSummaryRevisionAutofill() {
+    const source = document.getElementById("studentSummary");
+    const destination = document.getElementById("finalSummaryRevision");
+
+    if (!source || !destination) return;
+
+    function fillRevisionIfEmpty() {
+        const originalSummary = source.value.trim();
+        const currentRevision = destination.value.trim();
+
+        if (!currentRevision && originalSummary) {
+            destination.value = originalSummary;
+            saveState();
+            updateUnlocks();
+        }
+    }
+
+    source.addEventListener("input", fillRevisionIfEmpty);
+    fillRevisionIfEmpty();
+}
+
+function initializeFinalSummaryRevisionDiff() {
+    const original = document.getElementById("studentSummary");
+    const revision = document.getElementById("finalSummaryRevision");
+    const button = document.getElementById("showRevisionChanges");
+    const preview = document.getElementById("revisionPreview");
+    const feedback = document.getElementById("revisionChangesFeedback");
+
+    if (!original || !revision || !button || !preview || !feedback) return;
+
+    function escapeHtml(text) {
+        return text.replace(/[&<>"']/g, character => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        }[character]));
+    }
+
+    function getWords(text) {
+        return text.trim().split(/\s+/).filter(Boolean);
+    }
+
+    function buildSimpleDiff(originalText, revisedText) {
+        const originalWords = getWords(originalText);
+        const revisedWords = getWords(revisedText);
+
+        const rows = originalWords.length + 1;
+        const cols = revisedWords.length + 1;
+        const dp = Array.from({ length: rows }, () => Array(cols).fill(0));
+
+        for (let i = originalWords.length - 1; i >= 0; i--) {
+            for (let j = revisedWords.length - 1; j >= 0; j--) {
+                if (originalWords[i] === revisedWords[j]) {
+                    dp[i][j] = dp[i + 1][j + 1] + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i + 1][j], dp[i][j + 1]);
+                }
+            }
+        }
+
+        let i = 0;
+        let j = 0;
+        const output = [];
+
+        while (i < originalWords.length && j < revisedWords.length) {
+            if (originalWords[i] === revisedWords[j]) {
+                output.push(escapeHtml(revisedWords[j]));
+                i++;
+                j++;
+            } else if (dp[i + 1][j] >= dp[i][j + 1]) {
+                output.push(`<del>${escapeHtml(originalWords[i])}</del>`);
+                i++;
+            } else {
+                output.push(`<ins>${escapeHtml(revisedWords[j])}</ins>`);
+                j++;
+            }
+        }
+
+        while (i < originalWords.length) {
+            output.push(`<del>${escapeHtml(originalWords[i])}</del>`);
+            i++;
+        }
+
+        while (j < revisedWords.length) {
+            output.push(`<ins>${escapeHtml(revisedWords[j])}</ins>`);
+            j++;
+        }
+
+        return output.join(" ");
+    }
+
+    button.addEventListener("click", () => {
+        const originalText = original.value.trim();
+        const revisedText = revision.value.trim();
+
+        if (!originalText || !revisedText) {
+            feedback.className = "revision-feedback needs-answer";
+            feedback.textContent = "Please revise some part of your review based off the AI feedback";
+            preview.innerHTML = "";
+            return;
+        }
+
+        feedback.className = "revision-feedback correct";
+        feedback.textContent = "Received!";
+        preview.innerHTML = buildSimpleDiff(originalText, revisedText);
+
+        saveState();
+        updateUnlocks();
+    });
+
+    revision.addEventListener("input", () => {
+        feedback.textContent = "";
+        feedback.className = "revision-feedback";
+        preview.innerHTML = "";
+    });
+}
+
 /* ============================================================
     Startup
    ============================================================ */
@@ -1382,14 +1760,20 @@ function initializeLesson() {
     initializeFormListeners();
     initializeCopyButtons();
     initializeTogglePanels();
+    initializeFinalSummaryRevisionDiff();
 
     initializeChatbotUseFollowup();
     initializeSentenceBuilderFeedback();
     initializeCheckAnswerButtons();
     initializeSourceMatching();
+    initializeSummaryNotesFeedback();
+    initializeRevisionPromptFeedback();
+    initializeReflectionFeedback();
     initializeProsConsSort();
     initializeSummaryComparisonAutofill();
     initializeOriginalSummaryAutofill();
+    initializeArticleLinkTextAutofill();
+    initializeFinalSummaryRevisionAutofill();
     initializeYouTubeVideoGate();
 
     updateRubricScore();
