@@ -1447,19 +1447,39 @@ function initializeTestingReset() {
 }
 
 function initializeSummaryComparisonAutofill() {
-    const source = document.getElementById("studentSummary");
-    const destination = document.getElementById("studentSummaryForRevision");
+    const studentSummarySource = document.getElementById("studentSummary");
+    const aiSummarySource = document.getElementById("aiSummaryDraft");
 
-    if (!source || !destination) return;
+    const studentSummaryComparison = document.getElementById("studentSummaryComparison");
+    const aiSummaryComparison = document.getElementById("aiSummaryComparison");
 
-    function syncStudentSummaryComparison() {
-        destination.value = source.value;
+    if (
+        !studentSummarySource ||
+        !aiSummarySource ||
+        !studentSummaryComparison ||
+        !aiSummaryComparison
+    ) {
+        console.warn("Summary comparison autofill is missing one or more required fields.", {
+            studentSummarySource,
+            aiSummarySource,
+            studentSummaryComparison,
+            aiSummaryComparison
+        });
+        return;
+    }
+
+    function syncSummaryComparisonFields() {
+        studentSummaryComparison.value = studentSummarySource.value;
+        aiSummaryComparison.value = aiSummarySource.value;
+
         saveState();
         updateUnlocks();
     }
 
-    source.addEventListener("input", syncStudentSummaryComparison);
-    syncStudentSummaryComparison();
+    studentSummarySource.addEventListener("input", syncSummaryComparisonFields);
+    aiSummarySource.addEventListener("input", syncSummaryComparisonFields);
+
+    syncSummaryComparisonFields();
 }
 
 function initializeOriginalSummaryAutofill() {
