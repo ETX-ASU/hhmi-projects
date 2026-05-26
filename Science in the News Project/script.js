@@ -1208,12 +1208,14 @@ const CHECK_ANSWER_CONFIG = {
     aiSummaryReadingApproach: {
         correct: ["question claims"],
         correctFeedback: "Nice work. This is a strong approach. You are engaging with the content while staying alert. Questioning claims and verifying details helps you avoid accepting false or incomplete information.",
-        feedbackByAnswer: {
-            "sounds clear": "Please try again. Clear writing can be misleading. AI-generated content is often polished, even when it contains errors or made-up information. Clarity alone is not a reliable signal of accuracy.",
-            "question claims": "Nice work. This is a strong approach. You are engaging with the content while staying alert. Questioning claims and verifying details helps you avoid accepting false or incomplete information.",
-            "ignore without sources": "Please try again. Sources are helpful, but their presence alone does not guarantee accuracy. Some AI-generated content includes incorrect or fabricated references, so it is better to evaluate both the content and the sources."
+        missingFeedback: {
+            "question claims": "Questioning claims and checking key information is the strongest approach because it helps you avoid accepting false or incomplete information."
         },
-        incorrectFeedback: "Please try again."
+        addedFeedback: {
+            "sounds clear": "Clear writing can be misleading. AI-generated content is often polished, even when it contains errors or made-up information. Clarity alone is not a reliable signal of accuracy. Try again.",
+            "ignore without sources": "Sources are helpful, but their presence alone does not guarantee accuracy. Some AI-generated content includes incorrect or fabricated references, so it is better to evaluate both the content and the sources. Try again."
+        },
+        incorrectFeedback: ""
     }
 };
 
