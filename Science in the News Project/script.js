@@ -840,9 +840,9 @@ function updateRubricScore() {
 function getRubricOverallRatingFromScore() {
     const score = Number(document.getElementById("rubricScore")?.textContent || 0);
 
-    if (score >= 17 && score <= 20) return "nailed it";
-    if (score >= 13 && score <= 16) return "pretty good";
-    if (score >= 9 && score <= 12) return "needs improvement";
+    if (score >= 13 && score <= 15) return "nailed it";
+    if (score >= 10 && score <= 12) return "pretty good";
+    if (score >= 6 && score <= 9) return "needs improvement";
     return "not credible";
 }
 
@@ -1075,9 +1075,9 @@ const CHECK_ANSWER_CONFIG = {
     },
     genaiDefinition: {
         correct: ["creates"],
-        correctFeedback: "Correct! Generative AI creates new content based on learned patterns.",
+        correctFeedback: "You got it. Generative AI is trained on large amounts of data to create new content. It can write paragraphs and even draw pictures, given what it learns.",
         feedbackByAnswer: {
-            creates: "Correct! Generative AI creates new content based on learned patterns.",
+            creates: "You got it. Generative AI is trained on large amounts of data to create new content. It can write paragraphs and even draw pictures, given what it learns.",
             stores: "Please try again. Some technology stores and retrieves information, but generative AI creates something new using patterns learned from data.",
             steps: "Please try again. This describes a more traditional computer program. Generative AI learns by example. It does not follow only basic automation or fixed instructions.",
             typed: "Please try again. Generative AI can generate new responses based on patterns in the data it was trained on. It does not only repeat answers humans have typed before."
@@ -1104,7 +1104,7 @@ const CHECK_ANSWER_CONFIG = {
         correct: ["clearInstructions", "guideIt", "samePrompt"],
         correctFeedback: "Nice work. Think about how your feedback changed the AI’s response and what that reveals about how it works. AI can misinterpret feedback or apply it incorrectly, especially if the request is unclear.",
         missingFeedback: {
-            "clear instructions": "Consider what happened when you gave more specific feedback. Did the response change? What does that suggest?",
+            clearInstructions: "Consider what happened when you gave more specific feedback. Did the response change? What does that suggest?",
             guideIt: "Think about your role in the interaction. Did the AI change based on what you said or asked?",
             samePrompt: "Think about whether the AI always gives the exact same response. What did you notice?"
         },
@@ -1144,8 +1144,17 @@ const CHECK_ANSWER_CONFIG = {
     },
     strongUses: {
         correct: ["feedback", "explain", "revising"],
-        correctFeedback: "Correct! These are strong ways to use AI while keeping your own thinking involved.",
-        incorrectFeedback: "Try again. Choose uses that help you improve your own work instead of replacing your thinking."
+        correctFeedback: "Nice work. Think about how AI supported your thinking and helped you improve your work, rather than replacing it.",
+        missingFeedback: {
+            feedback: "Consider how AI can help you reflect on and strengthen your thinking. Did you use it that way?",
+            explain: "How can AI help when something doesn’t make sense? Think about how you can use it to clarify ideas.",
+            revising: "Reflect on how feedback can help improve your writing. Did you use AI to guide revisions?"
+        },
+        addedFeedback: {
+            copying: "Think about your role as the writer. Are you using AI as a tool, or letting it do the work for you?",
+            "replace thinking": "Consider what happens when you rely on AI instead of thinking through ideas yourself."
+        },
+        incorrectFeedback: "Please try again."
     },
     aiSummaryOverallRating: {
         dynamicCorrect: getRubricOverallRatingFromScore,
@@ -1154,7 +1163,7 @@ const CHECK_ANSWER_CONFIG = {
     },
     sentenceWeakness: {
         anySelectionIsCorrect: true,
-        correctFeedback: "Thanks for identifying areas that could be improved. Use your choices to guide your revision.",
+        correctFeedback: "Thank you for sharing.",
         incorrectFeedback: "Even if it's really strong, if you had to pick a category to work on, what would it be?"
     },
     summaryDirection: {
@@ -1168,7 +1177,7 @@ const CHECK_ANSWER_CONFIG = {
         correctFeedback: "Nice work. AI is most powerful when it supports your thinking, helps you revise ideas, and strengthens your understanding.",
         feedbackByAnswer: {
             "helps thinking": "Nice work. AI is most powerful when it supports your thinking, helps you revise ideas, and strengthens your understanding.",
-            "replaces understanding": "Please try again. AI should support your learning, not replace your understanding.",
+            "replaces understanding": " Think about whether understanding the topic still matters when using AI.",
             "does hard work": "Think about your role when using AI. Should you still review and evaluate the results?",
             "always accurate": "Reflect on what you learned about AI summaries. Are they always fully accurate?"
         },
@@ -1558,6 +1567,8 @@ function initializeRevisionPromptFeedback() {
                 "needs-answer",
                 "Please paste in the revised AI summary."
             );
+            saveState();
+            updateUnlocks();
             return;
         }
 
@@ -1629,8 +1640,8 @@ function initializeReflectionFeedback() {
 }
 
 function initializeFinalSummaryRevisionAutofill() {
-    const source = document.getElementById("studentSummary");
-    const destination = document.getElementById("finalSummaryRevision");
+    const source = document.getElementById("revisionPrompt");
+    const destination = document.getElementById("finalSummaryRevision")
 
     if (!source || !destination) return;
 
@@ -1650,7 +1661,7 @@ function initializeFinalSummaryRevisionAutofill() {
 }
 
 function initializeFinalSummaryRevisionDiff() {
-    const original = document.getElementById("studentSummary");
+    const original = document.getElementById("revisionPrompt");
     const revision = document.getElementById("finalSummaryRevision");
     const button = document.getElementById("showRevisionChanges");
     const preview = document.getElementById("revisionPreview");
@@ -1747,6 +1758,101 @@ function initializeFinalSummaryRevisionDiff() {
     });
 }
 
+function initializeRubricRowCheck() {
+    const checkButton = document.getElementById("checkRubricRows");
+    const feedback = document.getElementById("rubricFeedback");
+
+    if (!checkButton || !feedback) return;
+
+    const rubricGroups = ["rubric1", "rubric2", "rubric3", "rubric4", "rubric5"];
+
+    function clearRubricFeedback() {
+        feedback.textContent = "";
+        feedback.className = "rubric-feedback";
+    }
+
+    function setRubricFeedback(type, message) {
+        feedback.className = `rubric-feedback ${type}`;
+        feedback.textContent = message;
+    }
+
+    checkButton.addEventListener("click", () => {
+        const unansweredRows = rubricGroups.filter(groupName => {
+            return !document.querySelector(`input[name="${groupName}"]:checked`);
+        });
+
+        if (unansweredRows.length > 0) {
+            setRubricFeedback(
+                "needs-answer",
+                "Please make sure to select an option from each row."
+            );
+            return;
+        }
+
+        setRubricFeedback(
+            "correct",
+            "Thank you for reviewing each category."
+        );
+
+        saveState();
+        updateUnlocks();
+    });
+
+    rubricGroups.forEach(groupName => {
+        document.querySelectorAll(`input[name="${groupName}"]`).forEach(input => {
+            input.addEventListener("change", () => {
+                clearRubricFeedback();
+                saveState();
+                updateUnlocks();
+            });
+        });
+    });
+}
+
+function initializeChatbotSuggestionsFeedback() {
+    const suggestions = document.getElementById("chatbotSuggestions");
+    const checkButton = document.getElementById("checkChatbotSuggestions");
+    const feedback = document.getElementById("chatbotSuggestionsFeedback");
+
+    if (!suggestions || !checkButton || !feedback) return;
+
+    function clearSuggestionsFeedback() {
+        feedback.textContent = "";
+        feedback.className = "suggestions-feedback";
+    }
+
+    function setSuggestionsFeedback(type, message) {
+        feedback.className = `suggestions-feedback ${type}`;
+        feedback.textContent = message;
+    }
+
+    checkButton.addEventListener("click", () => {
+        const suggestionsText = suggestions.value.trim();
+
+        if (!suggestionsText) {
+            setSuggestionsFeedback(
+                "needs-answer",
+                "Please add in the suggestions AI gave you."
+            );
+            return;
+        }
+
+        setSuggestionsFeedback(
+            "correct",
+            "Thanks!"
+        );
+
+        saveState();
+        updateUnlocks();
+    });
+
+    suggestions.addEventListener("input", () => {
+        clearSuggestionsFeedback();
+        saveState();
+        updateUnlocks();
+    });
+}
+
 /* ============================================================
     Startup
    ============================================================ */
@@ -1767,7 +1873,9 @@ function initializeLesson() {
     initializeCheckAnswerButtons();
     initializeSourceMatching();
     initializeSummaryNotesFeedback();
+    initializeRubricRowCheck();
     initializeRevisionPromptFeedback();
+    initializeChatbotSuggestionsFeedback();
     initializeReflectionFeedback();
     initializeProsConsSort();
     initializeSummaryComparisonAutofill();
