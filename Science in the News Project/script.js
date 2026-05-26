@@ -1484,7 +1484,7 @@ function initializeSummaryComparisonAutofill() {
 
 function initializeOriginalSummaryAutofill() {
     const source = document.getElementById("studentSummary");
-    const destination = document.getElementById("originalSummaryForRevision");
+    const destination = document.getElementById("studentSummaryForRevision");
 
     if (!source || !destination) return;
 
