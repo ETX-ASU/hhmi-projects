@@ -420,7 +420,7 @@ fieldset.answer-needs-answer {
 
 .check-answer-feedback {
     margin: 8px 0 0;
-    font-weight: 800;
+    font-weight: bold;
 }
 
 .check-answer-feedback.correct {
@@ -498,7 +498,7 @@ fieldset.answer-needs-answer {
     display: inline-flex;
     align-items: center;
     min-height: 1.5rem;
-    font-weight: 800;
+    font-weight: bold;
     line-height: 1.4;
     max-width: 760px;
 }
@@ -517,14 +517,17 @@ fieldset.answer-needs-answer {
 
 .source-matching-feedback.correct {
     color: #15803d;
+    font-weight: bold;
 }
 
 .source-matching-feedback.incorrect {
     color: #b91c1c;
+    font-weight: bold;
 }
 
 .source-matching-feedback.needs-answer {
     color: #a16207;
+    font-weight: bold;
 }
 
 /* ============================================================
@@ -691,20 +694,6 @@ fieldset.answer-needs-answer {
 .drop-zone.incorrect {
     border-color: #d92d20;
     background: #fff5f5;
-}
-
-.match-feedback {
-    min-height: 24px;
-    padding-left: 4px;
-    font-weight: 800;
-}
-
-.match-feedback.correct {
-    color: var(--green);
-}
-
-.match-feedback.incorrect {
-    color: var(--danger);
 }
 
 /* ============================================================
@@ -956,7 +945,7 @@ table.rubric {
     display: inline-flex;
     align-items: center;
     min-height: 1.5rem;
-    font-weight: 800;
+    font-weight: bold;
     line-height: 1.4;
     max-width: 760px;
 }
@@ -1070,9 +1059,8 @@ table.rubric {
 .placed-category-token .feedback {
     display: block;
     margin-top: 4px;
-
     font-size: 0.85rem;
-    font-weight: 900;
+    font-weight: bold;
 }
 
 .placed-category-token.correct .feedback {
@@ -1163,7 +1151,7 @@ table.rubric {
     display: inline-flex;
     align-items: center;
     min-height: 1.5rem;
-    font-weight: 800;
+    font-weight: bold;
     line-height: 1.4;
     max-width: 760px;
 }
@@ -1174,6 +1162,14 @@ table.rubric {
 
 .suggestions-feedback.needs-answer {
     color: var(--warning);
+}
+
+.drag-token.is-placed {
+    display: none;
+}
+
+#selectedArticleLinkText {
+    font-weight: bold;
 }
 
 @media (max-width: 820px) {
@@ -1193,7 +1189,7 @@ table.rubric {
     display: inline-flex;
     align-items: center;
     min-height: 1.5rem;
-    font-weight: 800;
+    font-weight: bold;
     line-height: 1.4;
     max-width: 760px;
 }
@@ -1222,7 +1218,7 @@ table.rubric {
     display: inline-flex;
     align-items: center;
     min-height: 1.5rem;
-    font-weight: 800;
+    font-weight: bold;
     line-height: 1.4;
     max-width: 760px;
 }

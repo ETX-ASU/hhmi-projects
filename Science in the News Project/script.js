@@ -407,6 +407,7 @@ function initializeSourceMatching() {
         zone.classList.toggle("filled", Boolean(value));
 
         clearSourceMatchingFeedback();
+        updateSourceTokenVisibility();
     }
 
     function clearExistingValue(value) {
@@ -419,6 +420,16 @@ function initializeSourceMatching() {
     function clearSelectedToken() {
         tokens.forEach(token => token.classList.remove("selected"));
         selectedValue = null;
+    }
+
+    function updateSourceTokenVisibility() {
+        const placedValues = zones
+            .map(zone => zone.querySelector('input[type="hidden"]')?.value)
+            .filter(Boolean);
+
+        tokens.forEach(token => {
+            token.classList.toggle("is-placed", placedValues.includes(token.dataset.value));
+        });
     }
 
     function assignValueToZone(zone, value) {
@@ -1064,12 +1075,12 @@ const CHECK_ANSWER_CONFIG = {
     },
     aiDefinition: {
         correct: ["thinkingTasks"],
-        correctFeedback: "Correct! AI systems perform tasks that usually require human thinking.",
+        correctFeedback: "You got it. AI refers to computer systems that can do tasks that typically require human thinking, such as analyzing information, recognizing patterns, making predictions, and solving problems.",
         feedbackByAnswer: {
-            storage: "Please try again. This is close to something computers can do, but AI does more than collect or store data.It processes and analyzes information.",
+            storage: "Please try again. This is close to something computers can do, but AI does more than collect or store data. It processes and analyzes information.",
             website: "Please try again. A website or search engine can help people find information, and some websites may use AI. However, AI goes beyond searching.",
             machine: "Please try again. This sounds more like a robot or a machine. Some robots use AI, but AI does not have to be a physical device. AI can also exist as software inside a computer, phone, app, or website.",
-            thinkingTasks: "Correct! AI systems perform tasks that usually require human thinking."
+            thinkingTasks: "You got it. AI refers to computer systems that can do tasks that typically require human thinking, such as analyzing information, recognizing patterns, making predictions, and solving problems."
         },
         incorrectFeedback: "Try again."
     },
@@ -1080,7 +1091,7 @@ const CHECK_ANSWER_CONFIG = {
             creates: "You got it. Generative AI is trained on large amounts of data to create new content. It can write paragraphs and even draw pictures, given what it learns.",
             stores: "Please try again. Some technology stores and retrieves information, but generative AI creates something new using patterns learned from data.",
             steps: "Please try again. This describes a more traditional computer program. Generative AI learns by example. It does not follow only basic automation or fixed instructions.",
-            typed: "Please try again. Generative AI can generate new responses based on patterns in the data it was trained on. It does not only repeat answers humans have typed before."
+            typed: "Please try again. Generative AI can repeat past answers and generate new responses based on patterns in the data it was trained on."
         },
         incorrectFeedback: "Try again. Generative AI is known for creating new content."
     },
@@ -1290,11 +1301,12 @@ function initializeCheckAnswerButtons() {
             const config = CHECK_ANSWER_CONFIG[name];
 
             if (selectedValues.length === 0) {
-                addGroupFeedback(
-                    fieldset,
-                    "needs-answer",
-                    config?.incorrectFeedback || "Please select an option before checking."
-                );
+                const blankMessage =
+                    name === "chatbotUse"
+                        ? "Please select an option, even if you haven't used a chatbot!"
+                        : config?.incorrectFeedback || "Please select an option before checking.";
+
+                addGroupFeedback(fieldset, "needs-answer", blankMessage);
                 return;
             }
 
@@ -1433,33 +1445,19 @@ function initializeTestingReset() {
 }
 
 function initializeSummaryComparisonAutofill() {
-    const studentSummarySource = document.getElementById("studentSummary");
-    const aiSummarySource = document.getElementById("aiSummaryDraft");
+    const source = document.getElementById("studentSummary");
+    const destination = document.getElementById("studentSummaryForRevision");
 
-    const studentSummaryComparison = document.getElementById("studentSummaryComparison");
-    const aiSummaryComparison = document.getElementById("aiSummaryComparison");
+    if (!source || !destination) return;
 
-    if (
-        !studentSummarySource ||
-        !aiSummarySource ||
-        !studentSummaryComparison ||
-        !aiSummaryComparison
-    ) {
-        return;
-    }
-
-    function syncSummaryComparisonFields() {
-        studentSummaryComparison.value = studentSummarySource.value;
-        aiSummaryComparison.value = aiSummarySource.value;
-
+    function syncStudentSummaryComparison() {
+        destination.value = source.value;
         saveState();
         updateUnlocks();
     }
 
-    studentSummarySource.addEventListener("input", syncSummaryComparisonFields);
-    aiSummarySource.addEventListener("input", syncSummaryComparisonFields);
-
-    syncSummaryComparisonFields();
+    source.addEventListener("input", syncStudentSummaryComparison);
+    syncStudentSummaryComparison();
 }
 
 function initializeOriginalSummaryAutofill() {
