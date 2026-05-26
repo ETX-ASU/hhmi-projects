@@ -1486,10 +1486,17 @@ function initializeOriginalSummaryAutofill() {
     const source = document.getElementById("studentSummary");
     const destination = document.getElementById("studentSummaryForRevision");
 
-    if (!source || !destination) return;
+    if (!source || !destination) {
+        console.warn("Original summary revision autofill is missing one or more required fields.", {
+            source,
+            destination
+        });
+        return;
+    }
 
     function syncOriginalSummary() {
         destination.value = source.value;
+
         saveState();
         updateUnlocks();
     }
