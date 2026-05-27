@@ -167,7 +167,7 @@ header.hero {
     z-index: 10;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
+    gap: 12px;
     margin-bottom: 18px;
     padding: 12px;
     border: 1px solid var(--border);
@@ -348,6 +348,8 @@ select {
 textarea {
     min-height: 130px;
     resize: vertical;
+    overflow: hidden;
+    resize: none;
 }
 
 .short-textarea {
@@ -1097,6 +1099,120 @@ table.rubric {
    ============================================================ */
 
 @media print {
+  @media print {
+    body {
+        font-size: 12pt;
+        line-height: 1.35;
+        background: #fff;
+        color: #000;
+    }
+
+    .wrap,
+    main.wrap {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .card,
+    section.card {
+        margin: 10px 0;
+        padding: 12px;
+        border: 1px solid #000;
+        box-shadow: none;
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    h1 {
+        font-size: 22pt;
+    }
+
+    h2 {
+        font-size: 18pt;
+    }
+
+    h3 {
+        font-size: 15pt;
+    }
+
+    h4,
+    p,
+    li,
+    label,
+    .option,
+    .callout {
+        font-size: 11pt;
+    }
+
+    .callout {
+        margin: 8px 0;
+        padding: 10px;
+    }
+
+    textarea,
+    input[type="text"],
+    input[type="url"] {
+        min-height: auto;
+        height: auto;
+        overflow: visible;
+        white-space: pre-wrap;
+        font-size: 11pt;
+        line-height: 1.35;
+        border: 1px solid #000;
+    }
+
+    .large-textarea,
+    .short-textarea {
+        min-height: auto;
+    }
+
+    .option {
+        padding: 6px;
+        margin: 6px 0;
+    }
+
+    fieldset {
+        margin: 8px 0;
+        padding: 10px;
+    }
+
+    .word-count,
+    .check-answer-feedback,
+    .sentence-feedback,
+    .source-matching-feedback,
+    .notes-feedback,
+    .revision-feedback,
+    .rubric-feedback,
+    .suggestions-feedback,
+    .ai-summary-feedback {
+        font-size: 10pt;
+    }
+
+    .question-image {
+        max-width: 120px;
+    }
+
+    .two-col,
+    .image-question-row,
+    .image-question-row.image-left,
+    .image-question-row.image-right {
+        grid-template-columns: 1fr 140px;
+        gap: 10px;
+    }
+
+    .rubric th,
+    .rubric td {
+        padding: 6px;
+        font-size: 9pt;
+    }
+
+    table.rubric {
+        min-width: 0;
+        width: 100%;
+    }
+}
     body {
         background: #fff;
         color: #000;

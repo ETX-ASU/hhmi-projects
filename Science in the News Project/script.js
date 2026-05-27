@@ -1318,8 +1318,8 @@ function initializeChatbotSuggestionsFeedback() {
 }
 
 /* ============================================================
-   Autofill Helpers
-   ============================================================ */
+  Autofill Helpers
+  ============================================================ */
 
 function initializeSummaryComparisonAutofill() {
     const studentSummarySource = document.getElementById("studentSummary");
@@ -1366,6 +1366,9 @@ function initializeOriginalSummaryAutofill() {
 
     function syncOriginalSummary() {
         destination.value = source.value;
+
+        resizeTextareaToFit(destination);
+
         saveState();
         updateUnlocks();
     }
@@ -1401,6 +1404,9 @@ function initializeFinalSummaryRevisionAutofill() {
 
         if (!currentRevision && sourceText) {
             destination.value = sourceText;
+
+            resizeTextareaToFit(destination);
+
             saveState();
             updateUnlocks();
         }
@@ -1510,6 +1516,45 @@ function initializeFinalSummaryRevisionDiff() {
 }
 
 /* ============================================================
+  Auto Size Textareas for Screen and Print
+  ============================================================ */
+
+function initializeAutoResizeTextareas() {
+    const textareas = [...document.querySelectorAll("textarea")];
+
+    if (!textareas.length) return;
+
+    function resizeAllTextareas() {
+        textareas.forEach(resizeTextareaToFit);
+    }
+
+    textareas.forEach(textarea => {
+        resizeTextareaToFit(textarea);
+
+        textarea.addEventListener("input", () => {
+            resizeTextareaToFit(textarea);
+        });
+
+        textarea.addEventListener("change", () => {
+            resizeTextareaToFit(textarea);
+        });
+    });
+
+    window.addEventListener("beforeprint", resizeAllTextareas);
+    window.addEventListener("afterprint", resizeAllTextareas);
+
+    setTimeout(resizeAllTextareas, 100);
+    setTimeout(resizeAllTextareas, 500);
+}
+
+function resizeTextareaToFit(textarea) {
+    if (!textarea) return;
+
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight + 12}px`;
+}
+
+/* ============================================================
   Generic UI Handlers
   ============================================================ */
 
@@ -1611,6 +1656,7 @@ function initializeLesson() {
 
     updateRubricScore();
     updateUnlocks();
+    initializeAutoResizeTextareas();
     showTab(state.unlockedTabs.includes(state.activeTab) ? state.activeTab : 0, false);
 }
 
