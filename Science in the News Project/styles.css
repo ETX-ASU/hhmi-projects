@@ -1099,7 +1099,6 @@ table.rubric {
    ============================================================ */
 
 @media print {
-  @media print {
     body {
         font-size: 12pt;
         line-height: 1.35;
@@ -1212,7 +1211,7 @@ table.rubric {
         min-width: 0;
         width: 100%;
     }
-}
+    
     body {
         background: #fff;
         color: #000;
@@ -1263,4 +1262,4 @@ table.rubric {
     a::after {
         content: "";
     }
-}
+  }
