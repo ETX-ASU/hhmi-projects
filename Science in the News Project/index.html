@@ -113,7 +113,7 @@
 
                         <!-- Student Article Summary -->
                         <section class="card">
-                              <h2>Your News Article Summary</h2>
+                              <h2>Your Article Summary</h2>
 
                               <p class="callout">
                                     You'll be using your summary of the <em>Science News</em> article you previously
@@ -125,6 +125,9 @@
                               </label>
                               <textarea id="studentSummary" name="studentSummary" data-required
                                     placeholder="Add your summary here."></textarea>
+                              <div class="word-count" data-word-count-for="studentSummary">
+                                    Word count: <span>0</span>
+                              </div>
                               <p class="callout">
                                     Now, share the link to the article you summarized.
                               </p>
@@ -132,7 +135,7 @@
                                     Paste the link to the <em>Science News</em> article here:
                               </label>
                               <input id="articleLink" name="articleLink" type="url"
-                                    placeholder="Paste the link to the article here." data-required />
+                                    placeholder="Paste the link to the Science News article." data-required />
                               <p class="callout">There are different types of sources of information. </p>
                               <div class="source-grid">
                                     <div class="info-tile">
@@ -173,7 +176,7 @@
                                                       </option>
                                                 </select>
                                                 resources summarize and organize information from other sources.
-                                                .
+
                                           </p>
 
                                           <p class="sentence-item">
@@ -439,7 +442,7 @@
                                     </label>
                               </fieldset>
 
-                              <p class="callout teal">Watch the video, then answer the questions below.</p>
+                              <p class="callout teal">Watch this video to get an overview of GenAI.</p>
 
                               <div class="video-embed">
                                     <div id="genaiVideo"></div>
@@ -454,7 +457,7 @@
                                     value="" />
 
                               <p class="callout teal">
-                                    Generative Artificial Intelligence is a form of AI that _________________?
+                                    Generative Artificial Intelligence is a form of AI that can _________________?
                               </p>
                               <fieldset data-required-group="genaiDefinition">
                                     <label class="option">
@@ -505,7 +508,7 @@
                                           the next tab to move on.
                                     </p>
                                     <div class="completion-status" data-status="1">
-                                          Complete everything in this tab to unlock Tab 2.
+                                          Complete everything in this tab to unlock Tab 3.
                                     </div>
                               </section>
                         </section>
@@ -517,7 +520,7 @@
                   <article class="tab-panel" data-tab="2">
                         <section class="card two-col">
                               <div>
-                                    <h2>How does GenAI Work?</h2>
+                                    <h2>How Does GenAI Work?</h2>
                                     <p>When you wrote your summary, you made choices about words, tone, and meaning. AI
                                           does something similar, but in a very different way.</p>
                                     <p class="callout">Let’s see how AI would generate a summary of the <em>Science
@@ -531,7 +534,7 @@
                         </section>
                         <!-- Open Chatbot -->
                         <section class="card">
-                              <h2>Open your Chatbot</h2>
+                              <h2>Open Your Chatbot</h2>
                               <p class="callout">
                                     For the rest of this lesson, you'll need your chatbot open. You'll be splitting your
                                     screen with this lesson and your chatbot.</p>
@@ -574,10 +577,6 @@
                                                       Your browser does not support the video tag.
                                                 </video>
                                           </div>
-                                          <p>
-                                                <small>Replace <code>drag_example.mov</code> with your actual demo video
-                                                      filename.</small>
-                                          </p>
                                     </div>
 
                                     <div class="toggle-panel" id="keyboardPanel">
@@ -648,7 +647,18 @@
                                     Paste the summary GenAI created:
                               </label>
                               <textarea id="aiSummaryDraft" name="aiSummaryDraft" class="large-textarea" data-required
-                                    placeholder="Paste the AI-generated summary here."></textarea>
+                                    placeholder="Paste the summary AI generated here."></textarea>
+                              <div class="word-count" data-word-count-for="aiSummaryDraft">
+                                    Word count: <span>0</span>
+                              </div>
+                              <div class="ai-summary-check-row">
+                                    <button type="button" class="secondary-button" id="checkAiSummaryDraft">
+                                          Submit AI Summary
+                                    </button>
+
+                                    <span class="ai-summary-feedback" id="aiSummaryDraftFeedback"
+                                          aria-live="polite"></span>
+                              </div>
                         </section>
 
                         <!-- How Does AI Write -->
@@ -695,7 +705,7 @@
                                                 <li>Do other credible sources say the same thing?</li>
                                           </ol>
                                           <li>Check sourcing:</li>
-                                          <ol>
+                                          <ol type="a">
                                                 <li>Is the original primary source included?</li>
                                           </ol>
                                     </ol>
@@ -706,7 +716,7 @@
                                     awhile! Dive deep!
                               </label>
                               <textarea id="aiSummaryNotes" name="aiSummaryNotes" class="large-textarea" data-required
-                                    placeholder="Record your notes here..."></textarea>
+                                    placeholder="Type your notes here…"></textarea>
                               <div class="notes-check-row">
                                     <button type="button" class="secondary-button" id="checkSummaryNotes">
                                           Submit Notes
@@ -792,29 +802,29 @@
                                                 </tr>
 
                                                 <tr>
-                                                      <td class="criteria">Summary Length</td>
+                                                      <td class="criteria">Summary length</td>
                                                       <td class="rubric-choice">
                                                             <label>
                                                                   <input type="radio" name="rubric3" value="3" />
-                                                                  <span>The summary is and appropriate length.</span>
+                                                                  <span>The summary is an appropriate length.</span>
                                                             </label>
                                                       </td>
                                                       <td class="rubric-choice">
                                                             <label>
                                                                   <input type="radio" name="rubric3" value="2" />
-                                                                  <span>Slightly too long or too short</span>
+                                                                  <span>Slightly too long or too short.</span>
                                                             </label>
                                                       </td>
                                                       <td class="rubric-choice">
                                                             <label>
                                                                   <input type="radio" name="rubric3" value="1" />
-                                                                  <span>Noticeably too long or too short</span>
+                                                                  <span>Noticeably too long or too short.</span>
                                                             </label>
                                                       </td>
                                                       <td class="rubric-choice">
                                                             <label>
                                                                   <input type="radio" name="rubric3" value="0" />
-                                                                  <span>Excessively long or short</span>
+                                                                  <span>Excessively long or short.</span>
                                                             </label>
                                                       </td>
                                                 </tr>
@@ -831,7 +841,7 @@
                                                             <label>
                                                                   <input type="radio" name="rubric4" value="2" />
                                                                   <span>Mentions some evidence of
-                                                                        studies/data.</span>
+                                                                        studies or data.</span>
                                                             </label>
                                                       </td>
                                                       <td class="rubric-choice">
@@ -851,12 +861,12 @@
                                                 </tr>
 
                                                 <tr>
-                                                      <td class="criteria">Source Credibility</td>
+                                                      <td class="criteria">Source credibility</td>
                                                       <td class="rubric-choice">
                                                             <label>
                                                                   <input type="radio" name="rubric5" value="3" />
                                                                   <span>Uses reliable sources and includes (cites) the
-                                                                        original news article..</span>
+                                                                        original news article.</span>
                                                             </label>
                                                       </td>
                                                       <td class="rubric-choice">
@@ -949,8 +959,8 @@
 
                                     <label class="option">
                                           <input type="checkbox" name="sentenceWeakness"
-                                                value="information is missing" />
-                                          Information is missing.
+                                                value="excessively long or short" />
+                                          Excessively long or short.
                                     </label>
 
                                     <label class="option">
@@ -986,6 +996,9 @@
                               </label>
                               <textarea id="revisionPrompt" name="revisionPrompt" class="large-textarea" data-required
                                     placeholder="Paste the new GenAI summary here."></textarea>
+                              <div class="word-count" data-word-count-for="revisionPrompt">
+                                    Word count: <span>0</span>
+                              </div>
                               <div class="revision-check-row">
                                     <button type="button" class="secondary-button" id="checkRevisionPrompt">
                                           Submit Revision
@@ -1008,7 +1021,7 @@
                                     placeholder="This will auto-populate from the summary you pasted in Step 1."></textarea>
 
                               <label for="aiSummaryComparison" class="callout teal">
-                                    Here’s the summary AI wrote:
+                                    Here's the revised summary AI wrote:
                               </label>
                               <textarea id="aiSummaryComparison" name="aiSummaryComparison" class="large-textarea"
                                     data-required readonly
@@ -1121,7 +1134,7 @@
                                     <ul>
                                           <li>Ask questions that help you improve your writing.</li>
                                           <li>Stay in control of your ideas and revisions.</li>
-                                          <li>Focus on strengthening clarity, accuracy, and completeness</li>
+                                          <li>Focus on strengthening clarity, accuracy, and completeness.</li>
                                     </ul>
                               </div>
 
@@ -1137,8 +1150,7 @@
                               </label>
 
                               <textarea id="chatbotSuggestions" name="chatbotSuggestions" class="large-textarea"
-                                    data-required
-                                    placeholder="Paste or summarize the chatbot’s suggestions here."></textarea>
+                                    data-required placeholder="Paste the suggestions…"></textarea>
 
                               <div class="suggestions-check-row">
                                     <button type="button" class="secondary-button" id="checkChatbotSuggestions">
@@ -1158,6 +1170,9 @@
                               <textarea id="finalSummaryRevision" name="finalSummaryRevision" class="large-textarea"
                                     data-required
                                     placeholder="Your original summary will appear here. Revise it directly in this box."></textarea>
+                              <div class="word-count" data-word-count-for="finalSummaryRevision">
+                                    Word count: <span>0</span>
+                              </div>
 
                               <div class="revision-diff-actions">
                                     <button type="button" class="secondary-button" id="showRevisionChanges">
@@ -1171,7 +1186,8 @@
 
                               <section class="card footer-actions">
                                     <h2>Onto Step 5!</h2>
-                                    <p>Congratulations on refining and updating your Science News article summary!</p>
+                                    <p>Congratulations on refining and updating your <em>Science News</em> article
+                                          summary!</p>
                                     <p>Let’s take some time to reflect on what can be learned from this experience.</p>
 
                                     <div class="completion-status" data-status="3">
@@ -1227,28 +1243,41 @@
                                           AI can produce different results from the same prompt.</label>
                               </fieldset>
 
-                              <h4 class="callout teal">
-                                    When you use AI responsibly to improve your own summary, what is your role? Select
-                                    all that apply.
-                              </h4>
-                              <fieldset data-required-group="feedbackChanged">
-                                    <label class="option">
-                                          <input type="checkbox" name="feedbackChanged" value="decision" />
-                                          I make the final decisions about what to change.
-                                    </label>
-                                    <label class="option">
-                                          <input type="checkbox" name="feedbackChanged" value="copy" />
-                                          I copy what the AI writes without thinking.
-                                    </label>
-                                    <label class="option">
-                                          <input type="checkbox" name="feedbackChanged" value="feedback" />
-                                          I use AI feedback to rethink my ideas.
-                                    </label>
-                                    <label class="option">
-                                          <input type="checkbox" name="feedbackChanged" value="accurate" />
-                                          I check whether the suggestions are accurate.
-                                    </label>
-                              </fieldset>
+                              <div class="image-question-row image-right">
+                                    <fieldset data-required-group="feedbackChanged">
+                                          <h4 class="callout teal">
+                                                When you use AI responsibly to improve your own summary, what is your
+                                                role?
+                                                Select all that apply.
+                                          </h4>
+
+                                          <label class="option">
+                                                <input type="checkbox" name="feedbackChanged" value="decision" />
+                                                I make the final decisions about what to change.
+                                          </label>
+
+                                          <label class="option">
+                                                <input type="checkbox" name="feedbackChanged" value="copy" />
+                                                I copy what the AI writes without thinking.
+                                          </label>
+
+                                          <label class="option">
+                                                <input type="checkbox" name="feedbackChanged" value="feedback" />
+                                                I use AI feedback to rethink my ideas.
+                                          </label>
+
+                                          <label class="option">
+                                                <input type="checkbox" name="feedbackChanged" value="accurate" />
+                                                I check whether the suggestions are accurate.
+                                          </label>
+                                    </fieldset>
+
+                                    <div class="question-image-wrap">
+                                          <img src="./assets/placeholder.svg"
+                                                alt="Illustration representing responsible AI use"
+                                                class="question-image" />
+                                    </div>
+                              </div>
 
                               <p class="callout teal">
                                     Which statement best describes AI as a tool?
@@ -1349,19 +1378,19 @@
 
                                           <fieldset data-required-group="aiSummaryReadingApproach">
                                                 <label class="option">
-                                                      <input type="checkbox" name="aiSummaryReadingApproach"
+                                                      <input type="radio" name="aiSummaryReadingApproach"
                                                             value="sounds clear" />
                                                       Consider it credible if it sounds clear and well-written.
                                                 </label>
 
                                                 <label class="option">
-                                                      <input type="checkbox" name="aiSummaryReadingApproach"
+                                                      <input type="radio" name="aiSummaryReadingApproach"
                                                             value="question claims" />
                                                       Read it, but pause to question claims and check key information.
                                                 </label>
 
                                                 <label class="option">
-                                                      <input type="checkbox" name="aiSummaryReadingApproach"
+                                                      <input type="radio" name="aiSummaryReadingApproach"
                                                             value="ignore without sources" />
                                                       Ignore it unless it includes sources or references.
                                                 </label>
@@ -1389,7 +1418,8 @@
                                                 why
                                                 it’s important to read AI-generated summaries critically, checking for
                                                 accuracy, clarity, and completeness.</p><br>
-                                          <p>The real strength of AI isn’t just how powerful it is, but how you use it.
+                                          <p>The real strength of AI isn’t just how powerful it is, but <strong>how you
+                                                      use it</strong>.
                                                 When
                                                 used well, AI can help sharpen your ideas, not replace them.</p>
                                     </div>

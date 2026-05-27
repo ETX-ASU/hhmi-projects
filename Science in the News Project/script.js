@@ -310,18 +310,31 @@ function tabComplete(index) {
 }
 
 function updateUnlocks() {
+    const unlockedTabs = [0];
+
     for (let i = 0; i < tabPanels.length - 1; i++) {
-        if (tabComplete(i) && !state.unlockedTabs.includes(i + 1)) {
-            state.unlockedTabs.push(i + 1);
+        if (tabComplete(i)) {
+            unlockedTabs.push(i + 1);
+        } else {
+            break;
         }
     }
 
-    state.unlockedTabs = [...new Set(state.unlockedTabs)].sort((a, b) => a - b);
+    state.unlockedTabs = [...new Set(unlockedTabs)].sort((a, b) => a - b);
+
+    if (!state.unlockedTabs.includes(state.activeTab)) {
+        state.activeTab = state.unlockedTabs[state.unlockedTabs.length - 1] || 0;
+        showTab(state.activeTab, false);
+    }
 
     tabButtons.forEach((button, index) => {
         const unlocked = state.unlockedTabs.includes(index);
         button.classList.toggle("locked", !unlocked);
         button.disabled = !unlocked;
+    });
+
+    tabPanels.forEach((panel, index) => {
+        panel.classList.toggle("active", index === state.activeTab);
     });
 
     statusBoxes.forEach(box => {
@@ -333,10 +346,10 @@ function updateUnlocks() {
 
         if (complete && !isLastTab) {
             box.textContent = `Tab ${index + 1} complete. Tab ${index + 2} is unlocked.`;
-        }
-
-        if (complete && isLastTab) {
+        } else if (complete && isLastTab) {
             box.textContent = "Lesson complete. You can print or save your work as a PDF.";
+        } else if (!complete && !isLastTab) {
+            box.textContent = `Complete everything in this tab to unlock Tab ${index + 2}.`;
         }
     });
 
@@ -609,7 +622,7 @@ function initializeSentenceBuilderFeedback() {
         } else {
             setSentenceFeedback(
                 "incorrect",
-                "It might help to review all three source types again. Reread the primary, secondary, and tertiary sources definitions. Focus on their purpose: presenting original research, analyzing research, or providing background information. Then try again."
+                "It might help to review all three source types again. Reread the primary, secondary, and tertiary sources definitions. Focus on their purpose: presenting original research, analyzing research, and compiling and summarizing information. Then try again."
             );
         }
 
@@ -1089,7 +1102,7 @@ const CHECK_ANSWER_CONFIG = {
         correctFeedback: "You got it. Generative AI is trained on large amounts of data to create new content. It can write paragraphs and even draw pictures, given what it learns.",
         feedbackByAnswer: {
             creates: "You got it. Generative AI is trained on large amounts of data to create new content. It can write paragraphs and even draw pictures, given what it learns.",
-            stores: "Please try again. Some technology stores and retrieves information, but generative AI creates something new using patterns learned from data.",
+            stores: "Please try again. Some technology stores and retrieve information, but generative AI repeats information and creates something new using patterns learned from data.",
             steps: "Please try again. This describes a more traditional computer program. Generative AI learns by example. It does not follow only basic automation or fixed instructions.",
             typed: "Please try again. Generative AI can repeat past answers and generate new responses based on patterns in the data it was trained on."
         },
@@ -1121,7 +1134,7 @@ const CHECK_ANSWER_CONFIG = {
         },
         addedFeedback: {
             appliesFeedback: "AI does not always understand and correctly apply all feedback.",
-            improveResponses: "AI still needs human input to refine and improve responses."
+            improveResponses: "Reflect on your experience. Did the AI work the same without your guidance?"
         },
         incorrectFeedback: "Please try again."
     },
@@ -1208,14 +1221,12 @@ const CHECK_ANSWER_CONFIG = {
     aiSummaryReadingApproach: {
         correct: ["question claims"],
         correctFeedback: "Nice work. This is a strong approach. You are engaging with the content while staying alert. Questioning claims and verifying details helps you avoid accepting false or incomplete information.",
-        missingFeedback: {
-            "question claims": "Questioning claims and checking key information is the strongest approach because it helps you avoid accepting false or incomplete information."
-        },
-        addedFeedback: {
+        feedbackByAnswer: {
             "sounds clear": "Clear writing can be misleading. AI-generated content is often polished, even when it contains errors or made-up information. Clarity alone is not a reliable signal of accuracy. Try again.",
+            "question claims": "Nice work. This is a strong approach. You are engaging with the content while staying alert. Questioning claims and verifying details helps you avoid accepting false or incomplete information.",
             "ignore without sources": "Sources are helpful, but their presence alone does not guarantee accuracy. Some AI-generated content includes incorrect or fabricated references, so it is better to evaluate both the content and the sources. Try again."
         },
-        incorrectFeedback: ""
+        incorrectFeedback: "Please try again."
     }
 };
 
@@ -1306,7 +1317,7 @@ function initializeCheckAnswerButtons() {
                 const blankMessage =
                     name === "chatbotUse"
                         ? "Please select an option, even if you haven't used a chatbot!"
-                        : config?.incorrectFeedback || "Please select an option before checking.";
+                        : "Please answer the question.";
 
                 addGroupFeedback(fieldset, "needs-answer", blankMessage);
                 return;
@@ -1880,6 +1891,80 @@ function initializeChatbotSuggestionsFeedback() {
     });
 }
 
+function initializeWordCounts() {
+    const counters = [...document.querySelectorAll("[data-word-count-for]")];
+
+    if (!counters.length) return;
+
+    function countWords(text) {
+        return text
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean).length;
+    }
+
+    counters.forEach(counter => {
+        const textareaId = counter.dataset.wordCountFor;
+        const textarea = document.getElementById(textareaId);
+        const output = counter.querySelector("span");
+
+        if (!textarea || !output) return;
+
+        function updateWordCount() {
+            output.textContent = countWords(textarea.value);
+        }
+
+        textarea.addEventListener("input", updateWordCount);
+        textarea.addEventListener("change", updateWordCount);
+
+        updateWordCount();
+    });
+}
+
+function initializeAiSummaryDraftFeedback() {
+    const aiSummary = document.getElementById("aiSummaryDraft");
+    const checkButton = document.getElementById("checkAiSummaryDraft");
+    const feedback = document.getElementById("aiSummaryDraftFeedback");
+
+    if (!aiSummary || !checkButton || !feedback) return;
+
+    function clearAiSummaryFeedback() {
+        feedback.textContent = "";
+        feedback.className = "ai-summary-feedback";
+    }
+
+    function setAiSummaryFeedback(type, message) {
+        feedback.className = `ai-summary-feedback ${type}`;
+        feedback.textContent = message;
+    }
+
+    checkButton.addEventListener("click", () => {
+        const summaryText = aiSummary.value.trim();
+
+        if (!summaryText) {
+            setAiSummaryFeedback(
+                "needs-answer",
+                "Please paste in the AI summary."
+            );
+            return;
+        }
+
+        setAiSummaryFeedback(
+            "correct",
+            "Got it!"
+        );
+
+        saveState();
+        updateUnlocks();
+    });
+
+    aiSummary.addEventListener("input", () => {
+        clearAiSummaryFeedback();
+        saveState();
+        updateUnlocks();
+    });
+}
+
 /* ============================================================
     Startup
    ============================================================ */
@@ -1903,6 +1988,9 @@ function initializeLesson() {
     initializeRubricRowCheck();
     initializeRevisionPromptFeedback();
     initializeChatbotSuggestionsFeedback();
+    initializeAiSummaryDraftFeedback();
+    initializeWordCounts()
+
     initializeReflectionFeedback();
     initializeProsConsSort();
     initializeSummaryComparisonAutofill();
