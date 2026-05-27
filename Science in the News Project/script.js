@@ -7,8 +7,8 @@
 */
 
 /* ============================================================
-   Configuration
-   ============================================================ */
+  Configuration
+  ============================================================ */
 
 const STORAGE_KEYS = {
     lesson: "scienceInTheNewsProgressV1",
@@ -22,8 +22,8 @@ const VIDEO_CONFIG = {
 };
 
 /* ============================================================
-   Cached DOM Elements
-   ============================================================ */
+  Cached DOM Elements
+  ============================================================ */
 
 const form = document.getElementById("lessonForm");
 const tabButtons = [...document.querySelectorAll("[data-tab-button]")];
@@ -32,8 +32,8 @@ const statusBoxes = [...document.querySelectorAll("[data-status]")];
 const resetTestingButton = document.getElementById("resetTestingProgress");
 
 /* ============================================================
-   Global State
-   ============================================================ */
+  Global State
+  ============================================================ */
 
 let state = {
     activeTab: 0,
@@ -48,8 +48,8 @@ let remainingWatchSeconds = VIDEO_CONFIG.requiredWatchSeconds;
 let watchTimerStarted = false;
 
 /* ============================================================
-   Utility Helpers
-   ============================================================ */
+  Utility Helpers
+  ============================================================ */
 
 function safeJsonParse(value, fallback = {}) {
     try {
@@ -77,8 +77,8 @@ function countWords(text) {
 }
 
 /* ============================================================
-   Progress Saving and Loading
-   ============================================================ */
+  Progress Saving and Loading
+  ============================================================ */
 
 function saveState() {
     if (!form) return;
@@ -140,9 +140,9 @@ function resetTestingProgress() {
 }
 
 /* ============================================================
-   Testing Helper
-   Run debugTabRequirements(0), debugTabRequirements(1), etc.
-   ============================================================ */
+  Testing Helper
+  Run debugTabRequirements(0), debugTabRequirements(1), etc.
+  ============================================================ */
 
 function debugTabRequirements(tabIndex = state.activeTab) {
     const panel = tabPanels[tabIndex];
@@ -234,8 +234,8 @@ function debugTabRequirements(tabIndex = state.activeTab) {
 }
 
 /* ============================================================
-   Required Completion and Tab Locking
-   ============================================================ */
+  Required Completion and Tab Locking
+  ============================================================ */
 
 function groupComplete(panel, groupName) {
     const group = panel.querySelector(`[data-required-group="${CSS.escape(groupName)}"]`);
@@ -363,8 +363,8 @@ function showTab(index, shouldScroll = true) {
 }
 
 /* ============================================================
-   Source Matching Activity
-   ============================================================ */
+  Source Matching Activity
+  ============================================================ */
 
 function initializeSourceMatching() {
     const tokens = [...document.querySelectorAll(".drag-token")];
@@ -544,8 +544,8 @@ function initializeSourceMatching() {
 }
 
 /* ============================================================
-   Sentence Builder Activity
-   ============================================================ */
+  Sentence Builder Activity
+  ============================================================ */
 
 function initializeSentenceBuilderFeedback() {
     const checkButton = document.getElementById("checkSentenceBuilder");
@@ -621,8 +621,8 @@ function initializeSentenceBuilderFeedback() {
 }
 
 /* ============================================================
-   YouTube Video Gate
-   ============================================================ */
+  YouTube Video Gate
+  ============================================================ */
 
 function initializeYouTubeVideoGate() {
     const videoInput = document.getElementById("watchedVideo");
@@ -809,8 +809,8 @@ function updateVideoStatusMessage() {
 }
 
 /* ============================================================
-   Rubric Scoring and Rubric Completion Check
-   ============================================================ */
+  Rubric Scoring and Rubric Completion Check
+  ============================================================ */
 
 function updateRubricScore() {
     const scoreOutput = document.getElementById("rubricScore");
@@ -880,8 +880,8 @@ function initializeRubricRowCheck() {
 }
 
 /* ============================================================
-   Multiple Choice / Multiple Select Answer Checks
-   ============================================================ */
+  Multiple Choice / Multiple Select Answer Checks
+  ============================================================ */
 
 const CHECK_ANSWER_CONFIG = {
     credibilityTraits: {
@@ -1180,8 +1180,8 @@ function initializeCheckAnswerButtons() {
 }
 
 /* ============================================================
-   Feedback Buttons for Text Entry Sections
-   ============================================================ */
+  Feedback Buttons for Text Entry Sections
+  ============================================================ */
 
 function initializeAiSummaryDraftFeedback() {
     const aiSummary = document.getElementById("aiSummaryDraft");
@@ -1411,8 +1411,8 @@ function initializeFinalSummaryRevisionAutofill() {
 }
 
 /* ============================================================
-   Final Revision Diff Preview
-   ============================================================ */
+  Final Revision Diff Preview
+  ============================================================ */
 
 function initializeFinalSummaryRevisionDiff() {
     const original = document.getElementById("studentSummaryForRevision");
@@ -1510,8 +1510,8 @@ function initializeFinalSummaryRevisionDiff() {
 }
 
 /* ============================================================
-   Generic UI Handlers
-   ============================================================ */
+  Generic UI Handlers
+  ============================================================ */
 
 function initializeTabs() {
     tabButtons.forEach((button, index) => {
@@ -1579,8 +1579,8 @@ function initializeWordCounts() {
 }
 
 /* ============================================================
-   Startup
-   ============================================================ */
+  Startup
+  ============================================================ */
 
 function initializeLesson() {
     loadState();
