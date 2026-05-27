@@ -1,39 +1,28 @@
 /*
     Science in the News - Main Script
     ------------------------------------------------------------
-    Handles:
-    - localStorage progress saving/restoring
-    - tab locking/unlocking
-    - required-field completion checks
-    - Source Matching drag/drop activity
-    - Sentence Builder feedback
-    - chatbot-use follow-up visibility
-    - YouTube video completion gate
-    - rubric scoring
-    - AI advantages/disadvantages sorting activity
-    - copy prompt buttons
-    - collapsible helper panels
-    - testing reset button
+    Handles lesson progress, tab locking, answer checks, autofill,
+    drag/drop activities, feedback buttons, rubric scoring, video
+    completion, word counts, and print/reset helpers.
 */
 
 /* ============================================================
-    Configuration
+   Configuration
    ============================================================ */
 
 const STORAGE_KEYS = {
     lesson: "scienceInTheNewsProgressV1",
-    videoGate: "scienceInTheNewsVideoGate",
-    prosConsSort: "scienceInTheNewsProsConsSort"
+    videoGate: "scienceInTheNewsVideoGate"
 };
 
 const VIDEO_CONFIG = {
     youtubeId: "rwF-X5STYks",
-    requiredProgress: 0.99,       // Treats 99% as full completion to avoid API end-of-video edge cases.
-    requiredWatchSeconds: 120     // Hidden active-play timer: 2 minutes.
+    requiredProgress: 0.99,
+    requiredWatchSeconds: 120
 };
 
 /* ============================================================
-    Cached DOM Elements
+   Cached DOM Elements
    ============================================================ */
 
 const form = document.getElementById("lessonForm");
@@ -43,7 +32,7 @@ const statusBoxes = [...document.querySelectorAll("[data-status]")];
 const resetTestingButton = document.getElementById("resetTestingProgress");
 
 /* ============================================================
-    Global State
+   Global State
    ============================================================ */
 
 let state = {
@@ -59,7 +48,7 @@ let remainingWatchSeconds = VIDEO_CONFIG.requiredWatchSeconds;
 let watchTimerStarted = false;
 
 /* ============================================================
-    Utility Helpers
+   Utility Helpers
    ============================================================ */
 
 function safeJsonParse(value, fallback = {}) {
@@ -80,8 +69,15 @@ function isFilled(element) {
     return String(element.value || "").trim().length > 0;
 }
 
+function countWords(text) {
+    return text
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean).length;
+}
+
 /* ============================================================
-    Progress Saving and Loading
+   Progress Saving and Loading
    ============================================================ */
 
 function saveState() {
@@ -144,8 +140,8 @@ function resetTestingProgress() {
 }
 
 /* ============================================================
-    Testing Helper
-    Run debugTabRequirements(0), debugTabRequirements(1), etc.
+   Testing Helper
+   Run debugTabRequirements(0), debugTabRequirements(1), etc.
    ============================================================ */
 
 function debugTabRequirements(tabIndex = state.activeTab) {
@@ -153,11 +149,10 @@ function debugTabRequirements(tabIndex = state.activeTab) {
 
     if (!panel) {
         console.warn(`No tab panel found for tab index ${tabIndex}.`);
-        return;
+        return [];
     }
 
     const incomplete = [];
-
     const requiredGroups = [
         ...new Set(
             [...panel.querySelectorAll("[data-required-group]")]
@@ -177,11 +172,9 @@ function debugTabRequirements(tabIndex = state.activeTab) {
                 field.type === "radio" || field.type === "checkbox"
             );
 
-            if (hasCheckable) {
-                complete = namedFields.some(field => field.checked);
-            } else {
-                complete = namedFields.every(isFilled);
-            }
+            complete = hasCheckable
+                ? namedFields.some(field => field.checked)
+                : namedFields.every(isFilled);
         } else if (requiredFields.length > 0) {
             complete = requiredFields.every(isFilled);
         }
@@ -203,9 +196,8 @@ function debugTabRequirements(tabIndex = state.activeTab) {
         });
     });
 
-    const directRequired = [
-        ...panel.querySelectorAll("[data-required], [data-required-check]")
-    ].filter(field => !groupedRequiredFields.has(field));
+    const directRequired = [...panel.querySelectorAll("[data-required], [data-required-check]")]
+        .filter(field => !groupedRequiredFields.has(field));
 
     directRequired.forEach(field => {
         if (!isFilled(field)) {
@@ -242,7 +234,7 @@ function debugTabRequirements(tabIndex = state.activeTab) {
 }
 
 /* ============================================================
-    Required Completion and Tab Locking
+   Required Completion and Tab Locking
    ============================================================ */
 
 function groupComplete(panel, groupName) {
@@ -251,7 +243,6 @@ function groupComplete(panel, groupName) {
 
     const namedFields = [...group.querySelectorAll(`[name="${CSS.escape(groupName)}"]`)];
 
-    // Radio/checkbox groups where all choices share the group name.
     if (namedFields.length > 0) {
         const hasCheckable = namedFields.some(element =>
             element.type === "radio" || element.type === "checkbox"
@@ -261,7 +252,6 @@ function groupComplete(panel, groupName) {
         return namedFields.every(isFilled);
     }
 
-    // Wrapper groups that contain required fields with their own names.
     const requiredFields = [...group.querySelectorAll("[data-required], [data-required-check]")];
     if (requiredFields.length > 0) return requiredFields.every(isFilled);
 
@@ -297,7 +287,6 @@ function tabComplete(index) {
     const allDirectChecksComplete = directRequiredChecks.every(isFilled);
     const allGroupsComplete = requiredGroups.every(groupName => groupComplete(panel, groupName));
 
-    // Tab 3, index 2, includes the rubric, which is required but does not use data-required.
     if (index === 2) {
         const rubricComplete = [1, 2, 3, 4, 5].every(num =>
             Boolean(form.querySelector(`[name="rubric${num}"]:checked`))
@@ -313,11 +302,8 @@ function updateUnlocks() {
     const unlockedTabs = [0];
 
     for (let i = 0; i < tabPanels.length - 1; i++) {
-        if (tabComplete(i)) {
-            unlockedTabs.push(i + 1);
-        } else {
-            break;
-        }
+        if (tabComplete(i)) unlockedTabs.push(i + 1);
+        else break;
     }
 
     state.unlockedTabs = [...new Set(unlockedTabs)].sort((a, b) => a - b);
@@ -377,7 +363,7 @@ function showTab(index, shouldScroll = true) {
 }
 
 /* ============================================================
-    Source Matching Activity
+   Source Matching Activity
    ============================================================ */
 
 function initializeSourceMatching() {
@@ -409,6 +395,16 @@ function initializeSourceMatching() {
         feedback.textContent = message;
     }
 
+    function updateSourceTokenVisibility() {
+        const placedValues = zones
+            .map(zone => zone.querySelector('input[type="hidden"]')?.value)
+            .filter(Boolean);
+
+        tokens.forEach(token => {
+            token.classList.toggle("is-placed", placedValues.includes(token.dataset.value));
+        });
+    }
+
     function updateZoneDisplay(zone, value) {
         const label = zone.querySelector(".drop-zone-text");
         const input = zone.querySelector('input[type="hidden"]');
@@ -433,16 +429,6 @@ function initializeSourceMatching() {
     function clearSelectedToken() {
         tokens.forEach(token => token.classList.remove("selected"));
         selectedValue = null;
-    }
-
-    function updateSourceTokenVisibility() {
-        const placedValues = zones
-            .map(zone => zone.querySelector('input[type="hidden"]')?.value)
-            .filter(Boolean);
-
-        tokens.forEach(token => {
-            token.classList.toggle("is-placed", placedValues.includes(token.dataset.value));
-        });
     }
 
     function assignValueToZone(zone, value) {
@@ -551,7 +537,6 @@ function initializeSourceMatching() {
         updateUnlocks();
     });
 
-    // Restore saved hidden input values after loadState().
     zones.forEach(zone => {
         const input = zone.querySelector('input[type="hidden"]');
         updateZoneDisplay(zone, input?.value || "");
@@ -559,7 +544,7 @@ function initializeSourceMatching() {
 }
 
 /* ============================================================
-    Sentence Builder Activity
+   Sentence Builder Activity
    ============================================================ */
 
 function initializeSentenceBuilderFeedback() {
@@ -584,11 +569,10 @@ function initializeSentenceBuilderFeedback() {
     }
 
     checkButton.addEventListener("click", () => {
-        const corrections = [];
         let unansweredCount = 0;
         let correctCount = 0;
 
-        selects.forEach((select, index) => {
+        selects.forEach(select => {
             const selectedOption = select.options[select.selectedIndex];
             select.classList.remove("correct", "incorrect", "needs-answer");
 
@@ -603,9 +587,6 @@ function initializeSentenceBuilderFeedback() {
                 select.classList.add("correct");
             } else {
                 select.classList.add("incorrect");
-                corrections.push(
-                    `${index + 1}. ${selectedOption.dataset.feedback || "Review what this source type usually does."}`
-                );
             }
         });
 
@@ -640,39 +621,7 @@ function initializeSentenceBuilderFeedback() {
 }
 
 /* ============================================================
-    Chatbot Use Follow-Up Question
-   ============================================================ */
-
-function initializeChatbotUseFollowup() {
-    const radios = [...document.querySelectorAll('input[name="chatbotUse"]')];
-    const followup = document.getElementById("chatbotExperienceFollowup");
-    const followupTextarea = document.getElementById("chatbotObservations");
-
-    if (!radios.length || !followup || !followupTextarea) return;
-
-    function updateFollowupVisibility() {
-        const selected = document.querySelector('input[name="chatbotUse"]:checked');
-        const shouldHide = selected && ["heard", "unknown"].includes(selected.value);
-
-        followup.classList.toggle("is-hidden", shouldHide);
-
-        if (shouldHide) {
-            followupTextarea.value = "";
-            followupTextarea.removeAttribute("data-required");
-        } else {
-            followupTextarea.setAttribute("data-required", "");
-        }
-
-        saveState();
-        updateUnlocks();
-    }
-
-    radios.forEach(radio => radio.addEventListener("change", updateFollowupVisibility));
-    updateFollowupVisibility();
-}
-
-/* ============================================================
-    YouTube Video Gate
+   YouTube Video Gate
    ============================================================ */
 
 function initializeYouTubeVideoGate() {
@@ -715,7 +664,7 @@ function handleGenAIVideoStateChange(event) {
     }
 
     stopVideoProgressCheck();
-    stopRequiredWatchTimer(); // Hidden timer only counts active play time.
+    stopRequiredWatchTimer();
 
     if (event.data === YT.PlayerState.ENDED) {
         markVideoProgressComplete();
@@ -840,22 +789,18 @@ function loadVideoGateProgress() {
 }
 
 /* ============================================================
-    Rubric Scoring
+   Rubric Scoring and Rubric Completion Check
    ============================================================ */
 
 function updateRubricScore() {
     const scoreOutput = document.getElementById("rubricScore");
-
     if (!scoreOutput) return;
 
     let total = 0;
 
     for (let i = 1; i <= 5; i++) {
         const selected = form.querySelector(`[name="rubric${i}"]:checked`);
-
-        if (selected) {
-            total += Number(selected.value);
-        }
+        if (selected) total += Number(selected.value);
     }
 
     scoreOutput.textContent = total;
@@ -870,206 +815,55 @@ function getRubricOverallRatingFromScore() {
     return "not credible";
 }
 
-/* ============================================================
-    AI Advantages / Disadvantages Sort Activity
-   ============================================================ */
+function initializeRubricRowCheck() {
+    const checkButton = document.getElementById("checkRubricRows");
+    const feedback = document.getElementById("rubricFeedback");
 
-function initializeProsConsSort() {
-    const activity = document.getElementById("aiProsConsActivity");
-    if (!activity) return;
+    if (!checkButton || !feedback) return;
 
-    const tokens = [...activity.querySelectorAll(".category-token")];
-    const zones = [...activity.querySelectorAll(".category-drop-zone")];
-    const completeInput = document.getElementById("aiProsConsComplete");
-    const clearButton = document.getElementById("clearProsConsSort");
+    const rubricGroups = ["rubric1", "rubric2", "rubric3", "rubric4", "rubric5"];
 
-    let selectedTokenValue = null;
-
-    function getSavedSort() {
-        return safeJsonParse(localStorage.getItem(STORAGE_KEYS.prosConsSort), {});
+    function clearRubricFeedback() {
+        feedback.textContent = "";
+        feedback.className = "rubric-feedback";
     }
 
-    function saveSort() {
-        const sortState = {};
-
-        zones.forEach(zone => {
-            sortState[zone.dataset.category] = [...zone.querySelectorAll(".placed-category-token")]
-                .map(item => ({
-                    value: item.dataset.value,
-                    correct: item.dataset.correct
-                }));
-        });
-
-        localStorage.setItem(STORAGE_KEYS.prosConsSort, JSON.stringify(sortState));
+    function setRubricFeedback(type, message) {
+        feedback.className = `rubric-feedback ${type}`;
+        feedback.textContent = message;
     }
 
-    function updateCompletion() {
-        const placedCount = activity.querySelectorAll(".placed-category-token").length;
-        if (completeInput) completeInput.value = placedCount === tokens.length ? "complete" : "";
-
-        saveSort();
-        saveState();
-        updateUnlocks();
-    }
-
-    function updateEmptyText(zone) {
-        const emptyText = zone.querySelector(".empty-category-text");
-        const hasItems = zone.querySelectorAll(".placed-category-token").length > 0;
-        if (emptyText) emptyText.style.display = hasItems ? "none" : "block";
-    }
-
-    function updateTokenVisibility() {
-        const placedValues = [...activity.querySelectorAll(".placed-category-token")]
-            .map(item => item.dataset.value);
-
-        tokens.forEach(token => {
-            token.classList.toggle("is-placed", placedValues.includes(token.dataset.value));
-        });
-    }
-
-    function removePlacedToken(value) {
-        activity.querySelectorAll(".placed-category-token").forEach(item => {
-            if (item.dataset.value === value) item.remove();
-        });
-    }
-
-    function createPlacedToken(value, correctCategory, droppedCategory) {
-        const button = document.createElement("button");
-        const isCorrect = correctCategory === droppedCategory;
-
-        button.type = "button";
-        button.className = `placed-category-token ${isCorrect ? "correct" : "incorrect"}`;
-        button.draggable = true;
-        button.dataset.value = value;
-        button.dataset.correct = correctCategory;
-        button.innerHTML = `
-            <span>${value}</span>
-            <span class="feedback">${isCorrect ? "Correct" : "Try again"}</span>
-        `;
-
-        button.addEventListener("dragstart", event => {
-            selectedTokenValue = value;
-            event.dataTransfer.setData("text/plain", value);
+    checkButton.addEventListener("click", () => {
+        const unansweredRows = rubricGroups.filter(groupName => {
+            return !document.querySelector(`input[name="${groupName}"]:checked`);
         });
 
-        // Click an already placed item to return it to the word bank.
-        button.addEventListener("click", () => {
-            removePlacedToken(value);
-            updateTokenVisibility();
-            zones.forEach(updateEmptyText);
-            updateCompletion();
-        });
+        if (unansweredRows.length > 0) {
+            setRubricFeedback("needs-answer", "Please make sure to select an option from each row.");
+            return;
+        }
 
-        return button;
-    }
-
-    function placeTokenInZone(value, zone) {
-        if (!value || !zone) return;
-
-        const originalToken = tokens.find(token => token.dataset.value === value);
-        if (!originalToken) return;
-
-        removePlacedToken(value);
-
-        const placedToken = createPlacedToken(
-            value,
-            originalToken.dataset.correct,
-            zone.dataset.category
-        );
-
-        zone.appendChild(placedToken);
-
-        selectedTokenValue = null;
-        tokens.forEach(token => token.classList.remove("selected"));
-
-        updateTokenVisibility();
-        zones.forEach(updateEmptyText);
-        updateCompletion();
-    }
-
-    tokens.forEach(token => {
-        token.addEventListener("dragstart", event => {
-            selectedTokenValue = token.dataset.value;
-            event.dataTransfer.setData("text/plain", selectedTokenValue);
-        });
-
-        token.addEventListener("click", () => {
-            tokens.forEach(item => item.classList.remove("selected"));
-            token.classList.add("selected");
-            selectedTokenValue = token.dataset.value;
-        });
-    });
-
-    zones.forEach(zone => {
-        zone.addEventListener("dragover", event => {
-            event.preventDefault();
-            zone.classList.add("over");
-        });
-
-        zone.addEventListener("dragleave", () => zone.classList.remove("over"));
-
-        zone.addEventListener("drop", event => {
-            event.preventDefault();
-            zone.classList.remove("over");
-            placeTokenInZone(event.dataTransfer.getData("text/plain") || selectedTokenValue, zone);
-        });
-
-        zone.addEventListener("click", () => placeTokenInZone(selectedTokenValue, zone));
-
-        zone.addEventListener("keydown", event => {
-            if ((event.key === "Enter" || event.key === " ") && selectedTokenValue) {
-                event.preventDefault();
-                placeTokenInZone(selectedTokenValue, zone);
-            }
-        });
-    });
-
-    clearButton?.addEventListener("click", () => {
-        activity.querySelectorAll(".placed-category-token").forEach(item => item.remove());
-        tokens.forEach(token => token.classList.remove("selected", "is-placed"));
-        selectedTokenValue = null;
-        if (completeInput) completeInput.value = "";
-
-        localStorage.removeItem(STORAGE_KEYS.prosConsSort);
-        zones.forEach(updateEmptyText);
+        setRubricFeedback("correct", "Thank you for reviewing each category.");
         saveState();
         updateUnlocks();
     });
 
-    function restoreSavedSort() {
-        const saved = getSavedSort();
-
-        Object.entries(saved).forEach(([category, items]) => {
-            const zone = zones.find(item => item.dataset.category === category);
-            if (!zone || !Array.isArray(items)) return;
-
-            items.forEach(item => placeTokenInZone(item.value, zone));
+    rubricGroups.forEach(groupName => {
+        document.querySelectorAll(`input[name="${groupName}"]`).forEach(input => {
+            input.addEventListener("change", () => {
+                clearRubricFeedback();
+                saveState();
+                updateUnlocks();
+            });
         });
-
-        updateTokenVisibility();
-        zones.forEach(updateEmptyText);
-        updateCompletion();
-    }
-
-    restoreSavedSort();
+    });
 }
 
-
 /* ============================================================
-    Multiple Choice / Multiple Select Answer Checks
+   Multiple Choice / Multiple Select Answer Checks
    ============================================================ */
 
 const CHECK_ANSWER_CONFIG = {
-    summarySourceType: {
-        correct: ["Tertiary"],
-        correctFeedback: "Correct. Your summary is a tertiary source because it simplifies and organizes information from another source for a general audience.",
-        feedbackByAnswer: {
-            Primary: "Not quite. A primary source presents original research or firsthand data. Your summary is not the original research.",
-            Secondary: "Not quite. A secondary source explains or interprets primary research. The news article is secondary, but your summary is one step further removed.",
-            Tertiary: "Correct. Your summary is a tertiary source because it simplifies and organizes information from another source for a general audience."
-        },
-        incorrectFeedback: "Try again."
-    },
     credibilityTraits: {
         correct: ["Clear evidence", "Reliable sources", "Easy to understand"],
         correctFeedback: "Nice work. Credibility comes from clear evidence, reliable sources, and writing that is easy to understand. This is your goal. Now, can AI do this?",
@@ -1097,6 +891,10 @@ const CHECK_ANSWER_CONFIG = {
         },
         incorrectFeedback: "Try again."
     },
+    chatbotUse: {
+        anySelectionIsCorrect: true,
+        correctFeedback: "Good to know!"
+    },
     genaiDefinition: {
         correct: ["creates"],
         correctFeedback: "You got it. Generative AI is trained on large amounts of data to create new content. It can write paragraphs and even draw pictures, given what it learns.",
@@ -1119,10 +917,20 @@ const CHECK_ANSWER_CONFIG = {
         },
         incorrectFeedback: "Try again. A prompt tells the AI what kind of output to create."
     },
-    summaryTruths: {
-        correct: ["may contain errors", "may omit details", "depends on prompt"],
-        correctFeedback: "Correct! AI summaries can be useful, but they still need human checking.",
-        incorrectFeedback: "Try again. Choose the statements that show AI summaries can help but are not automatically perfect."
+    aiSummaryOverallRating: {
+        dynamicCorrect: getRubricOverallRatingFromScore,
+        correctFeedback: "You're right!",
+        incorrectFeedback: "The total score doesn't fit in that range. Please try again."
+    },
+    sentenceWeakness: {
+        anySelectionIsCorrect: true,
+        correctFeedback: "Thank you for sharing.",
+        incorrectFeedback: "Even if it's really strong, if you had to pick a category to work on, what would it be?"
+    },
+    summaryDirection: {
+        anySelectionIsCorrect: true,
+        correctFeedback: "Thank you for sharing.",
+        incorrectFeedback: "Please share at least one of your observations."
     },
     noticedSummaries: {
         correct: ["clearInstructions", "guideIt", "samePrompt"],
@@ -1151,19 +959,15 @@ const CHECK_ANSWER_CONFIG = {
         },
         incorrectFeedback: "Please try again."
     },
-    feedbackTells: {
-        correct: ["clear instructions", "guided", "different results"],
-        correctFeedback: "Correct! AI output changes based on the guidance you provide.",
-        incorrectFeedback: "Try again. Focus on how human guidance affects AI responses."
-    },
-    studentRole: {
-        correct: ["final decisions", "rethink", "check"],
-        correctFeedback: "Correct! You should stay in charge, rethink ideas, and check accuracy.",
-        incorrectFeedback: "Try again. Choose the options where the student stays responsible for the work."
-    },
     aiToolStatement: {
         correct: ["helps thinking"],
-        correctFeedback: "Correct! AI is a tool that can support your thinking and writing.",
+        correctFeedback: "Nice work. AI is most powerful when it supports your thinking, helps you revise ideas, and strengthens your understanding.",
+        feedbackByAnswer: {
+            "helps thinking": "Nice work. AI is most powerful when it supports your thinking, helps you revise ideas, and strengthens your understanding.",
+            "replaces understanding": " Think about whether understanding the topic still matters when using AI.",
+            "does hard work": "Think about your role when using AI. Should you still review and evaluate the results?",
+            "always accurate": "Reflect on what you learned about AI summaries. Are they always fully accurate?"
+        },
         incorrectFeedback: "Try again. AI should support your learning, not replace your understanding."
     },
     strongUses: {
@@ -1179,33 +983,6 @@ const CHECK_ANSWER_CONFIG = {
             "replace thinking": "Consider what happens when you rely on AI instead of thinking through ideas yourself."
         },
         incorrectFeedback: "Please try again."
-    },
-    aiSummaryOverallRating: {
-        dynamicCorrect: getRubricOverallRatingFromScore,
-        correctFeedback: "You're right!",
-        incorrectFeedback: "The total score doesn't fit in that range. Please try again."
-    },
-    sentenceWeakness: {
-        anySelectionIsCorrect: true,
-        correctFeedback: "Thank you for sharing.",
-        incorrectFeedback: "Even if it's really strong, if you had to pick a category to work on, what would it be?"
-    },
-    summaryDirection: {
-        anySelectionIsCorrect: true,
-        correctFeedback: "Thank you for sharing.",
-        incorrectFeedback: "Please share at least one of your observations."
-    },
-
-    aiToolStatement: {
-        correct: ["helps thinking"],
-        correctFeedback: "Nice work. AI is most powerful when it supports your thinking, helps you revise ideas, and strengthens your understanding.",
-        feedbackByAnswer: {
-            "helps thinking": "Nice work. AI is most powerful when it supports your thinking, helps you revise ideas, and strengthens your understanding.",
-            "replaces understanding": " Think about whether understanding the topic still matters when using AI.",
-            "does hard work": "Think about your role when using AI. Should you still review and evaluate the results?",
-            "always accurate": "Reflect on what you learned about AI summaries. Are they always fully accurate?"
-        },
-        incorrectFeedback: "Try again. AI should support your learning, not replace your understanding."
     },
     scienceNewsEvaluation: {
         correct: ["original source"],
@@ -1235,13 +1012,11 @@ const CHECK_ANSWER_NO_KEY_FEEDBACK = "Good to know!";
 function initializeCheckAnswerButtons() {
     if (!form) return;
 
-    const excludedNames = new Set(["openedChatbot"]);
     const groupedNames = [
         ...new Set(
             [...form.querySelectorAll('input[type="radio"], input[type="checkbox"]')]
                 .map(input => input.name)
                 .filter(Boolean)
-                .filter(name => !excludedNames.has(name))
                 .filter(name => !name.startsWith("rubric"))
         )
     ];
@@ -1314,10 +1089,9 @@ function initializeCheckAnswerButtons() {
             const config = CHECK_ANSWER_CONFIG[name];
 
             if (selectedValues.length === 0) {
-                const blankMessage =
-                    name === "chatbotUse"
-                        ? "Please select an option, even if you haven't used a chatbot!"
-                        : "Please answer the question.";
+                const blankMessage = name === "chatbotUse"
+                    ? "Please select an option, even if you haven't used a chatbot!"
+                    : "Please answer the question.";
 
                 addGroupFeedback(fieldset, "needs-answer", blankMessage);
                 return;
@@ -1337,6 +1111,7 @@ function initializeCheckAnswerButtons() {
             const isCorrect = config.anySelectionIsCorrect
                 ? selectedValues.length > 0
                 : arraysMatch(selectedValues, correctValues);
+
             const selectedAnswer = selectedValues[0];
 
             let message =
@@ -1344,12 +1119,12 @@ function initializeCheckAnswerButtons() {
                 (isCorrect ? config.correctFeedback : config.incorrectFeedback);
 
             if (!isCorrect && (config.missingFeedback || config.addedFeedback)) {
-                const missingCorrectAnswers = config.correct.filter(
+                const missingCorrectAnswers = correctValues.filter(
                     answer => !selectedValues.includes(answer)
                 );
 
                 const addedIncorrectAnswers = selectedValues.filter(
-                    answer => !config.correct.includes(answer)
+                    answer => !correctValues.includes(answer)
                 );
 
                 const feedbackParts = [];
@@ -1371,12 +1146,7 @@ function initializeCheckAnswerButtons() {
                 }
             }
 
-            addGroupFeedback(
-                fieldset,
-                isCorrect ? "correct" : "incorrect",
-                message
-            );;
-
+            addGroupFeedback(fieldset, isCorrect ? "correct" : "incorrect", message);
             saveState();
             updateUnlocks();
         });
@@ -1390,86 +1160,155 @@ function initializeCheckAnswerButtons() {
 }
 
 /* ============================================================
-    Generic UI Handlers
+   Feedback Buttons for Text Entry Sections
    ============================================================ */
 
-function initializeTabs() {
-    tabButtons.forEach((button, index) => {
-        button.addEventListener("click", () => showTab(index, true));
-    });
-}
+function initializeAiSummaryDraftFeedback() {
+    const aiSummary = document.getElementById("aiSummaryDraft");
+    const checkButton = document.getElementById("checkAiSummaryDraft");
+    const feedback = document.getElementById("aiSummaryDraftFeedback");
 
-function initializeFormListeners() {
-    if (!form) return;
+    if (!aiSummary || !checkButton || !feedback) return;
 
-    form.addEventListener("input", () => {
-        updateRubricScore();
+    function setAiSummaryFeedback(type, message) {
+        feedback.className = `ai-summary-feedback ${type}`;
+        feedback.textContent = message;
+    }
+
+    checkButton.addEventListener("click", () => {
+        const summaryText = aiSummary.value.trim();
+
+        if (!summaryText) {
+            setAiSummaryFeedback("needs-answer", "Please paste in the AI summary.");
+            return;
+        }
+
+        setAiSummaryFeedback("correct", "Got it!");
+        saveState();
         updateUnlocks();
     });
 
-    form.addEventListener("change", () => {
-        updateRubricScore();
+    aiSummary.addEventListener("input", () => {
+        feedback.textContent = "";
+        feedback.className = "ai-summary-feedback";
+        saveState();
         updateUnlocks();
     });
 }
 
-function initializeCopyButtons() {
-    document.querySelectorAll("[data-copy]").forEach(button => {
-        button.addEventListener("click", async () => {
-            const target = document.getElementById(button.dataset.copy);
-            if (!target) return;
+function initializeSummaryNotesFeedback() {
+    const notes = document.getElementById("aiSummaryNotes");
+    const checkButton = document.getElementById("checkSummaryNotes");
+    const feedback = document.getElementById("summaryNotesFeedback");
 
-            try {
-                await navigator.clipboard.writeText(target.textContent.trim());
-                const originalText = button.textContent;
-                button.textContent = "Copied!";
-                setTimeout(() => {
-                    button.textContent = originalText;
-                }, 1400);
-            } catch (error) {
-                alert("Copy did not work in this browser. Highlight the prompt and copy it manually.");
-            }
-        });
+    if (!notes || !checkButton || !feedback) return;
+
+    function setNotesFeedback(type, message) {
+        feedback.className = `notes-feedback ${type}`;
+        feedback.textContent = message;
+    }
+
+    checkButton.addEventListener("click", () => {
+        const notesText = notes.value.trim();
+
+        if (!notesText) {
+            setNotesFeedback("needs-answer", "Please add in your notes from your review.");
+            return;
+        }
+
+        setNotesFeedback("correct", "Thanks!");
+        saveState();
+        updateUnlocks();
+    });
+
+    notes.addEventListener("input", () => {
+        feedback.textContent = "";
+        feedback.className = "notes-feedback";
+        saveState();
+        updateUnlocks();
     });
 }
 
-function initializeTogglePanels() {
-    document.querySelectorAll("[data-toggle]").forEach(button => {
-        button.addEventListener("click", () => {
-            const panel = document.getElementById(button.dataset.toggle);
-            if (!panel) return;
+function initializeRevisionPromptFeedback() {
+    const revisionPrompt = document.getElementById("revisionPrompt");
+    const checkButton = document.getElementById("checkRevisionPrompt");
+    const feedback = document.getElementById("revisionPromptFeedback");
 
-            const isOpen = panel.classList.toggle("open");
-            button.setAttribute("aria-expanded", String(isOpen));
+    if (!revisionPrompt || !checkButton || !feedback) return;
 
-            if (button.dataset.toggle === "helpPanel") {
-                const video = document.getElementById("howToVideo");
-                if (!video) return;
+    function setRevisionFeedback(type, message) {
+        feedback.className = `revision-feedback ${type}`;
+        feedback.textContent = message;
+    }
 
-                if (isOpen) video.play().catch(() => { });
-                else video.pause();
-            }
-        });
+    checkButton.addEventListener("click", () => {
+        const revisionText = revisionPrompt.value.trim();
+
+        if (!revisionText) {
+            setRevisionFeedback("needs-answer", "Please paste in the revised AI summary.");
+            saveState();
+            updateUnlocks();
+            return;
+        }
+
+        setRevisionFeedback("correct", "Received!");
+        saveState();
+        updateUnlocks();
+    });
+
+    revisionPrompt.addEventListener("input", () => {
+        feedback.textContent = "";
+        feedback.className = "revision-feedback";
+        saveState();
+        updateUnlocks();
     });
 }
 
-function initializeTestingReset() {
-    resetTestingButton?.addEventListener("click", resetTestingProgress);
+function initializeChatbotSuggestionsFeedback() {
+    const suggestions = document.getElementById("chatbotSuggestions");
+    const checkButton = document.getElementById("checkChatbotSuggestions");
+    const feedback = document.getElementById("chatbotSuggestionsFeedback");
+
+    if (!suggestions || !checkButton || !feedback) return;
+
+    function setSuggestionsFeedback(type, message) {
+        feedback.className = `suggestions-feedback ${type}`;
+        feedback.textContent = message;
+    }
+
+    checkButton.addEventListener("click", () => {
+        const suggestionsText = suggestions.value.trim();
+
+        if (!suggestionsText) {
+            setSuggestionsFeedback("needs-answer", "Please add in the suggestions AI gave you.");
+            return;
+        }
+
+        setSuggestionsFeedback("correct", "Thanks!");
+        saveState();
+        updateUnlocks();
+    });
+
+    suggestions.addEventListener("input", () => {
+        feedback.textContent = "";
+        feedback.className = "suggestions-feedback";
+        saveState();
+        updateUnlocks();
+    });
 }
+
+/* ============================================================
+   Autofill Helpers
+   ============================================================ */
 
 function initializeSummaryComparisonAutofill() {
     const studentSummarySource = document.getElementById("studentSummary");
-    const aiSummarySource = document.getElementById("aiSummaryDraft");
+    const aiSummarySource = document.getElementById("revisionPrompt");
 
     const studentSummaryComparison = document.getElementById("studentSummaryComparison");
     const aiSummaryComparison = document.getElementById("aiSummaryComparison");
 
-    if (
-        !studentSummarySource ||
-        !aiSummarySource ||
-        !studentSummaryComparison ||
-        !aiSummaryComparison
-    ) {
+    if (!studentSummarySource || !aiSummarySource || !studentSummaryComparison || !aiSummaryComparison) {
         console.warn("Summary comparison autofill is missing one or more required fields.", {
             studentSummarySource,
             aiSummarySource,
@@ -1507,7 +1346,6 @@ function initializeOriginalSummaryAutofill() {
 
     function syncOriginalSummary() {
         destination.value = source.value;
-
         saveState();
         updateUnlocks();
     }
@@ -1524,171 +1362,25 @@ function initializeArticleLinkTextAutofill() {
 
     function syncArticleLinkText() {
         const link = source.value.trim();
-
-        if (link) {
-            destination.textContent = link;
-        } else {
-            destination.textContent = "Not entered yet.";
-        }
+        destination.textContent = link || "Not entered yet.";
     }
 
     source.addEventListener("input", syncArticleLinkText);
     syncArticleLinkText();
 }
 
-function initializeSummaryNotesFeedback() {
-    const notes = document.getElementById("aiSummaryNotes");
-    const checkButton = document.getElementById("checkSummaryNotes");
-    const feedback = document.getElementById("summaryNotesFeedback");
-
-    if (!notes || !checkButton || !feedback) return;
-
-    function clearNotesFeedback() {
-        feedback.textContent = "";
-        feedback.className = "notes-feedback";
-    }
-
-    function setNotesFeedback(type, message) {
-        feedback.className = `notes-feedback ${type}`;
-        feedback.textContent = message;
-    }
-
-    checkButton.addEventListener("click", () => {
-        const notesText = notes.value.trim();
-
-        if (!notesText) {
-            setNotesFeedback(
-                "needs-answer",
-                "Please add in your notes from your review."
-            );
-            return;
-        }
-
-        setNotesFeedback(
-            "correct",
-            "Thanks!"
-        );
-
-        saveState();
-        updateUnlocks();
-    });
-
-    notes.addEventListener("input", () => {
-        clearNotesFeedback();
-        saveState();
-        updateUnlocks();
-    });
-}
-
-function initializeRevisionPromptFeedback() {
-    const revisionPrompt = document.getElementById("revisionPrompt");
-    const checkButton = document.getElementById("checkRevisionPrompt");
-    const feedback = document.getElementById("revisionPromptFeedback");
-
-    if (!revisionPrompt || !checkButton || !feedback) return;
-
-    function clearRevisionFeedback() {
-        feedback.textContent = "";
-        feedback.className = "revision-feedback";
-    }
-
-    function setRevisionFeedback(type, message) {
-        feedback.className = `revision-feedback ${type}`;
-        feedback.textContent = message;
-    }
-
-    checkButton.addEventListener("click", () => {
-        const revisionText = revisionPrompt.value.trim();
-
-        if (!revisionText) {
-            setRevisionFeedback(
-                "needs-answer",
-                "Please paste in the revised AI summary."
-            );
-            saveState();
-            updateUnlocks();
-            return;
-        }
-
-        setRevisionFeedback(
-            "correct",
-            "Received!"
-        );
-
-        saveState();
-        updateUnlocks();
-    });
-
-    revisionPrompt.addEventListener("input", () => {
-        clearRevisionFeedback();
-        saveState();
-        updateUnlocks();
-    });
-}
-
-function initializeReflectionFeedback() {
-    const checkButton = document.getElementById("checkReflectionResponses");
-    const feedback = document.getElementById("reflectionFeedback");
-
-    const reflectionFields = [
-        document.getElementById("studentOrganizationReflection"),
-        document.getElementById("aiOrganizationReflection"),
-        document.getElementById("combinedStrengthsReflection")
-    ];
-
-    if (!checkButton || !feedback || reflectionFields.some(field => !field)) return;
-
-    function clearReflectionFeedback() {
-        feedback.textContent = "";
-        feedback.className = "reflection-feedback";
-    }
-
-    function setReflectionFeedback(type, message) {
-        feedback.className = `reflection-feedback ${type}`;
-        feedback.textContent = message;
-    }
-
-    checkButton.addEventListener("click", () => {
-        const emptyFields = reflectionFields.filter(field => !field.value.trim());
-
-        if (emptyFields.length > 0) {
-            setReflectionFeedback(
-                "needs-answer",
-                `Please answer all reflection questions before submitting. ${emptyFields.length} ${emptyFields.length === 1 ? "question still needs" : "questions still need"} a response.`
-            );
-            return;
-        }
-
-        setReflectionFeedback(
-            "correct",
-            "Reflections submitted. Nice work comparing your summary with the AI summary and thinking about how to strengthen the final version."
-        );
-
-        saveState();
-        updateUnlocks();
-    });
-
-    reflectionFields.forEach(field => {
-        field.addEventListener("input", () => {
-            clearReflectionFeedback();
-            saveState();
-            updateUnlocks();
-        });
-    });
-}
-
 function initializeFinalSummaryRevisionAutofill() {
-    const source = document.getElementById("revisionPrompt");
-    const destination = document.getElementById("finalSummaryRevision")
+    const source = document.getElementById("studentSummaryForRevision");
+    const destination = document.getElementById("finalSummaryRevision");
 
     if (!source || !destination) return;
 
     function fillRevisionIfEmpty() {
-        const originalSummary = source.value.trim();
+        const sourceText = source.value.trim();
         const currentRevision = destination.value.trim();
 
-        if (!currentRevision && originalSummary) {
-            destination.value = originalSummary;
+        if (!currentRevision && sourceText) {
+            destination.value = sourceText;
             saveState();
             updateUnlocks();
         }
@@ -1698,8 +1390,12 @@ function initializeFinalSummaryRevisionAutofill() {
     fillRevisionIfEmpty();
 }
 
+/* ============================================================
+   Final Revision Diff Preview
+   ============================================================ */
+
 function initializeFinalSummaryRevisionDiff() {
-    const original = document.getElementById("revisionPrompt");
+    const original = document.getElementById("studentSummaryForRevision");
     const revision = document.getElementById("finalSummaryRevision");
     const button = document.getElementById("showRevisionChanges");
     const preview = document.getElementById("revisionPreview");
@@ -1724,18 +1420,15 @@ function initializeFinalSummaryRevisionDiff() {
     function buildSimpleDiff(originalText, revisedText) {
         const originalWords = getWords(originalText);
         const revisedWords = getWords(revisedText);
-
         const rows = originalWords.length + 1;
         const cols = revisedWords.length + 1;
         const dp = Array.from({ length: rows }, () => Array(cols).fill(0));
 
         for (let i = originalWords.length - 1; i >= 0; i--) {
             for (let j = revisedWords.length - 1; j >= 0; j--) {
-                if (originalWords[i] === revisedWords[j]) {
-                    dp[i][j] = dp[i + 1][j + 1] + 1;
-                } else {
-                    dp[i][j] = Math.max(dp[i + 1][j], dp[i][j + 1]);
-                }
+                dp[i][j] = originalWords[i] === revisedWords[j]
+                    ? dp[i + 1][j + 1] + 1
+                    : Math.max(dp[i + 1][j], dp[i][j + 1]);
             }
         }
 
@@ -1796,112 +1489,57 @@ function initializeFinalSummaryRevisionDiff() {
     });
 }
 
-function initializeRubricRowCheck() {
-    const checkButton = document.getElementById("checkRubricRows");
-    const feedback = document.getElementById("rubricFeedback");
+/* ============================================================
+   Generic UI Handlers
+   ============================================================ */
 
-    if (!checkButton || !feedback) return;
+function initializeTabs() {
+    tabButtons.forEach((button, index) => {
+        button.addEventListener("click", () => showTab(index, true));
+    });
+}
 
-    const rubricGroups = ["rubric1", "rubric2", "rubric3", "rubric4", "rubric5"];
+function initializeFormListeners() {
+    if (!form) return;
 
-    function clearRubricFeedback() {
-        feedback.textContent = "";
-        feedback.className = "rubric-feedback";
-    }
-
-    function setRubricFeedback(type, message) {
-        feedback.className = `rubric-feedback ${type}`;
-        feedback.textContent = message;
-    }
-
-    checkButton.addEventListener("click", () => {
-        const unansweredRows = rubricGroups.filter(groupName => {
-            return !document.querySelector(`input[name="${groupName}"]:checked`);
-        });
-
-        if (unansweredRows.length > 0) {
-            setRubricFeedback(
-                "needs-answer",
-                "Please make sure to select an option from each row."
-            );
-            return;
-        }
-
-        setRubricFeedback(
-            "correct",
-            "Thank you for reviewing each category."
-        );
-
-        saveState();
+    form.addEventListener("input", () => {
+        updateRubricScore();
         updateUnlocks();
     });
 
-    rubricGroups.forEach(groupName => {
-        document.querySelectorAll(`input[name="${groupName}"]`).forEach(input => {
-            input.addEventListener("change", () => {
-                clearRubricFeedback();
-                saveState();
-                updateUnlocks();
-            });
+    form.addEventListener("change", () => {
+        updateRubricScore();
+        updateUnlocks();
+    });
+}
+
+function initializeTogglePanels() {
+    document.querySelectorAll("[data-toggle]").forEach(button => {
+        button.addEventListener("click", () => {
+            const panel = document.getElementById(button.dataset.toggle);
+            if (!panel) return;
+
+            const isOpen = panel.classList.toggle("open");
+            button.setAttribute("aria-expanded", String(isOpen));
+
+            if (button.dataset.toggle === "helpPanel") {
+                const video = document.getElementById("howToVideo");
+                if (!video) return;
+
+                if (isOpen) video.play().catch(() => { });
+                else video.pause();
+            }
         });
     });
 }
 
-function initializeChatbotSuggestionsFeedback() {
-    const suggestions = document.getElementById("chatbotSuggestions");
-    const checkButton = document.getElementById("checkChatbotSuggestions");
-    const feedback = document.getElementById("chatbotSuggestionsFeedback");
-
-    if (!suggestions || !checkButton || !feedback) return;
-
-    function clearSuggestionsFeedback() {
-        feedback.textContent = "";
-        feedback.className = "suggestions-feedback";
-    }
-
-    function setSuggestionsFeedback(type, message) {
-        feedback.className = `suggestions-feedback ${type}`;
-        feedback.textContent = message;
-    }
-
-    checkButton.addEventListener("click", () => {
-        const suggestionsText = suggestions.value.trim();
-
-        if (!suggestionsText) {
-            setSuggestionsFeedback(
-                "needs-answer",
-                "Please add in the suggestions AI gave you."
-            );
-            return;
-        }
-
-        setSuggestionsFeedback(
-            "correct",
-            "Thanks!"
-        );
-
-        saveState();
-        updateUnlocks();
-    });
-
-    suggestions.addEventListener("input", () => {
-        clearSuggestionsFeedback();
-        saveState();
-        updateUnlocks();
-    });
+function initializeTestingReset() {
+    resetTestingButton?.addEventListener("click", resetTestingProgress);
 }
 
 function initializeWordCounts() {
     const counters = [...document.querySelectorAll("[data-word-count-for]")];
-
     if (!counters.length) return;
-
-    function countWords(text) {
-        return text
-            .trim()
-            .split(/\s+/)
-            .filter(Boolean).length;
-    }
 
     counters.forEach(counter => {
         const textareaId = counter.dataset.wordCountFor;
@@ -1916,57 +1554,12 @@ function initializeWordCounts() {
 
         textarea.addEventListener("input", updateWordCount);
         textarea.addEventListener("change", updateWordCount);
-
         updateWordCount();
     });
 }
 
-function initializeAiSummaryDraftFeedback() {
-    const aiSummary = document.getElementById("aiSummaryDraft");
-    const checkButton = document.getElementById("checkAiSummaryDraft");
-    const feedback = document.getElementById("aiSummaryDraftFeedback");
-
-    if (!aiSummary || !checkButton || !feedback) return;
-
-    function clearAiSummaryFeedback() {
-        feedback.textContent = "";
-        feedback.className = "ai-summary-feedback";
-    }
-
-    function setAiSummaryFeedback(type, message) {
-        feedback.className = `ai-summary-feedback ${type}`;
-        feedback.textContent = message;
-    }
-
-    checkButton.addEventListener("click", () => {
-        const summaryText = aiSummary.value.trim();
-
-        if (!summaryText) {
-            setAiSummaryFeedback(
-                "needs-answer",
-                "Please paste in the AI summary."
-            );
-            return;
-        }
-
-        setAiSummaryFeedback(
-            "correct",
-            "Got it!"
-        );
-
-        saveState();
-        updateUnlocks();
-    });
-
-    aiSummary.addEventListener("input", () => {
-        clearAiSummaryFeedback();
-        saveState();
-        updateUnlocks();
-    });
-}
-
 /* ============================================================
-    Startup
+   Startup
    ============================================================ */
 
 function initializeLesson() {
@@ -1976,27 +1569,24 @@ function initializeLesson() {
     initializeTestingReset();
     initializeTabs();
     initializeFormListeners();
-    initializeCopyButtons();
     initializeTogglePanels();
-    initializeFinalSummaryRevisionDiff();
 
-    initializeChatbotUseFollowup();
     initializeSentenceBuilderFeedback();
-    initializeCheckAnswerButtons();
     initializeSourceMatching();
+    initializeCheckAnswerButtons();
+    initializeAiSummaryDraftFeedback();
     initializeSummaryNotesFeedback();
     initializeRubricRowCheck();
     initializeRevisionPromptFeedback();
     initializeChatbotSuggestionsFeedback();
-    initializeAiSummaryDraftFeedback();
-    initializeWordCounts()
 
-    initializeReflectionFeedback();
-    initializeProsConsSort();
     initializeSummaryComparisonAutofill();
     initializeOriginalSummaryAutofill();
     initializeArticleLinkTextAutofill();
     initializeFinalSummaryRevisionAutofill();
+    initializeFinalSummaryRevisionDiff();
+
+    initializeWordCounts();
     initializeYouTubeVideoGate();
 
     updateRubricScore();
