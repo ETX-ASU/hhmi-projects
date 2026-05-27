@@ -18,7 +18,7 @@ const STORAGE_KEYS = {
 const VIDEO_CONFIG = {
     youtubeId: "rwF-X5STYks",
     requiredProgress: 0.99,
-    requiredWatchSeconds: 120
+    requiredWatchSeconds: 118
 };
 
 /* ============================================================
