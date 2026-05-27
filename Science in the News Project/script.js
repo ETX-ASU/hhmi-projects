@@ -355,6 +355,10 @@ function showTab(index, shouldScroll = true) {
         panel.classList.toggle("active", panelIndex === index);
     });
 
+    resizeVisibleTextareas();
+    setTimeout(resizeVisibleTextareas, 50);
+    setTimeout(resizeVisibleTextareas, 150);
+
     saveState();
 
     if (shouldScroll) {
@@ -1342,6 +1346,9 @@ function initializeSummaryComparisonAutofill() {
         studentSummaryComparison.value = studentSummarySource.value;
         aiSummaryComparison.value = aiSummarySource.value;
 
+        resizeTextareaToFit(studentSummaryComparison);
+        resizeTextareaToFit(aiSummaryComparison);
+
         saveState();
         updateUnlocks();
     }
@@ -1516,10 +1523,6 @@ function initializeFinalSummaryRevisionDiff() {
 }
 
 /* ============================================================
-  Auto Size Textareas for Screen and Print
-  ============================================================ */
-
-/* ============================================================
   Auto Size Textareas and Print Copies
   ============================================================ */
 
@@ -1527,7 +1530,16 @@ function resizeTextareaToFit(textarea) {
     if (!textarea) return;
 
     textarea.style.height = "auto";
-    textarea.style.height = `${textarea.scrollHeight + 16}px`;
+
+    requestAnimationFrame(() => {
+        textarea.style.height = `${textarea.scrollHeight + 16}px`;
+    });
+}
+
+function resizeVisibleTextareas() {
+    document.querySelectorAll(".tab-panel.active textarea").forEach(textarea => {
+        resizeTextareaToFit(textarea);
+    });
 }
 
 function initializeAutoResizeTextareas() {
@@ -1577,7 +1589,6 @@ function initializePrintTextareaCopies() {
     }
 
     window.addEventListener("beforeprint", createPrintCopies);
-
     window.addEventListener("afterprint", removeOldPrintCopies);
 
     const printButton = document.querySelector(".print-button");
@@ -1592,14 +1603,6 @@ function initializePrintTextareaCopies() {
         }, 150);
     });
 }
-
-function resizeTextareaToFit(textarea) {
-    if (!textarea) return;
-
-    textarea.style.height = "auto";
-    textarea.style.height = `${textarea.scrollHeight + 12}px`;
-}
-
 
 
 /* ============================================================
@@ -1704,8 +1707,8 @@ function initializeLesson() {
 
     updateRubricScore();
     updateUnlocks();
-initializeAutoResizeTextareas();
-initializePrintTextareaCopies();
+    initializeAutoResizeTextareas();
+    initializePrintTextareaCopies();
     showTab(state.unlockedTabs.includes(state.activeTab) ? state.activeTab : 0, false);
 }
 

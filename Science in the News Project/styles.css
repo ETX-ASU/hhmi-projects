@@ -636,8 +636,8 @@ fieldset.answer-needs-answer {
     outline-offset: 4px;
     background: rgba(0, 163, 79, 0.25);
     box-shadow:
-      0 0 0 6px var(--white),
-      0 0 0 10px var(--green);
+        0 0 0 6px var(--white),
+        0 0 0 10px var(--green);
 
 }
 
@@ -646,8 +646,8 @@ fieldset.answer-needs-answer {
     outline: 4px solid var(--teal);
     outline-offset: 4px;
     box-shadow:
-      0 0 0 6px var(--white),
-      0 0 0 10px var(--green);
+        0 0 0 6px var(--white),
+        0 0 0 10px var(--green);
 }
 
 /* Make the drop zone look ready when a word is selected */
@@ -743,16 +743,16 @@ fieldset.answer-needs-answer {
     outline: 4px solid var(--teal);
     outline-offset: 4px;
     box-shadow:
-      0 0 0 6px var(--white),
-      0 0 0 10px var(--green);
+        0 0 0 6px var(--white),
+        0 0 0 10px var(--green);
 }
 
 .drop-zone:focus-visible {
     outline: 4px solid var(--teal);
     outline-offset: 4px;
     box-shadow:
-      0 0 0 6px var(--white),
-      0 0 0 10px var(--green);
+        0 0 0 6px var(--white),
+        0 0 0 10px var(--green);
 }
 
 .drop-zone.over {
@@ -953,8 +953,8 @@ table.rubric {
     outline: 4px solid var(--teal);
     outline-offset: 4px;
     box-shadow:
-      0 0 0 6px var(--white),
-      0 0 0 10px var(--green);
+        0 0 0 6px var(--white),
+        0 0 0 10px var(--green);
 }
 
 /* Strong keyboard focus styles for rubric choices */
@@ -963,8 +963,8 @@ table.rubric {
     outline-offset: -4px;
     background: #effaf3;
     box-shadow:
-      inset 0 0 0 4px var(--green),
-      0 0 0 4px rgba(0, 163, 79, 0.25);
+        inset 0 0 0 4px var(--green),
+        0 0 0 4px rgba(0, 163, 79, 0.25);
 }
 
 /* Make the selected rubric score more noticeable */
@@ -973,8 +973,8 @@ table.rubric {
     outline-offset: -4px;
     background: var(--soft-teal);
     box-shadow:
-      inset 0 0 0 4px var(--teal),
-      0 0 0 4px rgba(9, 141, 148, 0.2);
+        inset 0 0 0 4px var(--teal),
+        0 0 0 4px rgba(9, 141, 148, 0.2);
 }
 
 /* When the selected score also has keyboard focus */
@@ -982,8 +982,8 @@ table.rubric {
     outline: 4px solid var(--green);
     background: #effaf3;
     box-shadow:
-      inset 0 0 0 4px var(--green),
-      0 0 0 5px rgba(0, 0, 0, 0.18);
+        inset 0 0 0 4px var(--green),
+        0 0 0 5px rgba(0, 0, 0, 0.18);
 }
 
 .score-box {
@@ -1103,25 +1103,26 @@ table.rubric {
    ============================================================ */
 
 @media print {
-  textarea {
-    display: none !important;
-}
+    textarea {
+        display: none !important;
+    }
 
-.print-textarea-copy {
-    display: block !important;
-    min-height: 80px;
-    margin: 6px 0 14px;
-    padding: 10px;
-    border: 1px solid #000;
-    border-radius: 6px;
-    background: #fff;
-    color: #000;
-    white-space: pre-wrap;
-    font-size: 11pt;
-    line-height: 1.35;
-    page-break-inside: auto;
-    break-inside: auto;
-}
+    .print-textarea-copy {
+        display: block !important;
+        min-height: 80px;
+        margin: 6px 0 14px;
+        padding: 10px;
+        border: 1px solid #000;
+        border-radius: 6px;
+        background: #fff;
+        color: #000;
+        white-space: pre-wrap;
+        font-size: 11pt;
+        line-height: 1.35;
+        page-break-inside: auto;
+        break-inside: auto;
+    }
+
     body {
         font-size: 12pt;
         line-height: 1.35;
@@ -1174,16 +1175,16 @@ table.rubric {
     }
 
     textarea,
-input[type="text"],
-input[type="url"] {
-    min-height: auto !important;
-    height: auto;
-    overflow: visible !important;
-    white-space: pre-wrap;
-    font-size: 11pt;
-    line-height: 1.35;
-    border: 1px solid #000;
-}
+    input[type="text"],
+    input[type="url"] {
+        min-height: auto !important;
+        height: auto;
+        overflow: visible !important;
+        white-space: pre-wrap;
+        font-size: 11pt;
+        line-height: 1.35;
+        border: 1px solid #000;
+    }
 
     .large-textarea,
     .short-textarea {
@@ -1278,4 +1279,4 @@ input[type="url"] {
     a::after {
         content: "";
     }
-  }
+}
