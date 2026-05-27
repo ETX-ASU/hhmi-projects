@@ -352,6 +352,10 @@ textarea {
     resize: none;
 }
 
+.print-textarea-copy {
+    display: none;
+}
+
 .short-textarea {
     min-height: 78px;
 }
@@ -1099,6 +1103,25 @@ table.rubric {
    ============================================================ */
 
 @media print {
+  textarea {
+    display: none !important;
+}
+
+.print-textarea-copy {
+    display: block !important;
+    min-height: 80px;
+    margin: 6px 0 14px;
+    padding: 10px;
+    border: 1px solid #000;
+    border-radius: 6px;
+    background: #fff;
+    color: #000;
+    white-space: pre-wrap;
+    font-size: 11pt;
+    line-height: 1.35;
+    page-break-inside: auto;
+    break-inside: auto;
+}
     body {
         font-size: 12pt;
         line-height: 1.35;
@@ -1151,16 +1174,16 @@ table.rubric {
     }
 
     textarea,
-    input[type="text"],
-    input[type="url"] {
-        min-height: auto;
-        height: auto;
-        overflow: visible;
-        white-space: pre-wrap;
-        font-size: 11pt;
-        line-height: 1.35;
-        border: 1px solid #000;
-    }
+input[type="text"],
+input[type="url"] {
+    min-height: auto !important;
+    height: auto;
+    overflow: visible !important;
+    white-space: pre-wrap;
+    font-size: 11pt;
+    line-height: 1.35;
+    border: 1px solid #000;
+}
 
     .large-textarea,
     .short-textarea {
@@ -1211,7 +1234,7 @@ table.rubric {
         min-width: 0;
         width: 100%;
     }
-    
+
     body {
         background: #fff;
         color: #000;
@@ -1246,13 +1269,6 @@ table.rubric {
     section.card {
         border: 1px solid #000;
         box-shadow: none;
-    }
-
-    textarea,
-    input[type="text"],
-    input[type="url"] {
-        min-height: 80px;
-        border: 1px solid #000;
     }
 
     .print-only {
