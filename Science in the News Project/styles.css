@@ -1,10 +1,10 @@
 /* ============================================================
-   Science in the News - Main Stylesheet
-   Organized for readability and current lesson structure.
+    Science in the News - Main Stylesheet
+    Organized for readability and current lesson structure.
    ============================================================ */
 
 /* ============================================================
-   1. Theme Variables
+    1. Theme Variables
    ============================================================ */
 
 :root {
@@ -28,7 +28,7 @@
 }
 
 /* ============================================================
-   2. Base Page Styles
+    2. Base Page Styles
    ============================================================ */
 
 * {
@@ -86,7 +86,7 @@ main.wrap {
 }
 
 /* ============================================================
-   3. Header / Hero
+    3. Header / Hero
    ============================================================ */
 
 header.hero {
@@ -127,8 +127,8 @@ header.hero {
 }
 
 /* ============================================================
-   4. Testing Tools
-   Hide this block before launch if students should not see it.
+    4. Testing Tools
+    Hide this block before launch if students should not see it.
    ============================================================ */
 
 /*
@@ -158,7 +158,7 @@ header.hero {
 }
 
 /* ============================================================
-   5. Tabs and Tab Panels
+    5. Tabs and Tab Panels
    ============================================================ */
 
 .tabs {
@@ -213,7 +213,7 @@ header.hero {
 }
 
 /* ============================================================
-   6. Cards, Callouts, and General Layout
+    6. Cards, Callouts, and General Layout
    ============================================================ */
 
 .card,
@@ -283,7 +283,7 @@ section.card {
 }
 
 /* ============================================================
-   7. Question Images and Image/Text Rows
+    7. Question Images and Image/Text Rows
    ============================================================ */
 
 .image-question-row {
@@ -323,7 +323,7 @@ section.card {
 }
 
 /* ============================================================
-   8. Form Elements
+    8. Form Elements
    ============================================================ */
 
 label,
@@ -399,7 +399,7 @@ fieldset {
 }
 
 /* ============================================================
-   9. Buttons
+    9. Buttons
    ============================================================ */
 
 .print-button,
@@ -439,7 +439,7 @@ fieldset {
 }
 
 /* ============================================================
-   10. Feedback Rows and Feedback Text
+    10. Feedback Rows and Feedback Text
    ============================================================ */
 
 .check-answer-row,
@@ -533,7 +533,7 @@ fieldset.answer-needs-answer {
 }
 
 /* ============================================================
-   11. Sentence Builder Activity
+    11. Sentence Builder Activity
    ============================================================ */
 
 .sentence-builder {
@@ -580,7 +580,7 @@ fieldset.answer-needs-answer {
 }
 
 /* ============================================================
-   12. Source Matching Activity
+    12. Source Matching Activity
    ============================================================ */
 
 .word-bank {
@@ -611,18 +611,54 @@ fieldset.answer-needs-answer {
         border-color 0.2s ease;
 }
 
-.drag-token:hover,
-.drag-token:focus {
-    outline: none;
-    transform: translateY(-1px);
-    background: var(--teal);
-    color: var(--white);
+/* ============================================================
+    Source Matching Focus / Selected States
+   ============================================================ */
+
+/* Remove smaller default focus from the token itself */
+.drag-token:focus-visible {
+    outline: 4px solid var(--teal);
+    outline-offset: 4px;
+    box-shadow:
+        0 0 0 6px var(--white),
+        0 0 0 10px var(--green);
 }
 
+/* Make selected word-bank token match answer-choice styling */
 .drag-token.selected {
-    border-color: var(--green);
-    background: var(--green);
-    color: var(--white);
+    outline: 4px solid var(--teal);
+    outline-offset: 4px;
+    background: rgba(0, 163, 79, 0.25);
+    box-shadow:
+        0 0 0 6px var(--white),
+        0 0 0 10px var(--green);
+
+}
+
+/* Make keyboard-focused drop zones match answer-choice styling */
+.drop-zone:focus-visible {
+    outline: 4px solid var(--teal);
+    outline-offset: 4px;
+    box-shadow:
+        0 0 0 6px var(--white),
+        0 0 0 10px var(--green);
+}
+
+/* Make the drop zone look ready when a word is selected */
+.drop-zone:focus-visible .drop-zone-text {
+    color: var(--text);
+}
+
+/* Keep filled drop zones visually clear */
+.drop-zone.filled {
+    border-color: var(--teal);
+    background: #effaf3;
+    color: var(--text);
+}
+
+/* Optional: make placed/filled answer text stronger */
+.drop-zone.filled .drop-zone-text {
+    font-weight: 900;
 }
 
 .drag-token.is-placed {
@@ -698,9 +734,19 @@ fieldset.answer-needs-answer {
 
 .drop-zone:hover,
 .drop-zone:focus {
-    outline: none;
-    border-color: var(--teal);
-    background: #f9ffff;
+    outline: 4px solid var(--teal);
+    outline-offset: 4px;
+    box-shadow:
+        0 0 0 6px var(--white),
+        0 0 0 10px var(--green);
+}
+
+.drop-zone:focus-visible {
+    outline: 4px solid var(--teal);
+    outline-offset: 4px;
+    box-shadow:
+        0 0 0 6px var(--white),
+        0 0 0 10px var(--green);
 }
 
 .drop-zone.over {
@@ -727,7 +773,7 @@ fieldset.answer-needs-answer {
 }
 
 /* ============================================================
-   13. Workspace / Chatbot Split-Screen Widget
+    13. Workspace / Chatbot Split-Screen Widget
    ============================================================ */
 
 .workspace-widget {
@@ -778,7 +824,7 @@ fieldset.answer-needs-answer {
 }
 
 /* ============================================================
-   14. Video and Keyboard Helpers
+    14. Video and Keyboard Helpers
    ============================================================ */
 
 .video-embed {
@@ -838,7 +884,7 @@ kbd {
 }
 
 /* ============================================================
-   15. Rubric and Score Box
+    15. Rubric and Score Box
    ============================================================ */
 
 .rubric-wrap {
@@ -898,8 +944,40 @@ table.rubric {
 
 .rubric .rubric-choice:has(input[type="radio"]:checked),
 .rubric .rubric-choice:focus-within {
-    outline: 3px solid var(--teal);
-    outline-offset: -3px;
+    outline: 4px solid var(--teal);
+    outline-offset: 4px;
+    box-shadow:
+        0 0 0 6px var(--white),
+        0 0 0 10px var(--green);
+}
+
+/* Strong keyboard focus styles for rubric choices */
+.rubric .rubric-choice:focus-within {
+    outline: 4px solid var(--black);
+    outline-offset: -4px;
+    background: #effaf3;
+    box-shadow:
+        inset 0 0 0 4px var(--green),
+        0 0 0 4px rgba(0, 163, 79, 0.25);
+}
+
+/* Make the selected rubric score more noticeable */
+.rubric .rubric-choice:has(input[type="radio"]:checked) {
+    outline: 4px solid var(--teal);
+    outline-offset: -4px;
+    background: var(--soft-teal);
+    box-shadow:
+        inset 0 0 0 4px var(--teal),
+        0 0 0 4px rgba(9, 141, 148, 0.2);
+}
+
+/* When the selected score also has keyboard focus */
+.rubric .rubric-choice:has(input[type="radio"]:checked):focus-within {
+    outline: 4px solid var(--green);
+    background: #effaf3;
+    box-shadow:
+        inset 0 0 0 4px var(--green),
+        0 0 0 5px rgba(0, 0, 0, 0.18);
 }
 
 .score-box {
@@ -918,7 +996,7 @@ table.rubric {
 }
 
 /* ============================================================
-   16. Revision Diff Preview
+    16. Revision Diff Preview
    ============================================================ */
 
 .revision-preview {
@@ -945,7 +1023,7 @@ table.rubric {
 }
 
 /* ============================================================
-   17. Completion Status
+    17. Completion Status
    ============================================================ */
 
 .completion-status {
@@ -964,7 +1042,33 @@ table.rubric {
 }
 
 /* ============================================================
-   18. Responsive Layout
+    18. Global Keyboard Focus
+   ============================================================ */
+
+:focus-visible {
+    outline: 4px solid var(--teal);
+    outline-offset: 4px;
+    box-shadow:
+        0 0 0 6px var(--white),
+        0 0 0 10px var(--green);
+}
+
+.option input[type="checkbox"]:focus-visible,
+.option input[type="radio"]:focus-visible {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Make focused options stand out */
+.option:focus-within {
+    outline: 4px solid var(--teal);
+    outline-offset: 3px;
+    background: #effaf3;
+    box-shadow: 0 0 0 6px rgba(0, 163, 79, 0.18);
+}
+
+/* ============================================================
+    19. Responsive Layout
    ============================================================ */
 
 @media (max-width: 820px) {
