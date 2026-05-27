@@ -631,10 +631,7 @@ function initializeYouTubeVideoGate() {
 
     if (!videoInput || !timerInput || !videoStatus || !document.getElementById("genaiVideo")) return;
 
-    if (videoInput.value === "complete") {
-        videoStatus.textContent = "Video complete. You can continue.";
-        videoStatus.classList.add("complete");
-    }
+    updateVideoStatusMessage();
 
     if (!window.YT) {
         const tag = document.createElement("script");
@@ -725,23 +722,24 @@ function stopRequiredWatchTimer() {
 
 function markVideoProgressComplete() {
     const videoInput = document.getElementById("watchedVideo");
-    const videoStatus = document.getElementById("videoStatus");
 
-    if (!videoInput || !videoStatus) return;
+    if (!videoInput) return;
 
     videoInput.value = "complete";
-    videoStatus.textContent = "Video complete. You can continue.";
-    videoStatus.classList.add("complete");
 
+    updateVideoStatusMessage();
     saveState();
     updateUnlocks();
 }
 
 function markRequiredWatchTimerComplete() {
     const timerInput = document.getElementById("videoTimerComplete");
+
     if (!timerInput) return;
 
     timerInput.value = "complete";
+
+    updateVideoStatusMessage();
     saveVideoGateProgress();
     saveState();
     updateUnlocks();
@@ -785,6 +783,28 @@ function loadVideoGateProgress() {
 
     if (saved.timerComplete || remainingWatchSeconds <= 0) {
         timerInput.value = "complete";
+    }
+}
+
+function updateVideoStatusMessage() {
+    const videoInput = document.getElementById("watchedVideo");
+    const timerInput = document.getElementById("videoTimerComplete");
+    const videoStatus = document.getElementById("videoStatus");
+
+    if (!videoInput || !timerInput || !videoStatus) return;
+
+    const progressComplete = videoInput.value === "complete";
+    const timerComplete = timerInput.value === "complete";
+
+    if (progressComplete && timerComplete) {
+        videoStatus.textContent = "Video complete. You can continue.";
+        videoStatus.classList.add("complete");
+    } else if (progressComplete && !timerComplete) {
+        videoStatus.textContent = "Keep watching a little longer to complete the video.";
+        videoStatus.classList.remove("complete");
+    } else {
+        videoStatus.textContent = "Watch the video to continue.";
+        videoStatus.classList.remove("complete");
     }
 }
 
