@@ -134,7 +134,9 @@
           </label>
           <input id="articleLink" name="articleLink" type="url"
             placeholder="Paste the link to the Science News article." data-required />
-          <p class="callout">There are different types of sources of information. </p>
+        </section>
+        <section class="card">
+          <h2>Sources of Information</h2>
           <div class="source-grid">
             <div class="info-tile">
               <strong>Primary</strong><br />
@@ -155,7 +157,6 @@
           </div>
           <!-- Sentence Builder Activity -->
           <div class="sentence-builder" data-required-group="sentenceBuilder">
-            <h3>Sentence Builder Activity</h3>
             <h4 class="callout teal">Fill in the blanks to make each statement accurate.</h4>
 
             <div class="sentences">
@@ -219,92 +220,80 @@
           </div>
           <!-- Source Matching Activity -->
           <div class="matching-activity">
-            <h3>Source Matching Activity</h3>
-            <div class="image-question-row image-left">
-              <div class="question-image-wrap">
-                <img src="./assets/placeholder.svg" alt="Illustration representing source types"
-                  class="question-image" />
+            <fieldset class="drag-match-activity">
+              <h4 class="drag-instructions callout teal">
+                Match each resource connected to your article with the type of
+                scientific source it represents.
+              </h4>
+
+              <div class="word-bank" aria-label="Word bank">
+                <button type="button" class="drag-token" draggable="true" data-value="Primary">
+                  Primary
+                </button>
+                <button type="button" class="drag-token" draggable="true" data-value="Secondary">
+                  Secondary
+                </button>
+                <button type="button" class="drag-token" draggable="true" data-value="Tertiary">
+                  Tertiary
+                </button>
               </div>
-              <fieldset class="drag-match-activity">
-                <h4 class="drag-instructions callout teal">
-                  Match each resource connected to your article with the type of
-                  scientific source it represents.
-                </h4>
 
-                <div class="word-bank" aria-label="Word bank">
-                  <button type="button" class="drag-token" draggable="true" data-value="Primary">
-                    Primary
-                  </button>
-                  <button type="button" class="drag-token" draggable="true" data-value="Secondary">
-                    Secondary
-                  </button>
-                  <button type="button" class="drag-token" draggable="true" data-value="Tertiary">
-                    Tertiary
-                  </button>
-                </div>
-
-                <div class="drag-match-list">
-                  <div class="drag-match-row">
-                    <div class="definition-card">
-                      <h4>The original research article</h4>
-                    </div>
-
-                    <div class="drop-zone-card">
-                      <div class="drop-zone" data-target="matchResearch" data-correct="Primary" tabindex="0"
-                        aria-label="Drop source type for the original research article">
-                        <span class="drop-zone-text">Drop type
-                          here</span>
-                        <input type="hidden" id="matchResearch" name="matchResearch" data-required />
-                      </div>
-                    </div>
+              <div class="drag-match-list">
+                <div class="drag-match-row">
+                  <div class="definition-card">
+                    <h4>The original research article</h4>
                   </div>
 
-                  <div class="drag-match-row">
-                    <div class="definition-card">
-                      <h4>The <em>Science News</em> article you summarized
-                      </h4>
-                    </div>
-
-                    <div class="drop-zone-card">
-                      <div class="drop-zone" data-target="matchNewsArticle" data-correct="Secondary" tabindex="0"
-                        aria-label="Drop source type for the original news article">
-                        <span class="drop-zone-text">Drop type
-                          here</span>
-                        <input type="hidden" id="matchNewsArticle" name="matchNewsArticle" data-required />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="drag-match-row">
-                    <div class="definition-card">
-                      <h4>Your summary of the <em>Science News</em> article
-                      </h4>
-                    </div>
-
-                    <div class="drop-zone-card">
-                      <div class="drop-zone" data-target="matchStudentSummary" data-correct="Tertiary" tabindex="0"
-                        aria-label="Drop source type for your summary">
-                        <span class="drop-zone-text">Drop type
-                          here</span>
-                        <input type="hidden" id="matchStudentSummary" name="matchStudentSummary" data-required />
-                      </div>
+                  <div class="drop-zone-card">
+                    <div class="drop-zone" data-target="matchResearch" data-correct="Primary" tabindex="0"
+                      aria-label="Drop source type for the original research article">
+                      <span class="drop-zone-text">Drop type here</span>
+                      <input type="hidden" id="matchResearch" name="matchResearch" data-required />
                     </div>
                   </div>
                 </div>
 
-                <div class="source-matching-actions">
-                  <button type="button" class="secondary-button" id="checkSourceMatches">
-                    Check Answers
-                  </button>
+                <div class="drag-match-row">
+                  <div class="definition-card">
+                    <h4>The <em>Science News</em> article you summarized</h4>
+                  </div>
 
-                  <button type="button" class="secondary-button" id="clearSourceMatches">
-                    Clear Matches
-                  </button>
-
-                  <span class="source-matching-feedback" id="sourceMatchingFeedback" aria-live="polite"></span>
+                  <div class="drop-zone-card">
+                    <div class="drop-zone" data-target="matchNewsArticle" data-correct="Secondary" tabindex="0"
+                      aria-label="Drop source type for the original news article">
+                      <span class="drop-zone-text">Drop type here</span>
+                      <input type="hidden" id="matchNewsArticle" name="matchNewsArticle" data-required />
+                    </div>
+                  </div>
                 </div>
-              </fieldset>
-            </div>
+
+                <div class="drag-match-row">
+                  <div class="definition-card">
+                    <h4>Your summary of the <em>Science News</em> article</h4>
+                  </div>
+
+                  <div class="drop-zone-card">
+                    <div class="drop-zone" data-target="matchStudentSummary" data-correct="Tertiary" tabindex="0"
+                      aria-label="Drop source type for your summary">
+                      <span class="drop-zone-text">Drop type here</span>
+                      <input type="hidden" id="matchStudentSummary" name="matchStudentSummary" data-required />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="source-matching-actions">
+                <button type="button" class="secondary-button" id="checkSourceMatches">
+                  Check Answers
+                </button>
+
+                <button type="button" class="secondary-button" id="clearSourceMatches">
+                  Clear Matches
+                </button>
+
+                <span class="source-matching-feedback" id="sourceMatchingFeedback" aria-live="polite"></span>
+              </div>
+            </fieldset>
           </div>
           <p class="callout">How do you build credibility as a science editor in your summary of the <em>Science
               News</em> article?</p>
@@ -392,31 +381,6 @@
             <label class="option">
               <input type="radio" name="aiDefinition" value="thinkingTasks" />
               A computer system that performs tasks that usually require human thinking.
-            </label>
-          </fieldset>
-
-          <p class="callout teal">
-            How have you previously used GenAI chatbots like ChatGPT, Gemini, etc.?
-          </p>
-          <fieldset data-required-group="chatbotUse">
-            <label class="option">
-              <input type="radio" name="chatbotUse" value="regularly" />
-              I use chatbots regularly to get help with tasks like writing, researching, or
-              answering
-              questions.
-            </label>
-            <label class="option">
-              <input type="radio" name="chatbotUse" value="tried" />
-              I have tried using chatbots a few times, but I am still figuring out how
-              useful they are.
-            </label>
-            <label class="option">
-              <input type="radio" name="chatbotUse" value="heard" />
-              I have heard of chatbots, but I have not used them myself.
-            </label>
-            <label class="option">
-              <input type="radio" name="chatbotUse" value="unknown" />
-              I do not know what chatbots are or how they work.
             </label>
           </fieldset>
 
@@ -585,7 +549,7 @@
 
         <!-- Student-Written Prompt -->
         <section class="card">
-          <h2>Request the AI Summary</h2>
+          <h2>Request an AI Summary</h2>
 
           <p>Use AI to generate a summary of the <em>Science News</em> article you selected earlier.
             You will need to write a prompt. Keep in mind that AI works best when the prompt is
@@ -622,13 +586,6 @@
           <div class="word-count" data-word-count-for="aiSummaryDraft">
             Word count: <span>0</span>
           </div>
-          <div class="ai-summary-check-row">
-            <button type="button" class="secondary-button" id="checkAiSummaryDraft">
-              Submit AI Summary
-            </button>
-
-            <span class="ai-summary-feedback" id="aiSummaryDraftFeedback" aria-live="polite"></span>
-          </div>
         </section>
 
         <!-- How Does AI Write -->
@@ -655,10 +612,11 @@
         <section class="card">
           <h2>Analyze the Chatbot Summary</h2>
           <p>GenAI output is not always 100% accurate. As the editor, make sure the AI summary is
-            accurate! Use lateral reading to check the references in the chatbot-generated
-            summary to verify whether they exist.</p>
+            accurate!</p>
           <div class="callout">
-            <p>For each reference link in the article:</p>
+            <h3>Fact-Check Sources</h3>
+            <p>Use lateral reading to check the references in the chatbot-generated
+              summary to verify whether they exist. For each reference link in the article:</p>
             <ol>
               <li>In a new tab, while keeping this split-screen tab open, open the link.
                 Copy the
@@ -687,19 +645,13 @@
           </label>
           <textarea id="aiSummaryNotes" name="aiSummaryNotes" class="large-textarea" data-required
             placeholder="Type your notes here…"></textarea>
-          <div class="notes-check-row">
-            <button type="button" class="secondary-button" id="checkSummaryNotes">
-              Submit Notes
-            </button>
-
-            <span class="notes-feedback" id="summaryNotesFeedback" aria-live="polite"></span>
-          </div>
 
           <!-- Rubric -->
           <h4 class="callout teal">
             Use the rubric (scoring guide) to score the GenAI summary.
             Select the most appropriate score for each row.
           </h4>
+          <h3>Score the Summary</h3>
 
           <div class="rubric-wrap">
             <table class="rubric" aria-label="AI summary grading rubric">
@@ -866,20 +818,13 @@
               </tbody>
             </table>
           </div>
-          <div class="rubric-check-row">
-            <button type="button" class="secondary-button" id="checkRubricRows">
-              Check Answers
-            </button>
-
-            <span class="rubric-feedback" id="rubricFeedback" aria-live="polite"></span>
-          </div>
           <div class="score-box">
             <div class="score-card">
               The total score for the summary was: <span id="rubricScore">0</span> / 15
             </div>
           </div>
           <p class="callout teal">
-            How did the chatbot do overall?
+            Based on the chatbot summary total rubric score, how ready is it for publication?
           </p>
 
           <fieldset data-required-group="aiSummaryOverallRating">
@@ -903,6 +848,7 @@
               Not Recommended for Publication (0-5)
             </label>
           </fieldset>
+          <h3>Improve the Summary</h3>
           <div class="callout">
             <p>
               Remember, you are the editor and your name will be on the science
@@ -966,13 +912,6 @@
             placeholder="Paste the new GenAI summary here."></textarea>
           <div class="word-count" data-word-count-for="revisionPrompt">
             Word count: <span>0</span>
-          </div>
-          <div class="revision-check-row">
-            <button type="button" class="secondary-button" id="checkRevisionPrompt">
-              Submit Revision
-            </button>
-
-            <span class="revision-feedback" id="revisionPromptFeedback" aria-live="polite"></span>
           </div>
         </section>
 
@@ -1113,14 +1052,6 @@
           <textarea id="chatbotSuggestions" name="chatbotSuggestions" class="large-textarea" data-required
             placeholder="Paste the suggestions…"></textarea>
 
-          <div class="suggestions-check-row">
-            <button type="button" class="secondary-button" id="checkChatbotSuggestions">
-              Submit Suggestions
-            </button>
-
-            <span class="suggestions-feedback" id="chatbotSuggestionsFeedback" aria-live="polite"></span>
-          </div>
-
           <label for="finalSummaryRevision" class="callout teal">
             Now, update your summary using these suggestions. Below is the original version you
             submitted.
@@ -1163,7 +1094,7 @@
             <div>
               <h2>Final Thoughts</h2>
               <p>If you want to close the split screen, feel free to do
-                so!</p>
+                so.</p>
               <p class="callout"> Think about how the AI supported your writing and where
                 you had to rely on
                 your own judgment. This will help you better understand how to use AI

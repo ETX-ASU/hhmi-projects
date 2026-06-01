@@ -1010,10 +1010,10 @@ const CHECK_ANSWER_CONFIG = {
     },
     scienceNewsEvaluation: {
         correct: ["original source"],
-        correctFeedback: "Correct. Checking the original scientific source helps to verify the claims and understand the original context of the information shared. It is important in ensuring accuracy, preventing the spread of misinformation, and identifying any bias.",
+        correctFeedback: "Nice work. Checking the original scientific source helps to verify the claims and understand the original context of the information shared. It is important in ensuring accuracy, preventing the spread of misinformation, and identifying any bias.",
         feedbackByAnswer: {
             headline: "Please try again. News article headlines can be misleading and used as clickbait, to promote financial gain, increase user engagement, push a specific narrative, or meet the pressures of the 24-hour news cycle.",
-            "original source": "Correct. Checking the original scientific source helps to verify the claims and understand the original context of the information shared. It is important in ensuring accuracy, preventing the spread of misinformation, and identifying any bias.",
+            "original source": "Nice work. Checking the original scientific source helps to verify the claims and understand the original context of the information shared. It is important in ensuring accuracy, preventing the spread of misinformation, and identifying any bias.",
             "sounds interesting": "Please try again. Prioritizing emotional engagement with a news article over the facts is harmful. It can lead to misinformation, cognitive bias, and engagement in misleading arguments.",
             likes: "Please try again. Popularity on the internet is not proof that information is reliable because posts can spread quickly even when they contain mistakes, exaggerations, or false claims."
         },
@@ -1096,6 +1096,10 @@ function initializeCheckAnswerButtons() {
     }
 
     groupedNames.forEach(name => {
+        const groupsWithoutCheckButton = ["summaryDirection"];
+
+        if (groupsWithoutCheckButton.includes(name)) return;
+
         const inputs = getGroupInputs(name);
         if (inputs.length < 2) return;
 
