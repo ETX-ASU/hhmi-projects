@@ -1381,4 +1381,71 @@ table.rubric {
     a::after {
         content: "";
     }
+
+    .matching-activity .word-bank,
+    .matching-activity .source-matching-actions {
+        display: none !important;
+    }
+
+    .matching-activity .drag-match-activity {
+        margin: 8px 0 !important;
+        padding: 10px !important;
+        border: 1px solid #000 !important;
+        border-radius: 8px !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    .matching-activity .drag-match-list {
+        display: grid !important;
+        gap: 8px !important;
+    }
+
+    .matching-activity .drag-match-row {
+        display: grid !important;
+        grid-template-columns: 1fr 180px !important;
+        gap: 10px !important;
+        align-items: center !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    .matching-activity .definition-card,
+    .matching-activity .drop-zone-card,
+    .matching-activity .drop-zone {
+        margin: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .matching-activity .definition-card {
+        padding: 8px !important;
+        border: 1px solid #000 !important;
+        border-radius: 8px !important;
+    }
+
+    .matching-activity .definition-card h4 {
+        margin: 0 !important;
+        font-size: 10pt !important;
+        line-height: 1.25 !important;
+        color: #000 !important;
+    }
+
+    .matching-activity .drop-zone {
+        min-height: auto !important;
+        height: auto !important;
+        padding: 8px !important;
+        border: 1px solid #000 !important;
+        border-radius: 8px !important;
+        background: #fff !important;
+        color: #000 !important;
+        font-size: 10pt !important;
+        line-height: 1.25 !important;
+    }
+
+    .matching-activity .drop-zone-text {
+        font-size: 10pt !important;
+        line-height: 1.25 !important;
+        color: #000 !important;
+        font-weight: 800 !important;
+    }
 }
