@@ -1106,6 +1106,35 @@ table.rubric {
    ============================================================ */
 
 @media print {
+
+    .rubric-table,
+    .rubric-table th,
+    .rubric-table td,
+    .rubric-table label,
+    .rubric-table input,
+    .rubric-table span {
+        font-size: 10pt !important;
+        line-height: 1.25 !important;
+    }
+
+    .rubric-table th,
+    .rubric-table td {
+        padding: 6px !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .source-grid .info-tile {
+        font-size: 11pt !important;
+        line-height: 1.35 !important;
+    }
+
+    .source-grid .info-tile strong {
+        font-size: 11pt !important;
+    }
+
     textarea {
         display: none !important;
     }

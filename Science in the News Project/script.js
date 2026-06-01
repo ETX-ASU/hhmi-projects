@@ -1622,6 +1622,18 @@ function initializePrintTextareaCopies() {
     });
 }
 
+function initializePrintTitleCleanup() {
+    const originalTitle = document.title;
+
+    window.addEventListener("beforeprint", () => {
+        document.title = "";
+    });
+
+    window.addEventListener("afterprint", () => {
+        document.title = originalTitle;
+    });
+}
+
 
 /* ============================================================
   Generic UI Handlers
@@ -1727,6 +1739,8 @@ function initializeLesson() {
     updateUnlocks();
     initializeAutoResizeTextareas();
     initializePrintTextareaCopies();
+
+    initializePrintTitleCleanup()
     showTab(state.unlockedTabs.includes(state.activeTab) ? state.activeTab : 0, false);
 }
 
