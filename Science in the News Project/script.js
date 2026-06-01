@@ -602,7 +602,7 @@ function initializeSentenceBuilderFeedback() {
         } else if (correctCount === selects.length) {
             setSentenceFeedback(
                 "correct",
-                "Nice work! You correctly identified how each type of scientific source is used. Tertiary sources help build background knowledge, primary sources present original research, and secondary sources analyze and interpret that research. This understanding will help you choose the right sources when reading and writing about science."
+                "Nice work! You correctly identified how each type of scientific source is used. Tertiary sources help summarize information, primary sources present original research, and secondary sources analyze and interpret that research. This understanding will help you choose the right sources when reading and writing about science."
             );
         } else {
             setSentenceFeedback(
@@ -1376,6 +1376,8 @@ function initializeOriginalSummaryAutofill() {
 
         resizeTextareaToFit(destination);
 
+        destination.dispatchEvent(new Event("input", { bubbles: true }));
+
         saveState();
         updateUnlocks();
     }
@@ -1401,26 +1403,38 @@ function initializeArticleLinkTextAutofill() {
 
 function initializeFinalSummaryRevisionAutofill() {
     const source = document.getElementById("studentSummaryForRevision");
+    const originalSource = document.getElementById("studentSummary");
     const destination = document.getElementById("finalSummaryRevision");
 
-    if (!source || !destination) return;
+    if (!source || !originalSource || !destination) return;
 
-    function fillRevisionIfEmpty() {
-        const sourceText = source.value.trim();
+    function fillRevisionIfEmptyOrPartial() {
+        const sourceText = source.value.trim() || originalSource.value.trim();
         const currentRevision = destination.value.trim();
 
-        if (!currentRevision && sourceText) {
+        if (!sourceText) return;
+
+        const currentLooksPartial =
+            currentRevision &&
+            sourceText.startsWith(currentRevision) &&
+            currentRevision.length < sourceText.length;
+
+        if (!currentRevision || currentLooksPartial) {
             destination.value = sourceText;
 
             resizeTextareaToFit(destination);
+
+            destination.dispatchEvent(new Event("input", { bubbles: true }));
 
             saveState();
             updateUnlocks();
         }
     }
 
-    source.addEventListener("input", fillRevisionIfEmpty);
-    fillRevisionIfEmpty();
+    source.addEventListener("input", fillRevisionIfEmptyOrPartial);
+    originalSource.addEventListener("input", fillRevisionIfEmptyOrPartial);
+
+    fillRevisionIfEmptyOrPartial();
 }
 
 /* ============================================================
