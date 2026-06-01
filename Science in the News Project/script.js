@@ -1448,11 +1448,9 @@ function initializeFinalSummaryRevisionAutofill() {
 function initializeFinalSummaryRevisionDiff() {
     const original = document.getElementById("studentSummaryForRevision");
     const revision = document.getElementById("finalSummaryRevision");
-    const button = document.getElementById("showRevisionChanges");
     const preview = document.getElementById("revisionPreview");
-    const feedback = document.getElementById("revisionChangesFeedback");
 
-    if (!original || !revision || !button || !preview || !feedback) return;
+    if (!original || !revision || !preview) return;
 
     function escapeHtml(text) {
         return text.replace(/[&<>"']/g, character => ({
@@ -1514,30 +1512,30 @@ function initializeFinalSummaryRevisionDiff() {
         return output.join(" ");
     }
 
-    button.addEventListener("click", () => {
+    function updateLiveRevisionPreview() {
         const originalText = original.value.trim();
         const revisedText = revision.value.trim();
 
         if (!originalText || !revisedText) {
-            feedback.className = "revision-feedback needs-answer";
-            feedback.textContent = "Please revise some part of your review based off the AI feedback";
-            preview.innerHTML = "";
+            preview.textContent = "Start revising your summary above to see your changes here.";
             return;
         }
 
-        feedback.className = "revision-feedback correct";
-        feedback.textContent = "Received!";
+        if (originalText === revisedText) {
+            preview.textContent = "No revisions yet. Changes will appear here as you edit.";
+            return;
+        }
+
         preview.innerHTML = buildSimpleDiff(originalText, revisedText);
 
         saveState();
         updateUnlocks();
-    });
+    }
 
-    revision.addEventListener("input", () => {
-        feedback.textContent = "";
-        feedback.className = "revision-feedback";
-        preview.innerHTML = "";
-    });
+    original.addEventListener("input", updateLiveRevisionPreview);
+    revision.addEventListener("input", updateLiveRevisionPreview);
+
+    updateLiveRevisionPreview();
 }
 
 /* ============================================================
