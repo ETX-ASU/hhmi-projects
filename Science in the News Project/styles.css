@@ -1111,6 +1111,45 @@ table.rubric {
    ============================================================ */
 
 @media print {
+    .drag-match-row {
+        display: grid !important;
+        grid-template-columns: 1fr 180px !important;
+        gap: 10px !important;
+        align-items: center !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
+
+    .definition-card,
+    .drop-zone-card,
+    .drop-zone {
+        margin: 0 !important;
+    }
+
+    .definition-card {
+        padding: 8px !important;
+    }
+
+    .definition-card h4 {
+        margin: 0 !important;
+        font-size: 10pt !important;
+        line-height: 1.25 !important;
+    }
+
+    .drop-zone {
+        min-height: auto !important;
+        height: auto !important;
+        padding: 8px !important;
+        border: 1px solid #c7d8d4 !important;
+        border-radius: 8px !important;
+        font-size: 10pt !important;
+        line-height: 1.25 !important;
+    }
+
+    .drop-zone-text {
+        font-size: 10pt !important;
+        line-height: 1.25 !important;
+    }
 
     .rubric-table,
     .rubric-table th,
@@ -1125,6 +1164,32 @@ table.rubric {
     .rubric-table th,
     .rubric-table td {
         padding: 6px !important;
+    }
+
+    .rubric-table th,
+    .rubric-table thead th,
+    .rubric-table tbody th,
+    .rubric-table tr th,
+    .rubric th,
+    .rubric thead th,
+    .rubric tbody th,
+    .rubric tr th {
+        font-size: 10pt !important;
+        line-height: 1.25 !important;
+        font-weight: 800 !important;
+    }
+
+    .rubric-table tbody tr>th,
+    .rubric-table tbody tr>th *,
+    .rubric-table tbody tr>td:first-child,
+    .rubric-table tbody tr>td:first-child *,
+    .rubric tbody tr>th,
+    .rubric tbody tr>th *,
+    .rubric tbody tr>td:first-child,
+    .rubric tbody tr>td:first-child * {
+        font-size: 10pt !important;
+        line-height: 1.25 !important;
+        font-weight: 800 !important;
     }
 
     .no-print {
