@@ -419,6 +419,8 @@ function initializeSourceMatching() {
         label.textContent = value || "Drop type here";
         zone.classList.toggle("filled", Boolean(value));
 
+        zone.classList.remove("correct", "incorrect", "needs-answer");
+
         clearSourceMatchingFeedback();
         updateSourceTokenVisibility();
     }
@@ -578,19 +580,25 @@ function initializeSentenceBuilderFeedback() {
 
         selects.forEach(select => {
             const selectedOption = select.options[select.selectedIndex];
+            const sentenceItem = select.closest(".sentence-item");
+
             select.classList.remove("correct", "incorrect", "needs-answer");
+            sentenceItem?.classList.remove("is-correct", "is-incorrect", "needs-answer");
 
             if (!select.value) {
                 unansweredCount += 1;
                 select.classList.add("needs-answer");
+                sentenceItem?.classList.add("needs-answer");
                 return;
             }
 
             if (selectedOption.dataset.correct === "true") {
                 correctCount += 1;
                 select.classList.add("correct");
+                sentenceItem?.classList.add("is-correct");
             } else {
                 select.classList.add("incorrect");
+                sentenceItem?.classList.add("is-incorrect");
             }
         });
 
@@ -1702,6 +1710,17 @@ function initializeWordCounts() {
     });
 }
 
+function initializeBackToTopButtons() {
+    document.querySelectorAll(".back-to-top-button").forEach(button => {
+        button.addEventListener("click", () => {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        });
+    });
+}
+
 /* ============================================================
   Startup
   ============================================================ */
@@ -1739,6 +1758,7 @@ function initializeLesson() {
     initializePrintTextareaCopies();
 
     initializePrintTitleCleanup()
+    initializeBackToTopButtons()
     showTab(state.unlockedTabs.includes(state.activeTab) ? state.activeTab : 0, false);
 }
 
