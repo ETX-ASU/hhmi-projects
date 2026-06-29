@@ -650,6 +650,7 @@ fieldset.answer-needs-answer {
 }
 
 .drag-token {
+    font-size: 1rem;
     padding: 10px 16px;
     border: 2px solid var(--teal);
     border-radius: 999px;
@@ -799,7 +800,7 @@ fieldset.answer-needs-answer {
 .definition-card p {
     margin: 0 0 8px;
     color: var(--teal);
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: bold;
 }
 
