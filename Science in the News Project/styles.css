@@ -336,6 +336,21 @@ section.card {
     max-width: 550px;
 }
 
+.end-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 24px auto;
+}
+
+.end-image img {
+    display: block;
+    max-width: 420px;
+    width: 100%;
+    height: auto;
+}
+
 .question-content {
     min-width: 0;
 }
@@ -521,7 +536,8 @@ fieldset {
 .check-answer-feedback.incorrect,
 .sentence-feedback.incorrect,
 .source-matching-feedback.incorrect,
-.notes-feedback.incorrect {
+.notes-feedback.incorrect,
+.revision-feedback.incorrect {
     color: var(--danger);
 }
 

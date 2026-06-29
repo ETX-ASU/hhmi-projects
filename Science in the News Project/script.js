@@ -980,16 +980,15 @@ const CHECK_ANSWER_CONFIG = {
         noSelectionFeedbackType: "incorrect"
     },
     noticedSummaries: {
-        correct: ["clearInstructions", "guideIt", "samePrompt"],
-        correctFeedback: "Nice work. Think about how your feedback changed the AI’s response and what that reveals about how it works. AI can misinterpret feedback or apply it incorrectly, especially if the request is unclear.",
+        correct: ["clearInstructions", "guideIt"],
+        correctFeedback: "Nice work. Think about how your feedback changed the chatbot’s response and what that reveals about how it works. AI can misinterpret feedback or apply it incorrectly, especially if the request is unclear.",
         missingFeedback: {
-            clearInstructions: "Consider what happened when you gave more specific feedback. Did the response change? What does that suggest?",
-            guideIt: "Think about your role in the interaction. Did the AI change based on what you said or asked?",
-            samePrompt: "Think about whether the AI always gives the exact same response. What did you notice?"
+            clearInstructions: "Consider what happened when you gave more specific feedback to the chatbot. Did the response change? What does that suggest?",
+            guideIt: "Think about your role in the interaction. Did the chatbot’s response change based on what you said or asked?",
         },
         addedFeedback: {
             appliesFeedback: "AI does not always understand and correctly apply all feedback.",
-            improveResponses: "Reflect on your experience. Did the AI work the same without your guidance?"
+            improveResponses: "Reflect on your experience. Would the chatbot have given the same responses without your guidance?"
         },
         incorrectFeedback: "Please try again."
     },
@@ -998,7 +997,7 @@ const CHECK_ANSWER_CONFIG = {
         correctFeedback: "Nice work. Think about how you stayed in control of your writing while using AI to support your thinking.",
         missingFeedback: {
             decision: "Reflect on who is responsible for the final version of your summary. Who decides what stays or changes?",
-            feedback: "Consider how the AI helped you reflect. Did it change how you thought about your writing?",
+            feedback: "Consider how the AI helped you reflect. Did it change what you thought about in your writing?",
             accurate: "Think about reliability. Did you need to verify what the AI suggested?"
         },
         addedFeedback: {
@@ -1013,7 +1012,7 @@ const CHECK_ANSWER_CONFIG = {
             "helps thinking": "Nice work. AI is most powerful when it supports your thinking, helps you revise ideas, and strengthens your understanding.",
             "replaces understanding": " Think about whether understanding the topic still matters when using AI.",
             "does hard work": "Think about your role when using AI. Should you still review and evaluate the results?",
-            "always accurate": "Reflect on what you learned about AI summaries. Are they always fully accurate?"
+            "always accurate": " Reflect on what you learned about AI-generated summaries. Are they always fully accurate?"
         },
         incorrectFeedback: "Try again. AI should support your learning, not replace your understanding."
     },
@@ -1033,7 +1032,7 @@ const CHECK_ANSWER_CONFIG = {
     },
     scienceNewsEvaluation: {
         correct: ["original source"],
-        correctFeedback: "Nice work. Checking the original scientific source helps to verify the claims and understand the original context of the information shared. It is important in ensuring accuracy, preventing the spread of misinformation, and identifying any bias.",
+        correctFeedback: "Nice work. Checking the original scientific source helps to verify the claims and understand the original context of the information shared. It is important in ensuring accuracy, preventing the spread of misinformation, and identifying any biases.",
         feedbackByAnswer: {
             headline: "Please try again. News article headlines can be misleading and used as clickbait, to promote financial gain, increase user engagement, push a specific narrative, or meet the pressures of the 24-hour news cycle.",
             "original source": "Nice work. Checking the original scientific source helps to verify the claims and understand the original context of the information shared. It is important in ensuring accuracy, preventing the spread of misinformation, and identifying any bias.",
@@ -1046,7 +1045,7 @@ const CHECK_ANSWER_CONFIG = {
         correct: ["question claims"],
         correctFeedback: "Nice work. This is a strong approach. You are engaging with the content while staying alert. Questioning claims and verifying details helps you avoid accepting false or incomplete information.",
         feedbackByAnswer: {
-            "sounds clear": "Clear writing can be misleading. AI-generated content is often polished, even when it contains errors or made-up information. Clarity alone is not a reliable signal of accuracy. Try again.",
+            "sounds clear": "Clarity alone does not always mean accuracy. AI-generated content is often polished, even when it contains errors or made-up information. Try again.",
             "question claims": "Nice work. This is a strong approach. You are engaging with the content while staying alert. Questioning claims and verifying details helps you avoid accepting false or incomplete information.",
             "ignore without sources": "Sources are helpful, but their presence alone does not guarantee accuracy. Some AI-generated content includes incorrect or fabricated references, so it is better to evaluate both the content and the sources. Try again."
         },
@@ -1346,7 +1345,9 @@ function initializeChatbotSuggestionsFeedback() {
         const suggestionsText = suggestions.value.trim();
 
         if (!suggestionsText) {
-            setSuggestionsFeedback("needs-answer", "Please add in the suggestions AI gave you.");
+            setSuggestionsFeedback("incorrect", "Please add in the suggestions the chatbot gave you.");
+            saveState();
+            updateUnlocks();
             return;
         }
 
@@ -1358,6 +1359,53 @@ function initializeChatbotSuggestionsFeedback() {
     suggestions.addEventListener("input", () => {
         feedback.textContent = "";
         feedback.className = "suggestions-feedback";
+        saveState();
+        updateUnlocks();
+    });
+}
+
+function initializeFinalSummaryRevisionFeedback() {
+    const original = document.getElementById("studentSummaryForRevision");
+    const revision = document.getElementById("finalSummaryRevision");
+    const checkButton = document.getElementById("checkFinalSummaryRevision");
+    const feedback = document.getElementById("finalSummaryRevisionFeedback");
+
+    if (!original || !revision || !checkButton || !feedback) return;
+
+    function normalizeText(text) {
+        return text.trim().replace(/\s+/g, " ");
+    }
+
+    function setFinalRevisionFeedback(type, message) {
+        feedback.className = `revision-feedback ${type}`;
+        feedback.textContent = message;
+    }
+
+    checkButton.addEventListener("click", () => {
+        const originalText = normalizeText(original.value);
+        const revisionText = normalizeText(revision.value);
+
+        if (!revisionText || revisionText === originalText) {
+            setFinalRevisionFeedback(
+                "incorrect",
+                "Please revise some part of your summary based off the chatbot feedback."
+            );
+
+            saveState();
+            updateUnlocks();
+            return;
+        }
+
+        setFinalRevisionFeedback("correct", "Received!");
+
+        saveState();
+        updateUnlocks();
+    });
+
+    revision.addEventListener("input", () => {
+        feedback.textContent = "";
+        feedback.className = "revision-feedback";
+
         saveState();
         updateUnlocks();
     });
@@ -1772,6 +1820,7 @@ function initializeLesson() {
     initializeRubricRowCheck();
     initializeRevisionPromptFeedback();
     initializeChatbotSuggestionsFeedback();
+    initializeFinalSummaryRevisionFeedback();
 
     initializeSummaryComparisonAutofill();
     initializeOriginalSummaryAutofill();

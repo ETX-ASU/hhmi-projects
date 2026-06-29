@@ -335,7 +335,7 @@
         </section>
 
         <section class="card footer-actions">
-          <h2>Onto Step 2</h2>
+          <h2>Onto Tab 2</h2>
 
           <p class="callout">
             Let's investigate AI to see how it can help you develop science article summaries!
@@ -447,7 +447,7 @@
           </fieldset>
 
           <section class="card footer-actions">
-            <h2>Onto Step 3</h2>
+            <h2>Onto Tab 3</h2>
 
             <p class="callout">
               Select the next tab to move on.
@@ -997,7 +997,7 @@
 
         </section>
         <section class="card footer-actions">
-          <h2>Onto Step 4</h2>
+          <h2>Onto Tab 4</h2>
 
           <div class="callout">
             <p>In many cases, GenAI doesn’t automatically get things right. It needs clear
@@ -1024,7 +1024,8 @@
           <p>One of the most powerful uses of AI is as a tool to help you grow your skills. Instead
             of copying what it writes, you can use it to test your ideas, get feedback, and
             refine your thinking. </p>
-          <p class="callout">In the next step, you’ll use AI to improve your summary. The goal is not for AI to rewrite
+          <p class="callout">In the next step, you’ll use GenAI to improve your summary. The goal is <em>not</em> for
+            GenAI to rewrite
             your work, but to help you think
             more deeply about
             how to improve it.</p>
@@ -1033,7 +1034,7 @@
         <section class="card">
           <h2>Revising Your News Article Summary</h2>
           <label for="studentSummaryForRevision" class="callout teal">
-            Here's the summary YOU wrote:
+            Here's the summary you wrote:
           </label>
 
           <textarea id="studentSummaryForRevision" name="studentSummaryForRevision" class="large-textarea" data-required
@@ -1042,14 +1043,14 @@
             <p>Have another conversation with the chatbot to improve your
               summary. Your goals are to:</p>
             <ul>
+              <li>Focus on strengthening clarity, accuracy, and completeness.</li>
               <li>Ask questions that help you improve your writing.</li>
               <li>Stay in control of your ideas and revisions.</li>
-              <li>Focus on strengthening clarity, accuracy, and completeness.</li>
             </ul>
           </div>
 
           <p class="callout teal no-print">Now, write a prompt in the chatbot that shares your summary and
-            ask to guide you with questions, not a rewrite.</p>
+            asks the chatbot to guide you with questions, not a rewrite.</p>
 
           <p class="callout no-print">If the chatbot starts rewriting your summary, redirect it. Keep
             the focus on questions that help you think and revise.
@@ -1062,16 +1063,32 @@
           <textarea id="chatbotSuggestions" name="chatbotSuggestions" class="large-textarea" data-required
             placeholder="Paste the suggestions…"></textarea>
 
+          <div class="check-answer-row">
+            <button type="button" id="checkChatbotSuggestions" class="secondary-button check-answer-button">
+              Check My Answer
+            </button>
+
+            <span id="chatbotSuggestionsFeedback" class="suggestions-feedback" role="status"></span>
+          </div>
+
           <label for="finalSummaryRevision" class="callout teal">
             Now, update your summary using these suggestions. Below is the original version you
-            submitted.
-            Update it directly in the text box to submit a revised version.
+            submitted. Make your revisions directly in the box.
           </label>
 
           <textarea id="finalSummaryRevision" name="finalSummaryRevision" class="large-textarea" data-required
             placeholder="Your original summary will appear here. Revise it directly in this box."></textarea>
+
           <div class="word-count" data-word-count-for="finalSummaryRevision">
             Word count: <span>0</span>
+          </div>
+
+          <div class="revision-check-row">
+            <button type="button" id="checkFinalSummaryRevision" class="secondary-button check-answer-button">
+              Check My Answer
+            </button>
+
+            <span id="finalSummaryRevisionFeedback" class="revision-feedback" role="status"></span>
           </div>
 
           <h3 class="revision-preview-title">Summary Revisions</h3>
@@ -1080,7 +1097,7 @@
           </div>
 
           <section class="card footer-actions">
-            <h2>Onto Step 5!</h2>
+            <h2>Onto Tab 5</h2>
             <p>Congratulations on refining and updating your <em>Science News</em> article
               summary!</p>
             <p>Let’s take some time to reflect on what can be learned from this experience.</p>
@@ -1137,17 +1154,12 @@
               <input type="checkbox" name="noticedSummaries" value="improveResponses" />
               AI does not need human input to refine and improve responses.
             </label>
-            <label class="option">
-              <input type="checkbox" name="noticedSummaries" value="samePrompt" />
-              AI can produce different results from the same prompt.</label>
           </fieldset>
 
-          <div class="image-question-row image-right">
+          <div class="card two-col">
             <fieldset data-required-group="feedbackChanged">
               <p class="callout teal">
-                When you use AI responsibly to improve your own summary, what is your
-                role?
-                Select all that apply.
+                When you use AI responsibly to improve your own summary, what is your role? Select all that apply.
               </p>
 
               <label class="option">
@@ -1167,13 +1179,14 @@
 
               <label class="option">
                 <input type="checkbox" name="feedbackChanged" value="accurate" />
-                I check whether the suggestions are accurate.
+                I check whether the AI's suggestions are accurate.
               </label>
             </fieldset>
 
             <div class="question-image-wrap">
-              <img src="./assets/placeholder.svg" alt="Illustration representing responsible AI use"
-                class="question-image" />
+              <img src="./assets/5_Verify the Output.png"
+                alt="Illustration titled “Verify the Output” showing three steps: check claims, trace evidence, and question output."
+                class="question-image wide-image" />
             </div>
           </div>
 
@@ -1210,7 +1223,7 @@
           <fieldset data-required-group="strongUses">
             <label class="option">
               <input type="checkbox" name="strongUses" value="feedback" />
-              Asking for feedback on your ideas.
+              Asking for AI feedback on your ideas.
             </label>
 
             <label class="option">
@@ -1235,7 +1248,7 @@
           </fieldset>
 
           <p class="callout teal">
-            What is a good strategy for evaluating <em>Science News</em> articles?
+            What is a good strategy for evaluating science news articles?
           </p>
 
           <fieldset data-required-group="scienceNewsEvaluation">
@@ -1246,7 +1259,7 @@
 
             <label class="option">
               <input type="radio" name="scienceNewsEvaluation" value="original source" />
-              Checking the original source.
+              Checking the primary source.
             </label>
 
             <label class="option">
@@ -1260,62 +1273,46 @@
             </label>
           </fieldset>
 
+          <p class="callout">Imagine you come across an AI-generated science summary on a website or social media.
+            You don’t know how it was written.
+          </p>
+          <p class="callout teal">
+            How would you approach this AI-generated science summary?
+          </p>
 
-          <div class="card two-col">
-            <div>
-              <p class="callout">Now imagine you’re not the <strong>editor</strong>; you’re
-                the
-                <strong>reader</strong> scrolling through a
-                website or social media, and you come across an AI-generated science
-                summary. You don’t know how it was written.
-              </p>
-              <p class="callout teal">
-                How would you approach reading this AI-generated science summary? Select
-                all that apply.
-              </p>
+          <fieldset data-required-group="aiSummaryReadingApproach">
+            <label class="option">
+              <input type="radio" name="aiSummaryReadingApproach" value="sounds clear" />
+              Consider it reliable if it sounds clear and well-written.
+            </label>
 
-              <fieldset data-required-group="aiSummaryReadingApproach">
-                <label class="option">
-                  <input type="radio" name="aiSummaryReadingApproach" value="sounds clear" />
-                  Consider it credible if it sounds clear and well-written.
-                </label>
+            <label class="option">
+              <input type="radio" name="aiSummaryReadingApproach" value="question claims" />
+              Read it, but pause to question claims and check key information.
+            </label>
 
-                <label class="option">
-                  <input type="radio" name="aiSummaryReadingApproach" value="question claims" />
-                  Read it, but pause to question claims and check key information.
-                </label>
-
-                <label class="option">
-                  <input type="radio" name="aiSummaryReadingApproach" value="ignore without sources" />
-                  Ignore it unless it includes sources or references.
-                </label>
-              </fieldset>
-
-            </div>
-            <div>
-              <img src="./assets/placeholder.svg" alt="Illustration representing source types" class="question-image" />
-            </div>
-          </div>
+            <label class="option">
+              <input type="radio" name="aiSummaryReadingApproach" value="ignore without sources" />
+              Ignore it unless it includes sources or references.
+            </label>
+          </fieldset>
 
           <!-- Completion -->
           <section class="card">
             <div class="callout">
-
-              <p>Throughout this activity, you guided AI, evaluated its accuracy, and used
-                it to
-                strengthen your own thinking and writing.</p><br>
-              <p>AI can be a helpful tool, but it works best when you stay in control.</p>
+              <p>Throughout this activity, you guided AI, evaluated its output, and used its feedback to strengthen your
+                own thinking and writing</p><br>
+              <p>AI can be a helpful tool, but it works best when you stay in control. Because it builds sentences based
+                on patterns and probabilities, it can sound confident while still missing details or making small
+                mistakes. That’s why it’s important to read AI-generated summaries critically, checking for accuracy,
+                clarity, and completeness. </p>
               <br>
-              <p>Because it builds sentences based on patterns and probabilities, it can
-                sound
-                confident while still missing details or making small mistakes. That’s
-                why
-                it’s important to read AI-generated summaries critically, checking for
-                accuracy, clarity, and completeness.</p><br>
-              <p>The real strength of AI isn’t just how powerful it is, but <strong>how you
-                  use it</strong>.
-                When
-                used well, AI can help sharpen your ideas, not replace them.</p>
+              <p>The real strength of AI isn’t just how powerful it is, but how you use it. When used well, AI can help
+                sharpen your ideas, not replace them.</p>
+            </div>
+            <div class="end-image">
+              <img src="./assets/6_You Are The Expert.png"
+                alt="Graphic of text “You are the expert. You are the one responsible.”" />
             </div>
             <button class="print-button" type="button">
               Print to PDF
