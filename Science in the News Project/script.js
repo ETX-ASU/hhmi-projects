@@ -950,19 +950,34 @@ const CHECK_ANSWER_CONFIG = {
         incorrectFeedback: "Try again. A prompt tells the AI what kind of output to create."
     },
     aiSummaryOverallRating: {
-        dynamicCorrect: getRubricOverallRatingFromScore,
-        correctFeedback: "You're right!",
-        incorrectFeedback: "The total score doesn't fit in that range. Please try again."
+        anySelectionIsCorrect: true,
+
+        feedbackByAnswer: {
+            "ready to publish": "The chatbot summary is accurate, well-supported, and reliable. It clearly represents the article’s main ideas, uses strong evidence, and includes trustworthy sources. It is ready to be shared on a student website.",
+
+            "needs minor revisions": "The chatbot summary is mostly strong and could be publishable after a few improvements. It includes the main ideas, evidence, and reliable sources, but some parts may need to be clarified, strengthened, or checked more carefully before publication.",
+
+            "needs major revisions": "The chatbot summary is not ready to publish yet because it has an important issue with the main ideas, evidence, or source reliability. These problems could affect how accurately or responsibly the science is shared, so the summary needs significant revision before publication."
+        },
+
+        feedbackTypeByAnswer: {
+            "ready to publish": "correct",
+            "needs minor revisions": "warning",
+            "needs major revisions": "incorrect"
+        },
+
+        correctFeedback: "Thank you for your rating."
     },
     sentenceWeakness: {
         anySelectionIsCorrect: true,
         correctFeedback: "Thank you for sharing.",
-        incorrectFeedback: "Even if it's really strong, if you had to pick a category to work on, what would it be?"
+        incorrectFeedback: "Even if the summary is really strong, if you had to pick a category to work on, what would it be?"
     },
     summaryDirection: {
         anySelectionIsCorrect: true,
         correctFeedback: "Thank you for sharing.",
-        incorrectFeedback: "Please share at least one of your observations."
+        noSelectionFeedback: "Please share at least one of your observations.",
+        noSelectionFeedbackType: "incorrect"
     },
     noticedSummaries: {
         correct: ["clearInstructions", "guideIt", "samePrompt"],
@@ -1072,7 +1087,14 @@ function initializeCheckAnswerButtons() {
     }
 
     function clearGroupFeedback(fieldset) {
-        fieldset.classList.remove("answer-correct", "answer-incorrect", "answer-needs-answer", "answer-neutral");
+        fieldset.classList.remove(
+            "answer-correct",
+            "answer-incorrect",
+            "answer-needs-answer",
+            "answer-neutral",
+            "answer-warning"
+        );
+
         fieldset.querySelector(".check-answer-feedback")?.remove();
     }
 
@@ -1104,7 +1126,7 @@ function initializeCheckAnswerButtons() {
     }
 
     groupedNames.forEach(name => {
-        const groupsWithoutCheckButton = ["summaryDirection"];
+        const groupsWithoutCheckButton = [];
 
         if (groupsWithoutCheckButton.includes(name)) return;
 
@@ -1125,11 +1147,15 @@ function initializeCheckAnswerButtons() {
             const config = CHECK_ANSWER_CONFIG[name];
 
             if (selectedValues.length === 0) {
-                const blankMessage = name === "chatbotUse"
-                    ? "Please select an option, even if you haven't used a chatbot!"
-                    : "Please answer the question.";
+                const blankMessage =
+                    config?.noSelectionFeedback ||
+                    (name === "sentenceWeakness"
+                        ? "Even if the summary is really strong, if you had to pick a category to work on, what would it be?"
+                        : "Please answer the question.");
 
-                addGroupFeedback(fieldset, "needs-answer", blankMessage);
+                const blankType = config?.noSelectionFeedbackType || "needs-answer";
+
+                addGroupFeedback(fieldset, blankType, blankMessage);
                 return;
             }
 
@@ -1182,7 +1208,11 @@ function initializeCheckAnswerButtons() {
                 }
             }
 
-            addGroupFeedback(fieldset, isCorrect ? "correct" : "incorrect", message);
+            const feedbackType =
+                config.feedbackTypeByAnswer?.[selectedAnswer] ||
+                (isCorrect ? "correct" : "incorrect");
+
+            addGroupFeedback(fieldset, feedbackType, message);
             saveState();
             updateUnlocks();
         });

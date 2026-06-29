@@ -20,8 +20,8 @@
 
     --text: #10201c;
     --muted: #53645f;
-    --danger: #b42318;
-    --warning: #b54708;
+    --danger: #da1b0e;
+    --warning: #ce530c;
 
     --radius: 18px;
     --shadow: 0 12px 30px rgba(0, 0, 0, 0.09);
@@ -85,6 +85,11 @@ main.wrap {
     display: none !important;
 }
 
+ol,
+ul {
+    margin: 0;
+}
+
 /* ============================================================
     3. Header / Hero
    ============================================================ */
@@ -125,6 +130,14 @@ header.hero {
     width: 95%;
     height: auto;
 }
+
+.hero .chrome-note {
+    margin-top: 12px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+
 
 /* ============================================================
     4. Testing Tools
@@ -317,6 +330,10 @@ section.card {
     border: 1px solid var(--border);
     border-radius: 16px;
     background: #fbfffd;
+}
+
+.wide-image {
+    max-width: 550px;
 }
 
 .question-content {
@@ -535,6 +552,16 @@ fieldset.answer-incorrect {
 }
 
 fieldset.answer-needs-answer {
+    outline: 3px solid rgba(247, 144, 9, 0.2);
+}
+
+.check-answer-feedback.warning {
+    color: var(--warning);
+}
+
+fieldset.answer-warning {
+    border-radius: 14px;
+    outline-offset: 6px;
     outline: 3px solid rgba(247, 144, 9, 0.2);
 }
 
