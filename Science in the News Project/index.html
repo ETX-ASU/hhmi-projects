@@ -26,7 +26,7 @@
       <div>
         <h1>Science News in the Age of Artificial Intelligence (AI)</h1>
         <p>
-          Learn how generative AI works, evaluate the reliability of an AI-generated <em>Science News</em> summary, and
+          Learn how generative AI works, evaluate the reliability of an AI-generated science news summary, and
           decide
           how to use AI as a collaborator without giving up your own judgment.
         </p>
@@ -64,7 +64,7 @@
             ====================================================== -->
     <nav class="tabs" aria-label="Lesson tabs">
       <button type="button" class="tab-button active" data-tab-button="0">
-        1. You are the Editor
+        1. You Are the Editor
       </button>
 
       <button type="button" class="tab-button locked" data-tab-button="1">
@@ -72,7 +72,7 @@
       </button>
 
       <button type="button" class="tab-button locked" data-tab-button="2">
-        3. How does GenAI Work?
+        3. Effective Writing with GenAI
       </button>
 
       <button type="button" class="tab-button locked" data-tab-button="3">
@@ -97,15 +97,17 @@
         <!-- Introduction -->
         <section class="card two-col">
           <div>
-            <h2>This Has Your Name On It!</h2>
+            <h2>This Has Your Name on It!</h2>
             <p>
               You’ve been asked to write a short science explainer for a student website on
-              the <em>Science News</em> article you selected earlier.
+              the <em>Science News Explores</em> article you selected earlier.
             </p>
           </div>
 
           <div>
-            <img src="./assets/placeholder.svg" alt="Illustration representing source types" class="question-image" />
+            <img src="./assets/1_Science News Explores.png"
+              alt="Illustration of a hand writing on a document titled Science News Explores Summary."
+              class="question-image" />
           </div>
         </section>
 
@@ -114,45 +116,42 @@
           <h2>Your Article Summary</h2>
 
           <p class="callout">
-            You'll be using your summary of the <em>Science News</em> article you previously
-            wrote.
+            You'll be starting with the article summary that you previously wrote.
           </p>
 
           <label for="studentSummary" class="callout teal">
-            Find your summary and paste the whole thing here:
+            Paste your summary here:
           </label>
           <textarea id="studentSummary" name="studentSummary" data-required
             placeholder="Add your summary here."></textarea>
           <div class="word-count" data-word-count-for="studentSummary">
             Word count: <span>0</span>
           </div>
-          <p class="callout">
-            Now, share the link to the article you summarized.
-          </p>
           <label for="articleLink" class="callout teal">
-            Paste the link to the <em>Science News</em> article here:
+            Paste the link to the <em>Science News Explores</em> article here:
           </label>
-          <input id="articleLink" name="articleLink" type="url"
-            placeholder="Paste the link to the Science News article." data-required />
+          <input id="articleLink" name="articleLink" type="url" placeholder="Paste the link to the article."
+            data-required />
         </section>
         <section class="card">
           <h2>Sources of Information</h2>
+          <p class="callout">The news article and your summary are examples of sources of scientific information, which
+            can be categorized into three main groups:</p>
           <div class="source-grid">
             <div class="info-tile">
               <strong>Primary</strong><br />
-              Shares research data and findings with scientists for evaluation, replication,
-              and further development of the work.
+              Original research, data, and findings, written by the scientists who conducted the study.
             </div>
 
             <div class="info-tile">
               <strong>Secondary</strong><br />
-              Explains the current state of a research area with key audiences, including
-              scientists, policymakers, and the public.
+              Summaries or analyses of primary research for scientists, policymakers, funders, and sometimes public
+              audiences.
             </div>
 
             <div class="info-tile">
               <strong>Tertiary</strong><br />
-              Provides a broad overview of scientific breakthroughs to the general public.
+              Provides a broad overview, context, or quick facts about a topic to the public.
             </div>
           </div>
           <!-- Sentence Builder Activity -->
@@ -161,24 +160,25 @@
 
             <div class="sentences">
               <p class="sentence-item">
+                To quickly learn about how cells use DNA to make proteins, a student may use a biology textbook, which
+                is a
                 <select class="inline-select sentence-select" name="sourceSentence1" data-required>
                   <option value="">Choose...</option>
                   <option value="Primary">
-                    Primary
+                    primary
                   </option>
                   <option value="Secondary">
-                    Secondary
+                    secondary
                   </option>
                   <option value="Tertiary" data-correct="true">
-                    Tertiary
+                    tertiary
                   </option>
-                </select>
-                resources summarize and organize information from other sources.
+                </select> source.
 
               </p>
 
               <p class="sentence-item">
-                Peer-reviewed scholarly journal articles are a common type of
+                A journal article written by the biologist who tested how a gene affects plant growth is a
                 <select class="inline-select sentence-select" name="sourceSentence2" data-required>
                   <option value="">Choose...</option>
                   <option value="primary" data-correct="true">
@@ -191,24 +191,25 @@
                     tertiary
                   </option>
                 </select>
-                scientific resource.
+                source.
               </p>
 
               <p class="sentence-item">
+                A science writer reads a research study on antibiotic resistance and writes an article explaining the
+                findings. This article is a
                 <select class="inline-select sentence-select" name="sourceSentence3" data-required>
                   <option value="">Choose...</option>
                   <option value="Primary">
-                    Primary
+                    primary
                   </option>
                   <option value="Secondary" data-correct="true">
-                    Secondary
+                    secondary
                   </option>
                   <option value="Tertiary">
-                    Tertiary
+                    tertiary
                   </option>
                 </select>
-                sources interpret original research and provide analysis or explanation
-                of the findings.
+                sources.
               </p>
               <div class="sentence-check-row">
                 <button type="button" class="secondary-button" id="checkSentenceBuilder">
@@ -241,7 +242,7 @@
               <div class="drag-match-list">
                 <div class="drag-match-row">
                   <div class="definition-card">
-                    <p>The original research article</p>
+                    <p>the original research article</p>
                   </div>
 
                   <div class="drop-zone-card">
@@ -255,7 +256,7 @@
 
                 <div class="drag-match-row">
                   <div class="definition-card">
-                    <p>The <em>Science News</em> article you summarized</p>
+                    <p>the <em>Science News Explores</em> article you summarized</p>
                   </div>
 
                   <div class="drop-zone-card">
@@ -269,7 +270,7 @@
 
                 <div class="drag-match-row">
                   <div class="definition-card">
-                    <p>Your summary of the <em>Science News</em> article</p>
+                    <p>your summary of the <em>Science News Explores</em> article</p>
                   </div>
 
                   <div class="drop-zone-card">
@@ -295,40 +296,38 @@
               </div>
             </fieldset>
           </div>
-          <p class="callout">How do you build credibility as a science editor in your summary of the <em>Science
-              News</em> article?</p>
           <p class="callout teal">
-            What characteristics of your summary would build credibility with readers?
+            What characteristics of your summary would build credibility with your readers?
             Select all that apply.
           </p>
           <fieldset data-required-group="credibilityTraits">
             <label class="option">
               <input type="checkbox" name="credibilityTraits" value="Clear evidence" />
-              Clear evidence
+              clear evidence
             </label>
             <label class="option">
               <input type="checkbox" name="credibilityTraits" value="Reliable sources" />
-              Reliable sources
+              reliable sources
             </label>
             <label class="option">
               <input type="checkbox" name="credibilityTraits" value="Easy to understand" />
-              Easy to understand
+              easy to understand
             </label>
             <label class="option">
               <input type="checkbox" name="credibilityTraits" value="Personal opinions" />
-              Personal opinions
+              personal opinions
             </label>
             <label class="option">
               <input type="checkbox" name="credibilityTraits" value="Scientific jargon" />
-              Scientific jargon
+              scientific jargon
             </label>
             <label class="option">
               <input type="checkbox" name="credibilityTraits" value="Vague statements" />
-              Vague statements
+              vague statements
             </label>
             <label class="option">
               <input type="checkbox" name="credibilityTraits" value="Confident tone" />
-              Confident tone
+              confident tone
             </label>
           </fieldset>
         </section>
@@ -340,7 +339,7 @@
             Let's investigate AI to see how it can help you develop science article summaries!
           </p>
 
-          <p>Keep in mind that in the end your name is on it.</p>
+          <p>Keep in mind that, in the end, your name is on the work.</p>
           <p><strong>Your credibility is on the line!</strong></p>
           <p>Select the next tab to move on.</p>
 
@@ -361,9 +360,7 @@
       <article class="tab-panel" data-tab="1">
         <section class="card">
           <h2>What is Generative AI?</h2>
-          <p class="callout">In order to know how to use GenAI effectively, we need to know what it
-            is and how
-            it works.</p>
+          <p class="callout">To use generative AI (GenAI) effectively, we need to know what it is and how it works.</p>
 
           <p class="callout teal">
             Which of these descriptions best fit what artificial intelligence (AI) might be?
@@ -371,7 +368,7 @@
           <fieldset data-required-group="aiDefinition">
             <label class="option">
               <input type="radio" name="aiDefinition" value="storage" />
-              A program that collects and stores data in their computer without processing
+              A program that collects and stores data in a computer without processing
               it.
             </label>
             <label class="option">

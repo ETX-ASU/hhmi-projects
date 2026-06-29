@@ -527,7 +527,7 @@ function initializeSourceMatching() {
         } else {
             setSourceMatchingFeedback(
                 "incorrect",
-                "It might help to review all three source types again. Reread the primary, secondary, and tertiary sources definitions. Think about how each one builds on the other and try again."
+                "Review the definitions for primary, secondary, and tertiary sources. Think about how each one builds on the other and try again."
             );
         }
 
@@ -610,12 +610,12 @@ function initializeSentenceBuilderFeedback() {
         } else if (correctCount === selects.length) {
             setSentenceFeedback(
                 "correct",
-                "Nice work! You correctly identified how each type of scientific source is used. Tertiary sources help summarize information, primary sources present original research, and secondary sources analyze and interpret that research. This understanding will help you choose the right sources when reading and writing about science."
+                "Nice work! You correctly identified how each type of scientific source is used. Primary sources present original research, secondary sources analyze and interpret that research, and tertiary sources help build background knowledge. This understanding will help you choose the right sources when reading and writing about science"
             );
         } else {
             setSentenceFeedback(
                 "incorrect",
-                "It might help to review all three source types again. Reread the primary, secondary, and tertiary sources definitions. Focus on their purpose: presenting original research, analyzing research, and compiling and summarizing information. Then try again."
+                "Review the definitions for primary, secondary, and tertiary sources. Focus on their purposes: presenting original research, analyzing research, and compiling and summarizing information. Then try again."
             );
         }
 
@@ -901,13 +901,13 @@ const CHECK_ANSWER_CONFIG = {
         correctFeedback: "Nice work. Credibility comes from clear evidence, reliable sources, and writing that is easy to understand. This is your goal. Now, can AI do this?",
         missingFeedback: {
             "Clear evidence": "Your summary needs specific, accurate details from the research.",
-            "Reliable sources": "Credibility depends on where the information comes from.",
-            "Easy to understand": "A credible summary should be accessible."
+            "Reliable sources": "Credibility depends on which sources the information comes from",
+            "Easy to understand": "A credible summary should be clear and well-written"
         },
         addedFeedback: {
-            "Personal opinions": "Personal opinions reduce credibility.",
+            "Personal opinions": " Personal opinions can introduce bias and reduce credibility.",
             "Scientific jargon": "Too much jargon can confuse readers.",
-            "Vague statements": "Statements that are generalized can create misconceptions.",
+            "Vague statements": "Statements that are overly generalized can cause confusion and create misconceptions",
             "Confident tone": "Confidence doesn't mean the content is accurate."
         },
         incorrectFeedback: "Please try again."
@@ -916,9 +916,9 @@ const CHECK_ANSWER_CONFIG = {
         correct: ["thinkingTasks"],
         correctFeedback: "You got it. AI refers to computer systems that can do tasks that typically require human thinking, such as analyzing information, recognizing patterns, making predictions, and solving problems.",
         feedbackByAnswer: {
-            storage: "Please try again. This is close to something computers can do, but AI does more than collect or store data. It processes and analyzes information.",
-            website: "Please try again. A website or search engine can help people find information, and some websites may use AI. However, AI goes beyond searching.",
-            machine: "Please try again. This sounds more like a robot or a machine. Some robots use AI, but AI does not have to be a physical device. AI can also exist as software inside a computer, phone, app, or website.",
+            storage: " Please try again. This is close to something computers can do, but AI does more than just collect or store data. It also processes and analyzes information.",
+            website: "Please try again. A website or search engine can help people find information, and some websites may use AI. However, AI goes beyond just searching for information.",
+            machine: "Please try again. Some mechanical devices (such as robots or other machines) use AI, but AI does not have to be a physical device. AI can also exist as software inside a computer, phone, app, or website.",
             thinkingTasks: "You got it. AI refers to computer systems that can do tasks that typically require human thinking, such as analyzing information, recognizing patterns, making predictions, and solving problems."
         },
         incorrectFeedback: "Try again."
