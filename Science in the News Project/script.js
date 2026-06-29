@@ -16,9 +16,9 @@ const STORAGE_KEYS = {
 };
 
 const VIDEO_CONFIG = {
-    youtubeId: "rwF-X5STYks",
+    youtubeId: "sLtTLQcpvxI",
     requiredProgress: 0.99,
-    requiredWatchSeconds: 118
+    requiredWatchSeconds: 98
 };
 
 /* ============================================================
@@ -929,23 +929,23 @@ const CHECK_ANSWER_CONFIG = {
     },
     genaiDefinition: {
         correct: ["creates"],
-        correctFeedback: "You got it. Generative AI is trained on large amounts of data to create new content. It can write paragraphs and even draw pictures, given what it learns.",
+        correctFeedback: "You got it. GenAI is trained on large amounts of data to create new content. It can generate text, images, etc., given what it learns.",
         feedbackByAnswer: {
-            creates: "You got it. Generative AI is trained on large amounts of data to create new content. It can write paragraphs and even draw pictures, given what it learns.",
-            stores: "Please try again. Some technology stores and retrieve information, but generative AI repeats information and creates something new using patterns learned from data.",
-            steps: "Please try again. This describes a more traditional computer program. Generative AI learns by example. It does not follow only basic automation or fixed instructions.",
-            typed: "Please try again. Generative AI can repeat past answers and generate new responses based on patterns in the data it was trained on."
+            creates: "You got it. GenAI is trained on large amounts of data to create new content. It can generate text, images, etc., given what it learns.",
+            stores: "Please try again. Some technology stores and retrieves information, but GenAI creates something new using patterns learned from data.",
+            steps: "Please try again. GenAI learns by example. It does not follow basic automation or fixed instructions like more traditional computer programs.",
+            typed: "Please try again. GenAI can repeat past answers and generate new responses based on patterns in the data it was trained on."
         },
-        incorrectFeedback: "Try again. Generative AI is known for creating new content."
+        incorrectFeedback: "Try again. GenAI is known for creating new content."
     },
     promptFunction: {
         correct: ["guide"],
         correctFeedback: "You got it. Prompts are user inputs that tell the AI what to generate. They can be questions, statements, or instructions. ",
         feedbackByAnswer: {
-            faster: "Please try again. Prompts do not influence system speed. The speed at which the system runs is determined by factors such as its memory and storage capacity. ",
+            faster: "Please try again. Prompts can help the system work more efficiently. But they can’t make the system run faster than its normal limits, which are determined by factors such as the system’s memory and storage capacity.",
             guide: "You got it. Prompts are user inputs that tell the AI what to generate. They can be questions, statements, or instructions. ",
-            errors: "Please try again. Prompts are not used to fix errors. System errors are generally monitored, analyzed, and corrected by humans. ",
-            vocab: "Please try again. Prompts cannot limit vocabulary; they initiate the generation process. Therefore, as new datasets are added, the system’s vocabulary is expected to grow."
+            errors: "Please try again. Prompts can help people diagnose, analyze, and correct system errors. But they usually do not fix the errors on their own.",
+            vocab: "Please try again. Prompts can be used to limit the vocabulary the AI uses in specific responses. But they do not typically change the AI’s stored vocabulary. As new data are added, the system’s vocabulary is expected to grow."
         },
         incorrectFeedback: "Try again. A prompt tells the AI what kind of output to create."
     },
