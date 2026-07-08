@@ -380,6 +380,12 @@ fieldset {
     margin: 0 4px;
 }
 
+.testing-tools {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.75rem;
+}
+
 .word-count {
     margin-top: 6px;
     color: var(--muted);
@@ -397,6 +403,7 @@ fieldset {
    ============================================================ */
 
 .print-button,
+.reset-testing-button,
 .secondary-button {
     margin: 10px 8px 6px 0;
     padding: 11px 16px;
@@ -421,6 +428,12 @@ fieldset {
 
 .print-button {
     background: var(--green);
+    color: var(--white);
+    font-size: 1rem;
+}
+
+.reset-testing-button {
+    background: var(--danger);
     color: var(--white);
     font-size: 1rem;
 }
@@ -1411,6 +1424,7 @@ table.rubric {
     .back-to-top-row,
     .secondary-button,
     .print-button,
+    .reset-testing-button,
     .toggle-button,
     .video-embed,
     .hero-art {

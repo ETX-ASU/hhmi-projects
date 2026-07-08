@@ -256,6 +256,10 @@ function getButtonDescription(button) {
         return "Select this button to open the print dialog and save or print your completed responses.";
     }
 
+    if (button.classList.contains("reset-testing-button")) {
+        return "Select this button to clear saved testing progress and reload the activity.";
+    }
+
     if (button.id === "clearSourceMatches") {
         return "Select this button to clear all source-matching answers.";
     }
@@ -2141,6 +2145,24 @@ function initializePrintTitleCleanup() {
     });
 }
 
+function initializeResetTestingButton() {
+    const resetButton = document.querySelector(".reset-testing-button");
+    if (!resetButton) return;
+
+    resetButton.addEventListener("click", () => {
+        const confirmed = window.confirm(
+            "Reset testing progress? This clears saved answers, tab progress, and video completion for this activity."
+        );
+
+        if (!confirmed) return;
+
+        localStorage.removeItem(STORAGE_KEYS.lesson);
+        localStorage.removeItem(STORAGE_KEYS.videoGate);
+        form?.reset();
+        window.location.reload();
+    });
+}
+
 
 /* ============================================================
   Generic UI Handlers
@@ -2277,6 +2299,7 @@ function initializeLesson() {
     initializeAutoResizeTextareas();
     initializePrintTextareaCopies();
     initializePrintTitleCleanup();
+    initializeResetTestingButton();
 
     // Derive the initial interface state after every control is ready.
     updateRubricScore();
