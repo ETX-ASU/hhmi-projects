@@ -52,16 +52,6 @@
 
   <main class="wrap">
     <!-- ======================================================
-            Testing Tool
-            Remove or hide before launch.
-            ====================================================== -->
-    <div class="testing-tools">
-      <button type="button" class="testing-reset-button" id="resetTestingProgress">
-        Reset Testing Progress
-      </button>
-    </div>
-
-    <!-- ======================================================
             Locked Lesson Tabs
             ====================================================== -->
     <nav class="tabs" aria-label="Lesson tabs">
@@ -211,7 +201,7 @@
                     tertiary
                   </option>
                 </select>
-                sources.
+                source.
               </p>
               <div class="sentence-check-row">
                 <button type="button" class="secondary-button" id="checkSentenceBuilder">
@@ -396,11 +386,11 @@
           </div>
 
           <div class="video-status" id="videoStatus">
-            Watch the video to continue.
+            Optional video overview.
           </div>
 
-          <input type="hidden" id="watchedVideo" name="watchedVideo" data-required value="" />
-          <input type="hidden" id="videoTimerComplete" name="videoTimerComplete" data-required value="" />
+          <input type="hidden" id="watchedVideo" name="watchedVideo" value="" />
+          <input type="hidden" id="videoTimerComplete" name="videoTimerComplete" value="" />
 
           <p class="callout teal">
             GenAI is a form of AI that can _________________
@@ -520,11 +510,23 @@
                 scrub it with the
                 built-in controls.
               </p>
-              <div class="video-wrap">
-                <video id="howToVideo" controls loop muted playsinline preload="metadata">
-                  <source src="./assets/drag_example.mov" type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
+              <div class="local-video-accessible-wrapper" tabindex="0" role="group" aria-labelledby="howToVideoLabel"
+                aria-describedby="howToVideoStatus">
+                <p id="howToVideoLabel" class="screen-reader-only">
+                  Demonstration video: how to use the split-screen activity.
+                </p>
+
+                <p id="howToVideoStatus" class="screen-reader-only" role="status" aria-live="polite" aria-atomic="true">
+                  Video is stopped.
+                </p>
+
+                <div class="video-wrap">
+                  <video id="howToVideo" controls loop muted playsinline preload="metadata"
+                    aria-labelledby="howToVideoLabel" aria-describedby="howToVideoStatus">
+                    <source src="./assets/drag_example.mov" type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
               </div>
             </div>
 
@@ -572,7 +574,7 @@
             <ul>
               <li>
                 the link to the <em>Science News Explores</em> article you selected earlier:
-                <span id="selectedArticleLinkText" class="auto-filled-link">Not entered
+                <span id="selectedArticleLinkText">Not entered
                   yet.</span>
               </li>
               <li>guidance about the audience</li>
@@ -913,7 +915,7 @@
             Remember the new revision should still be 350 words or fewer.</p>
 
           <label for="revisionPrompt" class="callout teal">
-            Paste the new summary Here. (You won't be doing the rubric again for this
+            Paste the new summary here. (You won't be doing the rubric again for this
             version.)
           </label>
           <textarea id="revisionPrompt" name="revisionPrompt" class="large-textarea" data-required

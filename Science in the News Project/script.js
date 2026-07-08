@@ -29,7 +29,6 @@ const form = document.getElementById("lessonForm");
 const tabButtons = [...document.querySelectorAll("[data-tab-button]")];
 const tabPanels = [...document.querySelectorAll("[data-tab]")];
 const statusBoxes = [...document.querySelectorAll("[data-status]")];
-const resetTestingButton = document.getElementById("resetTestingProgress");
 
 /* ============================================================
   Global State
@@ -103,172 +102,6 @@ function initializeScreenReaderQuestionLabels() {
         return null;
     }
 
-    function getLabelTextFromIds(idList) {
-        return String(idList || "")
-            .split(/\s+/)
-            .map(id => document.getElementById(id)?.textContent?.trim())
-            .filter(Boolean)
-            .join(" ");
-    }
-
-    function getRequiredGroupQuestionText(group) {
-        const labelledText = getLabelTextFromIds(group.getAttribute("aria-labelledby"));
-        if (labelledText) return labelledText;
-
-        const legend = group.querySelector("legend");
-        if (legend?.textContent?.trim()) return legend.textContent.trim();
-
-        const internalQuestion = group.querySelector(".callout.teal");
-        if (internalQuestion?.textContent?.trim()) return internalQuestion.textContent.trim();
-
-        let sibling = group.previousElementSibling;
-        while (sibling) {
-            if (sibling.matches(".callout.teal, label.callout, p.callout")) {
-                return sibling.textContent.trim();
-            }
-            sibling = sibling.previousElementSibling;
-        }
-
-        return group.dataset.requiredGroup || "This question";
-    }
-
-    function getRequiredFieldLabelText(field) {
-        const labelledText = getLabelTextFromIds(field.getAttribute("aria-labelledby"));
-        if (labelledText) return labelledText;
-
-        const explicitLabel = field.id
-            ? form.querySelector(`label[for="${CSS.escape(field.id)}"]`)
-            : null;
-
-        if (explicitLabel?.textContent?.trim()) return explicitLabel.textContent.trim();
-
-        const wrappingLabel = field.closest("label");
-        if (wrappingLabel?.textContent?.trim()) return wrappingLabel.textContent.trim();
-
-        if (field.placeholder) return field.placeholder;
-
-        return field.name || field.id || "This field";
-    }
-
-    function getFirstFocusableElement(container) {
-        return container.querySelector(
-            'input:not([type="hidden"]):not([disabled]), textarea:not([disabled]), select:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-        );
-    }
-
-    function getIncompleteRequirements(panel) {
-        const incomplete = [];
-
-        const requiredGroups = [
-            ...new Set(
-                [...panel.querySelectorAll("[data-required-group]")]
-                    .map(group => group.dataset.requiredGroup)
-                    .filter(Boolean)
-            )
-        ];
-
-        requiredGroups.forEach(groupName => {
-            const group = panel.querySelector(`[data-required-group="${CSS.escape(groupName)}"]`);
-            if (!group || groupComplete(panel, groupName)) return;
-
-            incomplete.push({
-                type: "group",
-                element: group,
-                focusTarget: getFirstFocusableElement(group),
-                message: `${getRequiredGroupQuestionText(group)} is required. Choose or enter an answer.`
-            });
-        });
-
-        const groupedRequiredFields = new Set();
-
-        panel.querySelectorAll("[data-required-group]").forEach(group => {
-            group.querySelectorAll("[data-required], [data-required-check]").forEach(field => {
-                groupedRequiredFields.add(field);
-            });
-        });
-
-        const directRequired = [...panel.querySelectorAll("[data-required], [data-required-check]")]
-            .filter(field => !groupedRequiredFields.has(field));
-
-        directRequired.forEach(field => {
-            if (isFilled(field)) return;
-
-            const isHidden = field.type === "hidden";
-            const focusTarget = isHidden
-                ? document.getElementById("videoStatus") || field.closest("section")
-                : field;
-
-            incomplete.push({
-                type: "field",
-                element: field,
-                focusTarget,
-                message: `${getRequiredFieldLabelText(field)} is required.`
-            });
-        });
-
-        if (panel.dataset.tab === "2") {
-            for (let i = 1; i <= 5; i++) {
-                if (form.querySelector(`[name="rubric${i}"]:checked`)) continue;
-
-                incomplete.push({
-                    type: "rubric",
-                    element: form.querySelector(`[name="rubric${i}"]`)?.closest("tr"),
-                    focusTarget: form.querySelector(`[name="rubric${i}"]`),
-                    message: `Rubric row ${i} is required. Select one score for that row.`
-                });
-            }
-        }
-
-        return incomplete;
-    }
-
-    function setRequiredState(target, isInvalid) {
-        if (!target) return;
-
-        target.setAttribute("aria-invalid", String(isInvalid));
-        target.classList.toggle("required-missing", isInvalid);
-    }
-
-    function announceRequiredMessage(message) {
-        const liveRegion = document.getElementById("requiredFieldAnnouncement");
-        if (!liveRegion) return;
-
-        liveRegion.hidden = false;
-        liveRegion.textContent = "";
-
-        window.setTimeout(() => {
-            liveRegion.textContent = message;
-        }, 10);
-    }
-
-    function clearRequiredMessage() {
-        const liveRegion = document.getElementById("requiredFieldAnnouncement");
-        if (!liveRegion) return;
-
-        liveRegion.textContent = "";
-        liveRegion.hidden = true;
-    }
-
-    function updateRequiredAccessibility(panel = tabPanels[state.activeTab]) {
-        if (!panel) return;
-
-        const incomplete = getIncompleteRequirements(panel);
-        const incompleteElements = new Set(incomplete.map(item => item.element).filter(Boolean));
-
-        panel.querySelectorAll("[data-required-group]").forEach(group => {
-            setRequiredState(group, incompleteElements.has(group));
-
-            group.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
-                input.setAttribute("aria-invalid", String(incompleteElements.has(group)));
-            });
-        });
-
-        panel.querySelectorAll("[data-required], [data-required-check]").forEach(field => {
-            if (field.closest("[data-required-group]")) return;
-            setRequiredState(field, incompleteElements.has(field));
-        });
-    }
-
     function getOptionTextElement(label) {
         let textElement = label.querySelector(".screen-reader-option-text");
         if (textElement) return textElement;
@@ -307,37 +140,139 @@ function initializeScreenReaderQuestionLabels() {
     });
 }
 
+function getTextFromIds(idList) {
+    return String(idList || "")
+        .split(/\s+/)
+        .map(id => document.getElementById(id)?.textContent?.trim())
+        .filter(Boolean)
+        .join(" ");
+}
+
+function getRequirementText(element) {
+    if (!element) return "This field";
+
+    const labelledText = getTextFromIds(element.getAttribute("aria-labelledby"));
+    if (labelledText) return labelledText;
+
+    const describedText = getTextFromIds(element.getAttribute("aria-describedby"));
+    if (describedText) return describedText;
+
+    const legend = element.querySelector?.("legend");
+    if (legend?.textContent?.trim()) return legend.textContent.trim();
+
+    const internalPrompt = element.querySelector?.(".callout.teal, .drag-instructions");
+    if (internalPrompt?.textContent?.trim()) return internalPrompt.textContent.trim();
+
+    if (element.id) {
+        const explicitLabel = form?.querySelector(`label[for="${CSS.escape(element.id)}"]`);
+        if (explicitLabel?.textContent?.trim()) return explicitLabel.textContent.trim();
+    }
+
+    const wrappingLabel = element.closest?.("label");
+    if (wrappingLabel?.textContent?.trim()) return wrappingLabel.textContent.trim();
+
+    let sibling = element.previousElementSibling;
+    while (sibling) {
+        if (sibling.matches(".callout.teal, label.callout, p.callout, h2, h3")) {
+            return sibling.textContent.trim();
+        }
+        sibling = sibling.previousElementSibling;
+    }
+
+    return element.dataset?.requiredGroup || element.name || element.id || "This field";
+}
+
+function ensureValidationAnnouncementRegion() {
+    let region = document.getElementById("nativeValidationAnnouncement");
+    if (region) return region;
+
+    region = document.createElement("div");
+    region.id = "nativeValidationAnnouncement";
+    region.className = "screen-reader-only";
+    region.setAttribute("role", "alert");
+    region.setAttribute("aria-live", "assertive");
+    region.setAttribute("aria-atomic", "true");
+
+    if (form) form.prepend(region);
+    else document.body.prepend(region);
+
+    return region;
+}
+
+function announceValidationMessage(message) {
+    const region = ensureValidationAnnouncementRegion();
+    region.textContent = "";
+
+    window.setTimeout(() => {
+        region.textContent = message;
+    }, 10);
+}
+
+function clearValidationAnnouncement() {
+    const region = document.getElementById("nativeValidationAnnouncement");
+    if (region) region.textContent = "";
+}
+
+function focusCustomRequirement(item) {
+    if (!item?.focusTarget) return;
+
+    item.focusTarget.focus({ preventScroll: false });
+
+    if (typeof item.focusTarget.scrollIntoView === "function") {
+        item.focusTarget.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+}
+
+function getCustomIncompleteRequirement(panel) {
+    if (!panel) return null;
+
+    const videoInput = panel.querySelector("#watchedVideo");
+    const timerInput = panel.querySelector("#videoTimerComplete");
+    const videoStatus = document.getElementById("videoStatus");
+
+    if ((videoInput && !isFilled(videoInput)) || (timerInput && !isFilled(timerInput))) {
+        if (videoStatus) {
+            videoStatus.setAttribute("tabindex", "-1");
+            videoStatus.setAttribute("aria-invalid", "true");
+        }
+
+        return {
+            focusTarget: videoStatus || panel,
+            message: "The video is required. Watch the video before continuing."
+        };
+    }
+
+    const emptyHiddenRequired = [...panel.querySelectorAll('input[type="hidden"][data-required]')]
+        .filter(input => !isFilled(input));
+
+    if (emptyHiddenRequired.length) {
+        const firstHiddenInput = emptyHiddenRequired[0];
+        const dropZone = panel.querySelector(`[data-target="${CSS.escape(firstHiddenInput.id)}"]`);
+        const activity = firstHiddenInput.closest(".matching-activity, .drag-match-activity, [data-required-group]");
+        const activityText = getRequirementText(activity || firstHiddenInput);
+        const message = `${activityText} is required. Complete this activity before continuing.`;
+        const focusTarget = dropZone || activity || panel;
+
+        if (focusTarget) {
+            focusTarget.setAttribute("tabindex", focusTarget.getAttribute("tabindex") || "-1");
+            focusTarget.setAttribute("aria-invalid", "true");
+        }
+
+        return {
+            focusTarget,
+            message
+        };
+    }
+
+    return null;
+}
+
 function initializeNativeRequiredValidation() {
     if (!form) return;
 
-    function getQuestionText(group) {
-        const labelledIds = group.getAttribute("aria-labelledby");
+    ensureValidationAnnouncementRegion();
 
-        if (labelledIds) {
-            const labelledText = labelledIds
-                .split(/\s+/)
-                .map(id => document.getElementById(id)?.textContent?.trim())
-                .filter(Boolean)
-                .join(" ");
-
-            if (labelledText) return labelledText;
-        }
-
-        const legend = group.querySelector("legend");
-        if (legend?.textContent?.trim()) return legend.textContent.trim();
-
-        let sibling = group.previousElementSibling;
-        while (sibling) {
-            if (sibling.matches(".callout.teal, label.callout, p.callout")) {
-                return sibling.textContent.trim();
-            }
-            sibling = sibling.previousElementSibling;
-        }
-
-        return "This question";
-    }
-
-    // Native required works well for text fields, textareas, selects, and URLs.
+    // Native required works well for text fields, textareas, selects, URLs, and radio groups.
     form.querySelectorAll("[data-required], [data-required-check]").forEach(field => {
         if (field.type === "hidden") return;
 
@@ -347,11 +282,13 @@ function initializeNativeRequiredValidation() {
         field.addEventListener("input", () => {
             field.setCustomValidity("");
             field.setAttribute("aria-invalid", "false");
+            clearValidationAnnouncement();
         });
 
         field.addEventListener("change", () => {
             field.setCustomValidity("");
             field.setAttribute("aria-invalid", "false");
+            clearValidationAnnouncement();
         });
     });
 
@@ -359,19 +296,29 @@ function initializeNativeRequiredValidation() {
         const radios = [...group.querySelectorAll('input[type="radio"]')];
         const checkboxes = [...group.querySelectorAll('input[type="checkbox"]')];
 
-        // Radio groups: native required works.
+        group.setAttribute("aria-required", "true");
+        group.setAttribute("aria-invalid", "false");
+
+        // Radio groups: native required works when each radio in the group is marked required.
         radios.forEach(radio => {
             radio.required = true;
             radio.setAttribute("aria-required", "true");
+            radio.addEventListener("change", () => {
+                group.setAttribute("aria-invalid", "false");
+                radios.forEach(item => item.setAttribute("aria-invalid", "false"));
+                clearValidationAnnouncement();
+            });
         });
 
-        // Checkbox groups: native required alone does NOT mean "choose at least one."
-        // So we use native custom validity on the first checkbox in the group.
+        // Checkbox groups: native required alone would require every checkbox.
+        // Custom validity on the first checkbox gives native browser validation for "select at least one."
         if (checkboxes.length) {
-            const errorMessage = `${getQuestionText(group)} is required. Select at least one option.`;
+            const errorMessage = `${getRequirementText(group)} is required. Select at least one option.`;
 
             function updateCheckboxGroupValidity() {
                 const hasCheckedOption = checkboxes.some(checkbox => checkbox.checked);
+
+                group.setAttribute("aria-invalid", String(!hasCheckedOption));
 
                 checkboxes.forEach((checkbox, index) => {
                     checkbox.setAttribute("aria-required", "true");
@@ -383,6 +330,8 @@ function initializeNativeRequiredValidation() {
                         checkbox.setCustomValidity("");
                     }
                 });
+
+                if (hasCheckedOption) clearValidationAnnouncement();
             }
 
             checkboxes.forEach(checkbox => {
@@ -395,6 +344,9 @@ function initializeNativeRequiredValidation() {
 
     form.addEventListener("invalid", event => {
         event.target.setAttribute("aria-invalid", "true");
+
+        const group = event.target.closest("fieldset[data-required-group]");
+        if (group) group.setAttribute("aria-invalid", "true");
     }, true);
 }
 
@@ -413,8 +365,19 @@ function reportActiveTabValidity() {
 
     if (firstInvalidControl) {
         firstInvalidControl.setAttribute("aria-invalid", "true");
+
+        const group = firstInvalidControl.closest("fieldset[data-required-group]");
+        if (group) group.setAttribute("aria-invalid", "true");
+
         firstInvalidControl.focus();
         firstInvalidControl.reportValidity();
+        return false;
+    }
+
+    const customMissing = getCustomIncompleteRequirement(panel);
+    if (customMissing) {
+        focusCustomRequirement(customMissing);
+        announceValidationMessage(customMissing.message);
         return false;
     }
 
@@ -471,111 +434,6 @@ function loadState() {
             }
         });
     });
-}
-
-function resetTestingProgress() {
-    const confirmed = confirm(
-        "Reset testing progress? This will clear saved lesson progress and reload the page."
-    );
-
-    if (!confirmed) return;
-
-    Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
-    location.reload();
-}
-
-/* ============================================================
-  Testing Helper
-  Run debugTabRequirements(0), debugTabRequirements(1), etc.
-  ============================================================ */
-
-function debugTabRequirements(tabIndex = state.activeTab) {
-    const panel = tabPanels[tabIndex];
-
-    if (!panel) {
-        console.warn(`No tab panel found for tab index ${tabIndex}.`);
-        return [];
-    }
-
-    const incomplete = [];
-    const requiredGroups = [
-        ...new Set(
-            [...panel.querySelectorAll("[data-required-group]")]
-                .map(group => group.dataset.requiredGroup)
-        )
-    ];
-
-    requiredGroups.forEach(groupName => {
-        const group = panel.querySelector(`[data-required-group="${CSS.escape(groupName)}"]`);
-        const namedFields = [...group.querySelectorAll(`[name="${CSS.escape(groupName)}"]`)];
-        const requiredFields = [...group.querySelectorAll("[data-required], [data-required-check]")];
-
-        let complete = true;
-
-        if (namedFields.length > 0) {
-            const hasCheckable = namedFields.some(field =>
-                field.type === "radio" || field.type === "checkbox"
-            );
-
-            complete = hasCheckable
-                ? namedFields.some(field => field.checked)
-                : namedFields.every(isFilled);
-        } else if (requiredFields.length > 0) {
-            complete = requiredFields.every(isFilled);
-        }
-
-        if (!complete) {
-            incomplete.push({
-                type: "group",
-                name: groupName,
-                message: `Required group "${groupName}" is incomplete.`
-            });
-        }
-    });
-
-    const groupedRequiredFields = new Set();
-
-    panel.querySelectorAll("[data-required-group]").forEach(group => {
-        group.querySelectorAll("[data-required], [data-required-check]").forEach(field => {
-            groupedRequiredFields.add(field);
-        });
-    });
-
-    const directRequired = [...panel.querySelectorAll("[data-required], [data-required-check]")]
-        .filter(field => !groupedRequiredFields.has(field));
-
-    directRequired.forEach(field => {
-        if (!isFilled(field)) {
-            incomplete.push({
-                type: "field",
-                name: field.name || field.id || "(unnamed field)",
-                id: field.id || "",
-                tag: field.tagName.toLowerCase(),
-                message: `Required field "${field.name || field.id || "(unnamed field)"}" is incomplete.`
-            });
-        }
-    });
-
-    if (tabIndex === 2) {
-        for (let i = 1; i <= 5; i++) {
-            if (!form.querySelector(`[name="rubric${i}"]:checked`)) {
-                incomplete.push({
-                    type: "rubric",
-                    name: `rubric${i}`,
-                    message: `Rubric row ${i} is incomplete.`
-                });
-            }
-        }
-    }
-
-    if (incomplete.length === 0) {
-        console.log(`✅ Tab ${tabIndex + 1} is complete.`);
-    } else {
-        console.table(incomplete);
-        console.warn(`❌ Tab ${tabIndex + 1} has ${incomplete.length} incomplete requirement(s).`);
-    }
-
-    return incomplete;
 }
 
 /* ============================================================
@@ -681,15 +539,7 @@ function updateUnlocks() {
         } else if (complete && isLastTab) {
             box.textContent = "Lesson complete. You can print or save your work as a PDF.";
         } else if (!complete && !isLastTab) {
-            const incomplete = getIncompleteRequirements(tabPanels[index]);
-            const countText = incomplete.length === 1
-                ? "1 required item is still blank"
-                : `${incomplete.length} required items are still blank`;
-            const firstMissing = incomplete[0]?.message
-                ? ` First missing item: ${incomplete[0].message}`
-                : "";
-
-            box.textContent = `Complete everything in this tab to unlock Tab ${index + 2}. ${countText}.${firstMissing}`;
+            box.textContent = `Complete everything in this tab to unlock Tab ${index + 2}.`;
         }
     });
 
@@ -990,12 +840,97 @@ function initializeSentenceBuilderFeedback() {
   YouTube Video Gate
   ============================================================ */
 
+function initializeAccessibleVideoFocus() {
+    const videoElement = document.getElementById("genaiVideo");
+    const videoStatus = document.getElementById("videoStatus");
+
+    if (!videoElement) return null;
+
+    let wrapper = videoElement.closest(".video-accessible-wrapper");
+
+    if (!wrapper) {
+        wrapper = document.createElement("div");
+        wrapper.className = "video-accessible-wrapper";
+
+        videoElement.parentNode.insertBefore(wrapper, videoElement);
+        wrapper.appendChild(videoElement);
+    }
+
+    let instructions = document.getElementById("videoKeyboardInstructions");
+
+    if (!instructions) {
+        instructions = document.createElement("p");
+        instructions.id = "videoKeyboardInstructions";
+        instructions.className = "video-accessible-instructions";
+        instructions.textContent = "Video. Press Tab again to enter the video controls.";
+
+        wrapper.insertBefore(instructions, wrapper.firstChild);
+    }
+
+    wrapper.setAttribute("tabindex", "0");
+    wrapper.setAttribute("role", "group");
+    wrapper.setAttribute("aria-labelledby", "videoKeyboardInstructions");
+
+    if (videoStatus) {
+        wrapper.setAttribute("aria-describedby", "videoStatus");
+        videoStatus.setAttribute("role", "status");
+        videoStatus.setAttribute("aria-live", "polite");
+        videoStatus.setAttribute("aria-atomic", "true");
+    }
+
+    wrapper.addEventListener("keydown", event => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+
+        const iframe = wrapper.querySelector("iframe");
+
+        if (iframe) {
+            event.preventDefault();
+            iframe.focus();
+        }
+    });
+
+    return wrapper;
+}
+
+function initializeLocalVideoAnnouncements() {
+    const video = document.getElementById("howToVideo");
+    const status = document.getElementById("howToVideoStatus");
+
+    if (!video || !status) return;
+
+    function announce(message) {
+        status.textContent = "";
+
+        window.setTimeout(() => {
+            status.textContent = message;
+        }, 10);
+    }
+
+    video.addEventListener("play", () => {
+        announce("Video is playing.");
+    });
+
+    video.addEventListener("pause", () => {
+        if (!video.ended) {
+            announce("Video is paused.");
+        }
+    });
+
+    video.addEventListener("ended", () => {
+        announce("Video has ended.");
+    });
+}
+
 function initializeYouTubeVideoGate() {
     const videoInput = document.getElementById("watchedVideo");
     const timerInput = document.getElementById("videoTimerComplete");
     const videoStatus = document.getElementById("videoStatus");
 
-    if (!videoInput || !timerInput || !videoStatus || !document.getElementById("genaiVideo")) return;
+    if (!document.getElementById("genaiVideo")) return;
+
+    initializeAccessibleVideoFocus();
+
+    if (!videoInput || !timerInput || !videoStatus) return;
 
     updateVideoStatusMessage();
 
@@ -1190,15 +1125,6 @@ function updateRubricScore() {
     }
 
     scoreOutput.textContent = total;
-}
-
-function getRubricOverallRatingFromScore() {
-    const score = Number(document.getElementById("rubricScore")?.textContent || 0);
-
-    if (score >= 13 && score <= 15) return "nailed it";
-    if (score >= 10 && score <= 12) return "pretty good";
-    if (score >= 6 && score <= 9) return "needs improvement";
-    return "not credible";
 }
 
 function initializeRubricRowCheck() {
@@ -2126,10 +2052,6 @@ function initializeTogglePanels() {
     });
 }
 
-function initializeTestingReset() {
-    resetTestingButton?.addEventListener("click", resetTestingProgress);
-}
-
 function initializeWordCounts() {
     const counters = [...document.querySelectorAll("[data-word-count-for]")];
     if (!counters.length) return;
@@ -2170,7 +2092,6 @@ function initializeLesson() {
     loadState();
     loadVideoGateProgress();
 
-    initializeTestingReset();
     initializeTabs();
     initializeFormListeners();
     initializeTogglePanels();
@@ -2195,14 +2116,15 @@ function initializeLesson() {
     initializeYouTubeVideoGate();
     initializeScreenReaderQuestionLabels();
     initializeNativeRequiredValidation();
+    initializeLocalVideoAnnouncements();
 
     updateRubricScore();
     updateUnlocks();
     initializeAutoResizeTextareas();
     initializePrintTextareaCopies();
 
-    initializePrintTitleCleanup()
-    initializeBackToTopButtons()
+    initializePrintTitleCleanup();
+    initializeBackToTopButtons();
     showTab(state.unlockedTabs.includes(state.activeTab) ? state.activeTab : 0, false);
 }
 
