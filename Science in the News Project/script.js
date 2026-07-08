@@ -610,7 +610,7 @@ function initializeSentenceBuilderFeedback() {
         } else if (correctCount === selects.length) {
             setSentenceFeedback(
                 "correct",
-                "Nice work! You correctly identified how each type of scientific source is used. Primary sources present original research, secondary sources analyze and interpret that research, and tertiary sources help build background knowledge. This understanding will help you choose the right sources when reading and writing about science"
+                "Nice work! You correctly identified how each type of scientific source is used. Primary sources present original research, secondary sources analyze and interpret that research, and tertiary sources help build background knowledge. This understanding will help you choose the right sources when reading and writing about science."
             );
         } else {
             setSentenceFeedback(
@@ -901,8 +901,8 @@ const CHECK_ANSWER_CONFIG = {
         correctFeedback: "Nice work. Credibility comes from clear evidence, reliable sources, and writing that is easy to understand. This is your goal. Now, can AI do this?",
         missingFeedback: {
             "Clear evidence": "Your summary needs specific, accurate details from the research.",
-            "Reliable sources": "Credibility depends on which sources the information comes from",
-            "Easy to understand": "A credible summary should be clear and well-written"
+            "Reliable sources": "Credibility depends on which sources the information comes from.",
+            "Easy to understand": "A credible summary should be clear and well-written."
         },
         addedFeedback: {
             "Personal opinions": " Personal opinions can introduce bias and reduce credibility.",
@@ -1032,11 +1032,11 @@ const CHECK_ANSWER_CONFIG = {
     },
     scienceNewsEvaluation: {
         correct: ["original source"],
-        correctFeedback: "Nice work. Checking the original scientific source helps to verify the claims and understand the original context of the information shared. It is important in ensuring accuracy, preventing the spread of misinformation, and identifying any biases.",
+        correctFeedback: "Correct. Checking the original scientific source helps to verify the claims and understand the original context of the information shared. It is important in ensuring accuracy, preventing the spread of misinformation, and identifying any biases.",
         feedbackByAnswer: {
             headline: "Please try again. News article headlines can be misleading and used as clickbait, to promote financial gain, increase user engagement, push a specific narrative, or meet the pressures of the 24-hour news cycle.",
-            "original source": "Nice work. Checking the original scientific source helps to verify the claims and understand the original context of the information shared. It is important in ensuring accuracy, preventing the spread of misinformation, and identifying any bias.",
-            "sounds interesting": "Please try again. Prioritizing emotional engagement with a news article over the facts is harmful. It can lead to misinformation, cognitive bias, and engagement in misleading arguments.",
+            "original source": "Correct. Checking the original scientific source helps to verify the claims and understand the original context of the information shared. It is important in ensuring accuracy, preventing the spread of misinformation, and identifying any bias.",
+            "sounds interesting": "Please try again. Prioritizing emotional engagement with a news article over the facts can lead to misinformation, cognitive bias, and engagement in misleading arguments.",
             likes: "Please try again. Popularity on the internet is not proof that information is reliable because posts can spread quickly even when they contain mistakes, exaggerations, or false claims."
         },
         incorrectFeedback: "Please try again."
