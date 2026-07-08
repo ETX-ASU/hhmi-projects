@@ -159,7 +159,11 @@
               <p class="sentence-item">
                 To quickly learn about how cells use DNA to make proteins, a student may use a biology textbook, which
                 is a
-                <select class="inline-select sentence-select" name="sourceSentence1" data-required>
+                <label class="screen-reader-only" for="sourceSentence1">
+                  Choose the source type for the biology textbook example.
+                </label>
+                <select id="sourceSentence1" class="inline-select sentence-select" name="sourceSentence1"
+                  data-required>
                   <option value="">Choose...</option>
                   <option value="Primary">
                     primary
@@ -176,7 +180,11 @@
 
               <p class="sentence-item">
                 A journal article written by the biologist who tested how a gene affects plant growth is a
-                <select class="inline-select sentence-select" name="sourceSentence2" data-required>
+                <label class="screen-reader-only" for="sourceSentence2">
+                  Choose the source type for the journal article example.
+                </label>
+                <select id="sourceSentence2" class="inline-select sentence-select" name="sourceSentence2"
+                  data-required>
                   <option value="">Choose...</option>
                   <option value="primary" data-correct="true">
                     primary
@@ -194,7 +202,11 @@
               <p class="sentence-item">
                 A science writer reads a research study on antibiotic resistance and writes an article explaining the
                 findings. This article is a
-                <select class="inline-select sentence-select" name="sourceSentence3" data-required>
+                <label class="screen-reader-only" for="sourceSentence3">
+                  Choose the source type for the science news article example.
+                </label>
+                <select id="sourceSentence3" class="inline-select sentence-select" name="sourceSentence3"
+                  data-required>
                   <option value="">Choose...</option>
                   <option value="Primary">
                     primary
@@ -411,8 +423,8 @@
             Optional video overview.
           </div>
 
-          <input type="hidden" id="watchedVideo" name="watchedVideo" value="" />
-          <input type="hidden" id="videoTimerComplete" name="videoTimerComplete" value="" />
+          <input type="hidden" id="watchedVideo" name="watchedVideo" value="" data-required />
+          <input type="hidden" id="videoTimerComplete" name="videoTimerComplete" value="" data-required />
 
           <p class="callout teal">
             GenAI is a form of AI that can _________________

@@ -257,7 +257,7 @@ section.card {
 }
 
 .info-tile strong {
-    color: var(--teal);
+    color: #00656a;
 }
 
 .footer-actions {
@@ -799,7 +799,7 @@ fieldset.answer-warning {
 
 .definition-card p {
     margin: 0 0 8px;
-    color: var(--teal);
+    color: #00656a;
     font-size: 1rem;
     font-weight: bold;
 }

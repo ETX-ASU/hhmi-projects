@@ -414,13 +414,11 @@ function initializeNativeRequiredValidation() {
         const radios = [...group.querySelectorAll('input[type="radio"]')];
         const checkboxes = [...group.querySelectorAll('input[type="checkbox"]')];
 
-        group.setAttribute("aria-required", "true");
         group.setAttribute("aria-invalid", "false");
 
         // Radio groups: native required works when each radio in the group is marked required.
         radios.forEach(radio => {
             radio.required = true;
-            radio.setAttribute("aria-required", "true");
             radio.addEventListener("change", () => {
                 group.setAttribute("aria-invalid", "false");
                 radios.forEach(item => item.setAttribute("aria-invalid", "false"));
@@ -439,7 +437,6 @@ function initializeNativeRequiredValidation() {
                 group.setAttribute("aria-invalid", String(!hasCheckedOption));
 
                 checkboxes.forEach((checkbox, index) => {
-                    checkbox.setAttribute("aria-required", "true");
                     checkbox.setAttribute("aria-invalid", String(!hasCheckedOption));
 
                     if (index === 0) {
