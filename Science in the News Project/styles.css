@@ -98,22 +98,6 @@ ul {
     border: 0;
 }
 
-.local-video-accessible-wrapper {
-    max-width: 560px;
-    margin-top: 1rem;
-}
-
-.local-video-accessible-wrapper:focus {
-    outline: 5px solid var(--teal);
-    outline-offset: 6px;
-    border-radius: 12px;
-}
-
-.video-accessible-instructions {
-    margin-bottom: 0.75rem;
-    font-weight: 600;
-}
-
 /* ============================================================
     3. Header / Hero
    ============================================================ */
@@ -160,11 +144,8 @@ header.hero {
     font-weight: bold;
     font-size: 0.9rem;
 }
-
-
-
 /* ============================================================
-    5. Tabs and Tab Panels
+    4. Tabs and Tab Panels
    ============================================================ */
 
 .tabs {
@@ -204,7 +185,6 @@ header.hero {
 .tab-button.locked {
     opacity: 0.7;
     cursor: not-allowed;
-
 }
 
 .tab-button.locked::after {
@@ -218,11 +198,8 @@ header.hero {
 .tab-panel.active {
     display: block;
 }
-
-
-
 /* ============================================================
-    6. Cards, Callouts, and General Layout
+    5. Cards, Callouts, and General Layout
    ============================================================ */
 
 .card,
@@ -260,6 +237,10 @@ section.card {
     margin: 0;
 }
 
+.callout p + p {
+    margin-top: 1rem;
+}
+
 .source-grid,
 .ai-grid {
     display: grid;
@@ -292,7 +273,7 @@ section.card {
 }
 
 /* ============================================================
-    7. Question Images
+    6. Question Images
    ============================================================ */
 
 .question-image-wrap {
@@ -332,7 +313,7 @@ section.card {
 }
 
 /* ============================================================
-    8. Form Elements
+    7. Form Elements
    ============================================================ */
 
 label,
@@ -356,7 +337,6 @@ select {
 
 textarea {
     min-height: 130px;
-    resize: vertical;
     overflow: hidden;
     resize: none;
 }
@@ -413,7 +393,7 @@ fieldset {
 }
 
 /* ============================================================
-    9. Buttons
+    8. Buttons
    ============================================================ */
 
 .print-button,
@@ -453,7 +433,7 @@ fieldset {
 }
 
 /* ============================================================
-    10. Feedback Rows and Feedback Text
+    9. Feedback Rows and Feedback Text
    ============================================================ */
 
 .check-answer-row,
@@ -553,7 +533,7 @@ fieldset.answer-warning {
 }
 
 /* ============================================================
-    11. Sentence Builder Activity
+    10. Sentence Builder Activity
    ============================================================ */
 
 .sentence-builder {
@@ -645,7 +625,7 @@ fieldset.answer-warning {
 }
 
 /* ============================================================
-    12. Source Matching Activity
+    11. Source Matching Activity
    ============================================================ */
 
 .word-bank {
@@ -725,10 +705,9 @@ fieldset.answer-warning {
 }
 
 /* ============================================================
-    Source Matching Focus / Selected States
+    12. Source Matching Focus and Selection
    ============================================================ */
 
-/* Remove smaller default focus from the token itself */
 .drag-token:focus-visible {
     outline: 4px solid var(--teal);
     outline-offset: 4px;
@@ -737,7 +716,6 @@ fieldset.answer-warning {
         0 0 0 10px var(--green);
 }
 
-/* Make selected word-bank token match answer-choice styling */
 .drag-token.selected {
     outline: 4px solid var(--teal);
     outline-offset: 4px;
@@ -748,7 +726,6 @@ fieldset.answer-warning {
 
 }
 
-/* Make keyboard-focused drop zones match answer-choice styling */
 .drop-zone:focus-visible {
     outline: 4px solid var(--teal);
     outline-offset: 4px;
@@ -757,19 +734,16 @@ fieldset.answer-warning {
         0 0 0 10px var(--green);
 }
 
-/* Make the drop zone look ready when a word is selected */
 .drop-zone:focus-visible .drop-zone-text {
     color: var(--text);
 }
 
-/* Keep filled drop zones visually clear */
 .drop-zone.filled {
     border-color: var(--teal);
     background: #effaf3;
     color: var(--text);
 }
 
-/* Optional: make placed/filled answer text stronger */
 .drop-zone.filled .drop-zone-text {
     font-weight: 900;
 }
@@ -881,7 +855,7 @@ fieldset.answer-warning {
 }
 
 /* ============================================================
-    13. Workspace / Chatbot Split-Screen Widget
+    13. Workspace and Chatbot Links
    ============================================================ */
 
 .workspace-widget {
@@ -934,6 +908,22 @@ fieldset.answer-warning {
 /* ============================================================
     14. Video and Keyboard Helpers
    ============================================================ */
+
+.local-video-accessible-wrapper {
+    max-width: 560px;
+    margin-top: 1rem;
+}
+
+.local-video-accessible-wrapper:focus {
+    outline: 5px solid var(--teal);
+    outline-offset: 6px;
+    border-radius: 12px;
+}
+
+.video-accessible-instructions {
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
 
 .video-embed {
     position: relative;
@@ -1059,7 +1049,6 @@ table.rubric {
         0 0 0 10px var(--green);
 }
 
-/* Strong keyboard focus styles for rubric choices */
 .rubric .rubric-choice:focus-within {
     outline: 4px solid var(--black);
     outline-offset: -4px;
@@ -1069,7 +1058,6 @@ table.rubric {
         0 0 0 4px rgba(0, 163, 79, 0.25);
 }
 
-/* Make the selected rubric score more noticeable */
 .rubric .rubric-choice:has(input[type="radio"]:checked) {
     outline: 4px solid var(--teal);
     outline-offset: -4px;
@@ -1079,7 +1067,6 @@ table.rubric {
         0 0 0 4px rgba(9, 141, 148, 0.2);
 }
 
-/* When the selected score also has keyboard focus */
 .rubric .rubric-choice:has(input[type="radio"]:checked):focus-within {
     outline: 4px solid var(--green);
     background: #effaf3;
@@ -1182,7 +1169,6 @@ table.rubric {
     box-shadow: none;
 }
 
-/* Make focused options stand out */
 .option:focus-within {
     outline: 4px solid var(--teal);
     outline-offset: 3px;
@@ -1213,7 +1199,7 @@ table.rubric {
 }
 
 /* ============================================================
-    19. Print Styles
+    20. Print Styles
    ============================================================ */
 
 @media print {
@@ -1416,11 +1402,6 @@ table.rubric {
     table.rubric {
         min-width: 0;
         width: 100%;
-    }
-
-    body {
-        background: #fff;
-        color: #000;
     }
 
     header.hero,

@@ -3,7 +3,7 @@
     ------------------------------------------------------------
     Handles lesson progress, tab locking, answer checks, autofill,
     drag/drop activities, feedback buttons, rubric scoring, video
-    completion, word counts, and print/reset helpers.
+    completion, accessibility, word counts, and print helpers.
 */
 
 /* ============================================================
@@ -47,7 +47,7 @@ let remainingWatchSeconds = VIDEO_CONFIG.requiredWatchSeconds;
 let watchTimerStarted = false;
 
 /* ============================================================
-  Utility Helpers
+  General Utilities
   ============================================================ */
 
 function safeJsonParse(value, fallback = {}) {
@@ -74,6 +74,10 @@ function countWords(text) {
         .split(/\s+/)
         .filter(Boolean).length;
 }
+
+/* ============================================================
+  Accessibility and Validation
+  ============================================================ */
 
 function initializeScreenReaderQuestionLabels() {
     if (!form) return;
@@ -213,6 +217,116 @@ function clearValidationAnnouncement() {
     if (region) region.textContent = "";
 }
 
+// Add concise, state-aware descriptions without replacing visible button names.
+function getButtonDescription(button) {
+    const tabIndex = Number(button.dataset.tabButton);
+
+    if (Number.isInteger(tabIndex)) {
+        if (button.classList.contains("active")) {
+            return `You are currently viewing Tab ${tabIndex + 1}.`;
+        }
+
+        if (button.classList.contains("locked")) {
+            return `Tab ${tabIndex + 1} is locked. Complete the required items in the current tab before selecting this button.`;
+        }
+
+        return `Select this button to open Tab ${tabIndex + 1}.`;
+    }
+
+    if (button.dataset.toggle) {
+        const isOpen = button.getAttribute("aria-expanded") === "true";
+        const action = isOpen ? "hide" : "show";
+
+        if (button.dataset.toggle === "helpPanel") {
+            return `Select this button to ${action} the video instructions.`;
+        }
+
+        return `Select this button to ${action} the keyboard instructions.`;
+    }
+
+    if (button.classList.contains("drag-token")) {
+        return `Select ${button.textContent.trim()}, then select a matching drop zone.`;
+    }
+
+    if (button.classList.contains("back-to-top-button")) {
+        return "Select this button to return to the top of the page.";
+    }
+
+    if (button.classList.contains("print-button")) {
+        return "Select this button to open the print dialog and save or print your completed responses.";
+    }
+
+    if (button.id === "clearSourceMatches") {
+        return "Select this button to clear all source-matching answers.";
+    }
+
+    if (button.id === "checkSourceMatches") {
+        return "Select this button to check the source-matching answers and hear feedback.";
+    }
+
+    if (button.id === "checkSentenceBuilder") {
+        return "Select this button to check the sentence answers and hear feedback.";
+    }
+
+    if (button.classList.contains("check-answer-button")) {
+        return "Select this button to check your response and hear feedback.";
+    }
+
+    return `Select this button to activate ${button.textContent.trim()}.`;
+}
+
+function updateButtonDescription(button) {
+    const descriptionId = button.dataset.buttonDescriptionId;
+    const description = descriptionId && document.getElementById(descriptionId);
+
+    if (description) description.textContent = getButtonDescription(button);
+}
+
+function initializeButtonDescriptions() {
+    const buttons = [...document.querySelectorAll("button")];
+    if (!buttons.length) return;
+
+    const descriptionContainer = document.createElement("div");
+    descriptionContainer.id = "buttonDescriptions";
+    descriptionContainer.className = "screen-reader-only";
+    document.body.appendChild(descriptionContainer);
+
+    buttons.forEach((button, index) => {
+        const description = document.createElement("span");
+        description.id = `button-description-${index + 1}`;
+        description.textContent = getButtonDescription(button);
+        descriptionContainer.appendChild(description);
+
+        const existingIds = button.getAttribute("aria-describedby")?.trim();
+        button.setAttribute(
+            "aria-describedby",
+            [existingIds, description.id].filter(Boolean).join(" ")
+        );
+        button.dataset.buttonDescriptionId = description.id;
+    });
+}
+
+// Give assistive technology a useful question label instead of a generic
+// browser message such as "Please fill out this field."
+function getValidationMessage(control) {
+    const group = control.closest("fieldset[data-required-group]");
+    const requirementText = getRequirementText(group || control);
+
+    if (control.validity.typeMismatch) {
+        return `${requirementText} must contain a valid web address.`;
+    }
+
+    if (control.type === "checkbox") {
+        return `${requirementText} is required. Select at least one option.`;
+    }
+
+    if (control.type === "radio") {
+        return `${requirementText} is required. Select one option.`;
+    }
+
+    return `${requirementText} is required. Enter a response.`;
+}
+
 function focusCustomRequirement(item) {
     if (!item?.focusTarget) return;
 
@@ -350,7 +464,7 @@ function initializeNativeRequiredValidation() {
     }, true);
 }
 
-function reportActiveTabValidity() {
+function reportActiveTabValidity(requestedTabIndex) {
     const panel = tabPanels[state.activeTab];
     if (!panel) return true;
 
@@ -369,15 +483,24 @@ function reportActiveTabValidity() {
         const group = firstInvalidControl.closest("fieldset[data-required-group]");
         if (group) group.setAttribute("aria-invalid", "true");
 
+        const destination = Number.isInteger(requestedTabIndex)
+            ? `Cannot open Tab ${requestedTabIndex + 1}. `
+            : "Cannot continue. ";
+
         firstInvalidControl.focus();
         firstInvalidControl.reportValidity();
+        announceValidationMessage(destination + getValidationMessage(firstInvalidControl));
         return false;
     }
 
     const customMissing = getCustomIncompleteRequirement(panel);
     if (customMissing) {
+        const destination = Number.isInteger(requestedTabIndex)
+            ? `Cannot open Tab ${requestedTabIndex + 1}. `
+            : "Cannot continue. ";
+
         focusCustomRequirement(customMissing);
-        announceValidationMessage(customMissing.message);
+        announceValidationMessage(destination + customMissing.message);
         return false;
     }
 
@@ -521,6 +644,7 @@ function updateUnlocks() {
         button.classList.toggle("locked", !unlocked);
         button.disabled = false;
         button.setAttribute("aria-disabled", String(!unlocked));
+        updateButtonDescription(button);
     });
 
     tabPanels.forEach((panel, index) => {
@@ -580,10 +704,20 @@ function initializeSourceMatching() {
     const clearButton = document.getElementById("clearSourceMatches");
     const checkButton = document.getElementById("checkSourceMatches");
     const feedback = document.getElementById("sourceMatchingFeedback");
+    const status = document.getElementById("sourceMatchingStatus");
 
     if (!tokens.length || !zones.length) return;
 
     let selectedValue = null;
+
+    function announceSourceMatchingStatus(message) {
+        if (!status) return;
+
+        status.textContent = "";
+        window.setTimeout(() => {
+            status.textContent = message;
+        }, 10);
+    }
 
     function clearSourceMatchingFeedback() {
         zones.forEach(zone => {
@@ -647,6 +781,7 @@ function initializeSourceMatching() {
         clearExistingValue(value);
         updateZoneDisplay(zone, value);
         clearSelectedToken();
+        announceSourceMatchingStatus(`${value} placed. ${zone.getAttribute("aria-label")}.`);
         saveState();
         updateUnlocks();
     }
@@ -661,6 +796,9 @@ function initializeSourceMatching() {
             tokens.forEach(item => item.classList.remove("selected"));
             token.classList.add("selected");
             selectedValue = token.dataset.value;
+            announceSourceMatchingStatus(
+                `${selectedValue} selected. Press Tab to move to a drop zone, then press Enter or Space to place it.`
+            );
         });
     });
 
@@ -687,7 +825,11 @@ function initializeSourceMatching() {
             }
 
             if (event.key === "Backspace" || event.key === "Delete") {
+                const removedValue = zone.querySelector('input[type="hidden"]')?.value;
                 updateZoneDisplay(zone, "");
+                announceSourceMatchingStatus(
+                    removedValue ? `${removedValue} removed from this drop zone.` : "This drop zone is already empty."
+                );
                 saveState();
                 updateUnlocks();
             }
@@ -743,6 +885,7 @@ function initializeSourceMatching() {
         zones.forEach(zone => updateZoneDisplay(zone, ""));
         clearSelectedToken();
         clearSourceMatchingFeedback();
+        announceSourceMatchingStatus("All source-matching answers were cleared.");
         saveState();
         updateUnlocks();
     });
@@ -2009,7 +2152,7 @@ function initializeTabs() {
             const unlocked = state.unlockedTabs.includes(index);
 
             if (!unlocked) {
-                reportActiveTabValidity();
+                reportActiveTabValidity(index);
                 return;
             }
 
@@ -2040,6 +2183,7 @@ function initializeTogglePanels() {
 
             const isOpen = panel.classList.toggle("open");
             button.setAttribute("aria-expanded", String(isOpen));
+            updateButtonDescription(button);
 
             if (button.dataset.toggle === "helpPanel") {
                 const video = document.getElementById("howToVideo");
@@ -2080,6 +2224,10 @@ function initializeBackToTopButtons() {
                 top: 0,
                 behavior: "smooth"
             });
+
+            // Return keyboard and screen-reader users to the active tab in the
+            // lesson navigation instead of leaving focus at the bottom.
+            tabButtons[state.activeTab]?.focus({ preventScroll: true });
         });
     });
 }
@@ -2089,13 +2237,17 @@ function initializeBackToTopButtons() {
   ============================================================ */
 
 function initializeLesson() {
+    // Restore persisted values before initializing controls that depend on them.
     loadState();
     loadVideoGateProgress();
 
+    // Core navigation and shared interface behavior.
     initializeTabs();
     initializeFormListeners();
     initializeTogglePanels();
+    initializeBackToTopButtons();
 
+    // Activities and their feedback controls.
     initializeSentenceBuilderFeedback();
     initializeSourceMatching();
     initializeCheckAnswerButtons();
@@ -2106,25 +2258,29 @@ function initializeLesson() {
     initializeChatbotSuggestionsFeedback();
     initializeFinalSummaryRevisionFeedback();
 
+    // Keep repeated lesson content synchronized automatically.
     initializeSummaryComparisonAutofill();
     initializeOriginalSummaryAutofill();
     initializeArticleLinkTextAutofill();
     initializeFinalSummaryRevisionAutofill();
     initializeFinalSummaryRevisionDiff();
 
-    initializeWordCounts();
-    initializeYouTubeVideoGate();
+    // Accessibility runs after dynamic answer buttons have been created.
     initializeScreenReaderQuestionLabels();
     initializeNativeRequiredValidation();
-    initializeLocalVideoAnnouncements();
+    initializeButtonDescriptions();
 
-    updateRubricScore();
-    updateUnlocks();
+    // Video, text sizing, and print helpers.
+    initializeYouTubeVideoGate();
+    initializeLocalVideoAnnouncements();
+    initializeWordCounts();
     initializeAutoResizeTextareas();
     initializePrintTextareaCopies();
-
     initializePrintTitleCleanup();
-    initializeBackToTopButtons();
+
+    // Derive the initial interface state after every control is ready.
+    updateRubricScore();
+    updateUnlocks();
     showTab(state.unlockedTabs.includes(state.activeTab) ? state.activeTab : 0, false);
 }
 

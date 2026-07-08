@@ -27,8 +27,7 @@
         <h1>Science News in the Age of Artificial Intelligence (AI)</h1>
         <p>
           Learn how generative AI works, evaluate the reliability of an AI-generated science news summary, and
-          decide
-          how to use AI as a collaborator without giving up your own judgment.
+          decide how to use AI as a collaborator without giving up your own judgment.
         </p>
 
         <p class="chrome-note">Note: Chrome is the recommended browser for this activity.</p>
@@ -52,8 +51,8 @@
 
   <main class="wrap">
     <!-- ======================================================
-            Locked Lesson Tabs
-            ====================================================== -->
+      Lesson Navigation
+      ====================================================== -->
     <nav class="tabs" aria-label="Lesson tabs">
       <button type="button" class="tab-button active" data-tab-button="0">
         1. You Are the Editor
@@ -83,8 +82,8 @@
       </div>
 
       <!-- ==================================================
-            TAB 1: You are the Editor
-            ================================================== -->
+        Tab 1: You Are the Editor
+        ================================================== -->
       <article class="tab-panel active" data-tab="0">
         <!-- Introduction -->
         <section class="card two-col">
@@ -219,14 +218,28 @@
                 scientific source it represents.
               </p>
 
-              <div class="word-bank" aria-label="Word bank">
-                <button type="button" class="drag-token" draggable="true" data-value="Primary">
+              <p id="sourceMatchingKeyboardInstructions" hidden>
+                Keyboard instructions for source matching. First, press Tab to move to a source type button. Press
+                Enter or Space to select it. Next, press Tab to move to the matching drop zone, then press Enter or
+                Space to place the selected source type. To remove an answer, focus its drop zone and press Delete or
+                Backspace. Repeat these steps for all three sources, then select Check Answers.
+              </p>
+
+              <span id="sourceMatchingStatus" class="screen-reader-only" role="status" aria-live="polite"
+                aria-atomic="true"></span>
+
+              <div class="word-bank" role="group" aria-label="Source type word bank"
+                aria-describedby="sourceMatchingKeyboardInstructions">
+                <button type="button" class="drag-token" draggable="true" data-value="Primary"
+                  aria-describedby="sourceMatchingKeyboardInstructions">
                   Primary
                 </button>
-                <button type="button" class="drag-token" draggable="true" data-value="Secondary">
+                <button type="button" class="drag-token" draggable="true" data-value="Secondary"
+                  aria-describedby="sourceMatchingKeyboardInstructions">
                   Secondary
                 </button>
-                <button type="button" class="drag-token" draggable="true" data-value="Tertiary">
+                <button type="button" class="drag-token" draggable="true" data-value="Tertiary"
+                  aria-describedby="sourceMatchingKeyboardInstructions">
                   Tertiary
                 </button>
               </div>
@@ -239,7 +252,8 @@
 
                   <div class="drop-zone-card">
                     <div class="drop-zone" data-target="matchResearch" data-correct="Primary" tabindex="0"
-                      aria-label="Drop source type for the original research article">
+                      aria-label="Drop source type for the original research article"
+                      aria-describedby="sourceMatchingKeyboardInstructions">
                       <span class="drop-zone-text">Drop type here</span>
                       <input type="hidden" id="matchResearch" name="matchResearch" data-required />
                     </div>
@@ -253,7 +267,8 @@
 
                   <div class="drop-zone-card">
                     <div class="drop-zone" data-target="matchNewsArticle" data-correct="Secondary" tabindex="0"
-                      aria-label="Drop source type for the original news article">
+                      aria-label="Drop source type for the Science News Explores article"
+                      aria-describedby="sourceMatchingKeyboardInstructions">
                       <span class="drop-zone-text">Drop type here</span>
                       <input type="hidden" id="matchNewsArticle" name="matchNewsArticle" data-required />
                     </div>
@@ -267,7 +282,8 @@
 
                   <div class="drop-zone-card">
                     <div class="drop-zone" data-target="matchStudentSummary" data-correct="Tertiary" tabindex="0"
-                      aria-label="Drop source type for your summary">
+                      aria-label="Drop source type for your summary"
+                      aria-describedby="sourceMatchingKeyboardInstructions">
                       <span class="drop-zone-text">Drop type here</span>
                       <input type="hidden" id="matchStudentSummary" name="matchStudentSummary" data-required />
                     </div>
@@ -347,8 +363,8 @@
       </article>
 
       <!-- ==================================================
-            TAB 2: What is GenAI?
-            ================================================== -->
+        Tab 2: What Is GenAI?
+        ================================================== -->
       <article class="tab-panel" data-tab="1">
         <section class="card">
           <h2>What is Generative AI?</h2>
@@ -456,8 +472,8 @@
       </article>
 
       <!-- ==================================================
-                  TAB 3: How does GenAI Work?
-                  ================================================== -->
+        Tab 3: Effective Writing with GenAI
+        ================================================== -->
       <article class="tab-panel" data-tab="2">
         <section class="card two-col">
           <div>
@@ -469,7 +485,7 @@
           </div>
 
           <div>
-            <img src="./assets//3_GenAI Icons_Option 1.png" alt="Illustration of generative AI icons."
+            <img src="./assets/3_GenAI Icons_Option 1.png" alt="Illustration of generative AI icons."
               class="question-image wide-image">
           </div>
         </section>
@@ -1021,8 +1037,8 @@
       </article>
 
       <!-- ==================================================
-                  TAB 4: AI as a Tool
-                  ================================================== -->
+        Tab 4: AI as a Tool
+        ================================================== -->
       <article class="tab-panel" data-tab="3">
         <section class="card">
           <h2>A Powerful Tool</h2>
@@ -1112,19 +1128,20 @@
               Complete everything in this tab to unlock Tab 5.
             </div>
           </section>
-          <div class="back-to-top-row">
-            <button type="button" class="secondary-button back-to-top-button">
-              Back to Top ↑
-            </button>
-          </div>
+        </section>
+        <div class="back-to-top-row">
+          <button type="button" class="secondary-button back-to-top-button">
+            Back to Top ↑
+          </button>
+        </div>
       </article>
 
       <!-- ==================================================
-                  TAB 5: Final Thoughts
-                  ================================================== -->
+        Tab 5: Final Thoughts
+        ================================================== -->
       <article class="tab-panel" data-tab="4">
         <section class="card">
-          <section class="card two-col">
+          <div class="two-col">
             <div>
               <h2>Final Thoughts</h2>
               <p>If you'd like to close the split screen, feel free to do so. There's usually a close button in the
@@ -1140,7 +1157,7 @@
                 alt="Overlapping AI windows showing prompts like “explain CRISPR” and “summarize the research paper."
                 class="question-image wide-image" />
             </div>
-          </section>
+          </div>
 
           <label for="noticedSummaries" class="callout teal">
             What does giving feedback to a chatbot tell you about how AI works? Select all that
@@ -1309,12 +1326,11 @@
           <section class="card">
             <div class="callout">
               <p>Throughout this activity, you guided AI, evaluated its output, and used its feedback to strengthen your
-                own thinking and writing</p><br>
+                own thinking and writing.</p>
               <p>AI can be a helpful tool, but it works best when you stay in control. Because it builds sentences based
                 on patterns and probabilities, it can sound confident while still missing details or making small
                 mistakes. That’s why it’s important to read AI-generated summaries critically, checking for accuracy,
-                clarity, and completeness. </p>
-              <br>
+                clarity, and completeness.</p>
               <p>The real strength of AI isn’t just how powerful it is, but <em>how you use it</em>. When used well, AI
                 can help
                 sharpen your ideas, not replace them.</p>
@@ -1331,6 +1347,7 @@
               Complete everything in this tab, then print or save your work.
             </div>
           </section>
+        </section>
       </article>
     </form>
   </main>
