@@ -7,7 +7,7 @@
 */
 
 /* ============================================================
-  Configuration
+    Configuration
   ============================================================ */
 
 const STORAGE_KEYS = {
@@ -22,7 +22,7 @@ const VIDEO_CONFIG = {
 };
 
 /* ============================================================
-  Cached DOM Elements
+    Cached DOM Elements
   ============================================================ */
 
 const form = document.getElementById("lessonForm");
@@ -31,7 +31,7 @@ const tabPanels = [...document.querySelectorAll("[data-tab]")];
 const statusBoxes = [...document.querySelectorAll("[data-status]")];
 
 /* ============================================================
-  Global State
+    Global State
   ============================================================ */
 
 let state = {
@@ -47,7 +47,7 @@ let remainingWatchSeconds = VIDEO_CONFIG.requiredWatchSeconds;
 let watchTimerStarted = false;
 
 /* ============================================================
-  General Utilities
+    General Utilities
   ============================================================ */
 
 function safeJsonParse(value, fallback = {}) {
@@ -76,7 +76,7 @@ function countWords(text) {
 }
 
 /* ============================================================
-  Accessibility and Validation
+    Accessibility and Validation
   ============================================================ */
 
 function initializeScreenReaderQuestionLabels() {
@@ -512,7 +512,7 @@ function reportActiveTabValidity(requestedTabIndex) {
 }
 
 /* ============================================================
-  Progress Saving and Loading
+    Progress Saving and Loading
   ============================================================ */
 
 function saveState() {
@@ -564,7 +564,7 @@ function loadState() {
 }
 
 /* ============================================================
-  Required Completion and Tab Locking
+    Required Completion and Tab Locking
   ============================================================ */
 
 function groupComplete(panel, groupName) {
@@ -699,7 +699,7 @@ function showTab(index, shouldScroll = true) {
 }
 
 /* ============================================================
-  Source Matching Activity
+    Source Matching Activity
   ============================================================ */
 
 function initializeSourceMatching() {
@@ -901,7 +901,7 @@ function initializeSourceMatching() {
 }
 
 /* ============================================================
-  Sentence Builder Activity
+    Sentence Builder Activity
   ============================================================ */
 
 function initializeSentenceBuilderFeedback() {
@@ -984,7 +984,7 @@ function initializeSentenceBuilderFeedback() {
 }
 
 /* ============================================================
-  YouTube Video Gate
+    YouTube Video Gate
   ============================================================ */
 
 function initializeAccessibleVideoFocus() {
@@ -1257,7 +1257,7 @@ function updateVideoStatusMessage() {
 }
 
 /* ============================================================
-  Rubric Scoring and Rubric Completion Check
+    Rubric Scoring and Rubric Completion Check
   ============================================================ */
 
 function updateRubricScore() {
@@ -1319,7 +1319,7 @@ function initializeRubricRowCheck() {
 }
 
 /* ============================================================
-  Multiple Choice / Multiple Select Answer Checks
+    Multiple Choice / Multiple Select Answer Checks
   ============================================================ */
 
 const CHECK_ANSWER_CONFIG = {
@@ -1652,7 +1652,7 @@ function initializeCheckAnswerButtons() {
 }
 
 /* ============================================================
-  Feedback Buttons for Text Entry Sections
+    Feedback Buttons for Text Entry Sections
   ============================================================ */
 
 function initializeAiSummaryDraftFeedback() {
@@ -1839,7 +1839,7 @@ function initializeFinalSummaryRevisionFeedback() {
 }
 
 /* ============================================================
-  Autofill Helpers
+    Autofill Helpers
   ============================================================ */
 
 function initializeSummaryComparisonAutofill() {
@@ -1955,7 +1955,7 @@ function initializeFinalSummaryRevisionAutofill() {
 }
 
 /* ============================================================
-  Final Revision Diff Preview
+    Final Revision Diff Preview
   ============================================================ */
 
 function initializeFinalSummaryRevisionDiff() {
@@ -2052,7 +2052,7 @@ function initializeFinalSummaryRevisionDiff() {
 }
 
 /* ============================================================
-  Auto Size Textareas and Print Copies
+    Auto Size Textareas and Print Copies
   ============================================================ */
 
 function resizeTextareaToFit(textarea) {
@@ -2165,7 +2165,7 @@ function initializeResetTestingButton() {
 
 
 /* ============================================================
-  Generic UI Handlers
+    Generic UI Handlers
   ============================================================ */
 
 function initializeTabs() {
@@ -2255,7 +2255,7 @@ function initializeBackToTopButtons() {
 }
 
 /* ============================================================
-  Startup
+    Startup
   ============================================================ */
 
 function initializeLesson() {
