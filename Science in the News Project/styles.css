@@ -9,7 +9,9 @@
 
 :root {
     --green: #008540;
+    --green-text: #007137;
     --teal: #098D94;
+    --teal-interactive: #067078;
     --white: #FFFFFF;
     --black: #000000;
 
@@ -886,7 +888,7 @@ fieldset.answer-warning {
     padding: 10px 14px;
     border: none;
     border-radius: 999px;
-    background: var(--teal);
+    background: var(--teal-interactive);
     color: var(--white);
     font-weight: 800;
     cursor: pointer;
@@ -910,7 +912,7 @@ fieldset.answer-warning {
     padding: 18px;
     border: 2px dashed rgba(255, 255, 255, 0.55);
     border-radius: 14px;
-    background: var(--teal);
+    background: var(--teal-interactive);
     color: var(--white);
     text-align: center;
     text-decoration: none;
@@ -1129,7 +1131,7 @@ table.rubric {
 }
 
 .revision-preview ins {
-    color: var(--green);
+    color: var(--green-text);
     background: #effaf3;
     text-decoration: none;
     font-weight: 800;
