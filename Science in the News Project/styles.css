@@ -10,8 +10,10 @@
 :root {
     --green: #008540;
     --green-text: #007137;
-    --teal: #098D94;
+    --teal: #0A7F85;
     --teal-interactive: #067078;
+    --hero-green: #007A3B;
+    --hero-teal: #08767C;
     --white: #FFFFFF;
     --black: #000000;
 
@@ -23,7 +25,7 @@
     --text: #10201c;
     --muted: #53645f;
     --danger: #da1b0e;
-    --warning: #ce530c;
+    --warning: #C74F0A;
 
     --radius: 18px;
     --shadow: 0 12px 30px rgba(0, 0, 0, 0.09);
@@ -35,6 +37,12 @@
 
 * {
     box-sizing: border-box;
+}
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: clip;
 }
 
 body {
@@ -83,6 +91,14 @@ main.wrap {
     padding-bottom: 60px;
 }
 
+form,
+.tab-panel,
+.card,
+section.card {
+    min-width: 0;
+    max-width: 100%;
+}
+
 ol,
 ul {
     margin: 0;
@@ -109,7 +125,7 @@ header.hero {
     color: var(--white);
     background:
         radial-gradient(circle at top right, rgba(0, 163, 79, 0.2), transparent 28%),
-        linear-gradient(135deg, var(--teal), var(--green));
+        linear-gradient(135deg, var(--hero-teal), var(--hero-green));
 }
 
 .hero-grid {
@@ -117,6 +133,11 @@ header.hero {
     grid-template-columns: 1.3fr 0.7fr;
     gap: 28px;
     align-items: center;
+    min-width: 0;
+}
+
+.hero-grid>* {
+    min-width: 0;
 }
 
 .hero p {
@@ -126,6 +147,9 @@ header.hero {
 }
 
 .hero-art {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     min-height: 220px;
     display: grid;
     place-items: center;
@@ -138,6 +162,7 @@ header.hero {
 
 .hero-art svg {
     width: 95%;
+    max-width: 100%;
     height: auto;
 }
 
@@ -146,6 +171,7 @@ header.hero {
     font-weight: bold;
     font-size: 0.9rem;
 }
+
 /* ============================================================
     4. Tabs and Tab Panels
    ============================================================ */
@@ -154,9 +180,6 @@ header.hero {
     position: sticky;
     top: 0;
     z-index: 10;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
     margin-bottom: 18px;
     padding: 10px;
     border: 1px solid var(--border);
@@ -166,7 +189,26 @@ header.hero {
     backdrop-filter: blur(12px);
 }
 
+.tab-list {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.tab-list>li {
+    display: flex;
+    min-width: 0;
+}
+
 .tab-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    width: 100%;
     min-height: 64px;
     padding: 5px 8px;
     border: 2px solid transparent;
@@ -178,6 +220,10 @@ header.hero {
     font-size: 1.125rem;
 }
 
+.tab-label {
+    min-width: 0;
+}
+
 .tab-button.active {
     border-color: var(--black);
     background: var(--green);
@@ -185,12 +231,37 @@ header.hero {
 }
 
 .tab-button.locked {
-    opacity: 0.7;
+    color: var(--muted);
     cursor: not-allowed;
 }
 
-.tab-button.locked::after {
-    content: " 🔒";
+.lock-icon {
+    display: none;
+    flex: 0 0 auto;
+    width: 1em;
+    height: 1em;
+}
+
+.lock-body {
+    fill: #A85F00;
+    stroke: #7A4500;
+    stroke-width: 1.25;
+}
+
+.lock-shackle {
+    fill: none;
+    stroke: #59636B;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.lock-keyhole {
+    fill: #2E251C;
+}
+
+.tab-button.locked .lock-icon {
+    display: block;
 }
 
 .tab-panel {
@@ -200,6 +271,7 @@ header.hero {
 .tab-panel.active {
     display: block;
 }
+
 /* ============================================================
     5. Cards, Callouts, and General Layout
    ============================================================ */
@@ -239,7 +311,7 @@ section.card {
     margin: 0;
 }
 
-.callout p + p {
+.callout p+p {
     margin-top: 1rem;
 }
 
@@ -258,8 +330,12 @@ section.card {
     background: #fbfffd;
 }
 
-.info-tile strong {
+.info-tile h3 {
     color: #00656a;
+}
+
+.info-tile p {
+    margin: 0;
 }
 
 .footer-actions {
@@ -339,7 +415,7 @@ select {
 
 textarea {
     min-height: 130px;
-    overflow: hidden;
+    overflow-y: auto;
     resize: none;
 }
 
@@ -599,12 +675,12 @@ fieldset.answer-warning {
     padding-right: 12px;
 }
 
-.sentence-item::after {
+.answer-status-icon {
     position: absolute;
     top: 50%;
-    right: 18px;
+    right: 14px;
     transform: translateY(-50%);
-    display: none;
+    display: flex;
     width: 28px;
     height: 28px;
     border-radius: 999px;
@@ -615,25 +691,27 @@ fieldset.answer-warning {
     line-height: 1;
 }
 
-.sentence-item.is-correct::after {
-    content: "✓";
-    display: flex;
+.answer-status-icon[hidden] {
+    display: none;
+}
+
+.sentence-item>.answer-status-icon {
+    right: 18px;
+}
+
+.answer-status-icon[data-status="correct"] {
     background: #effaf3;
     color: var(--green);
     border: 2px solid var(--green);
 }
 
-.sentence-item.is-incorrect::after {
-    content: "✕";
-    display: flex;
+.answer-status-icon[data-status="incorrect"] {
     background: #fff5f5;
     color: var(--danger);
     border: 2px solid var(--danger);
 }
 
-.sentence-item.needs-answer::after {
-    content: "!";
-    display: flex;
+.answer-status-icon[data-status="needsAnswer"] {
     background: #fffaeb;
     color: var(--warning);
     border: 2px solid var(--warning);
@@ -679,46 +757,6 @@ fieldset.answer-warning {
     padding-right: 52px;
 }
 
-.drop-zone::after {
-    position: absolute;
-    top: 50%;
-    right: 14px;
-    transform: translateY(-50%);
-    display: none;
-    width: 28px;
-    height: 28px;
-    border-radius: 999px;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    font-weight: 900;
-    line-height: 1;
-}
-
-.drop-zone.correct::after {
-    content: "✓";
-    display: flex;
-    background: #effaf3;
-    color: var(--green);
-    border: 2px solid var(--green);
-}
-
-.drop-zone.incorrect::after {
-    content: "✕";
-    display: flex;
-    background: #fff5f5;
-    color: var(--danger);
-    border: 2px solid var(--danger);
-}
-
-.drop-zone.needs-answer::after {
-    content: "!";
-    display: flex;
-    background: #fffaeb;
-    color: var(--warning);
-    border: 2px solid var(--warning);
-}
-
 /* ============================================================
     12. Source Matching Focus and Selection
    ============================================================ */
@@ -735,6 +773,7 @@ fieldset.answer-warning {
     outline: 4px solid var(--teal);
     outline-offset: 4px;
     background: rgba(0, 163, 79, 0.25);
+    color: #006268;
     box-shadow:
         0 0 0 6px var(--white),
         0 0 0 10px var(--green);
@@ -1001,7 +1040,9 @@ kbd {
    ============================================================ */
 
 .rubric-wrap {
+    max-width: 100%;
     overflow-x: auto;
+    overscroll-behavior-inline: contain;
 }
 
 table.rubric {
@@ -1022,6 +1063,11 @@ table.rubric {
 .rubric th {
     background: #f7faf9;
     font-size: 1.05rem;
+}
+
+.rubric tbody th {
+    background: var(--white);
+    font-size: inherit;
 }
 
 .rubric .criteria {
@@ -1200,16 +1246,36 @@ table.rubric {
     .hero-grid,
     .two-col,
     .drag-match-row {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .hero-grid>*,
+    .two-col>*,
+    .drag-match-row>* {
+        min-width: 0;
     }
 
     .tabs {
         position: static;
+    }
+
+    .tab-list {
         grid-template-columns: 1fr;
     }
 
     .question-image {
         max-width: 260px;
+    }
+}
+
+@media (max-width: 480px) {
+    .wrap {
+        width: calc(100% - 16px);
+    }
+
+    header.hero {
+        padding-right: 8px;
+        padding-left: 8px;
     }
 }
 
@@ -1285,7 +1351,7 @@ table.rubric {
         line-height: 1.35 !important;
     }
 
-    .source-grid .info-tile strong {
+    .source-grid .info-tile h3 {
         font-size: 11pt !important;
     }
 

@@ -60,25 +60,61 @@
       Lesson Navigation
       ====================================================== -->
     <nav class="tabs" aria-label="Lesson tabs">
-      <button type="button" class="tab-button active" data-tab-button="0">
-        1. You Are the Editor
-      </button>
+      <ol class="tab-list" role="list">
+        <li>
+          <button type="button" class="tab-button active" data-tab-button="0">
+            <span class="tab-label">1. You Are the Editor</span>
+          </button>
+        </li>
 
-      <button type="button" class="tab-button locked" data-tab-button="1">
-        2. What is GenAI?
-      </button>
+        <li>
+          <button type="button" class="tab-button locked" data-tab-button="1">
+            <span class="tab-label">2. What is GenAI?</span>
+            <svg class="lock-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <rect class="lock-body" width="18" height="11" x="3" y="11" rx="2"></rect>
+              <path class="lock-shackle" d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              <circle class="lock-keyhole" cx="12" cy="15.5" r="1.5"></circle>
+              <rect class="lock-keyhole" x="11.25" y="16.5" width="1.5" height="3" rx="0.75"></rect>
+            </svg>
+          </button>
+        </li>
 
-      <button type="button" class="tab-button locked" data-tab-button="2">
-        3. Effective Writing with GenAI
-      </button>
+        <li>
+          <button type="button" class="tab-button locked" data-tab-button="2">
+            <span class="tab-label">3. Effective Writing with GenAI</span>
+            <svg class="lock-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <rect class="lock-body" width="18" height="11" x="3" y="11" rx="2"></rect>
+              <path class="lock-shackle" d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              <circle class="lock-keyhole" cx="12" cy="15.5" r="1.5"></circle>
+              <rect class="lock-keyhole" x="11.25" y="16.5" width="1.5" height="3" rx="0.75"></rect>
+            </svg>
+          </button>
+        </li>
 
-      <button type="button" class="tab-button locked" data-tab-button="3">
-        4. AI as a Tool
-      </button>
+        <li>
+          <button type="button" class="tab-button locked" data-tab-button="3">
+            <span class="tab-label">4. AI as a Tool</span>
+            <svg class="lock-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <rect class="lock-body" width="18" height="11" x="3" y="11" rx="2"></rect>
+              <path class="lock-shackle" d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              <circle class="lock-keyhole" cx="12" cy="15.5" r="1.5"></circle>
+              <rect class="lock-keyhole" x="11.25" y="16.5" width="1.5" height="3" rx="0.75"></rect>
+            </svg>
+          </button>
+        </li>
 
-      <button type="button" class="tab-button locked" data-tab-button="4">
-        5. Final Thoughts
-      </button>
+        <li>
+          <button type="button" class="tab-button locked" data-tab-button="4">
+            <span class="tab-label">5. Final Thoughts</span>
+            <svg class="lock-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <rect class="lock-body" width="18" height="11" x="3" y="11" rx="2"></rect>
+              <path class="lock-shackle" d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              <circle class="lock-keyhole" cx="12" cy="15.5" r="1.5"></circle>
+              <rect class="lock-keyhole" x="11.25" y="16.5" width="1.5" height="3" rx="0.75"></rect>
+            </svg>
+          </button>
+        </li>
+      </ol>
     </nav>
 
     <form id="lessonForm">
@@ -136,34 +172,32 @@
             can be categorized into three main groups:</p>
           <div class="source-grid">
             <div class="info-tile">
-              <strong>Primary</strong><br />
-              Original research, data, and findings, written by the scientists who conducted the study.
+              <h3>Primary</h3>
+              <p>Original research, data, and findings, written by the scientists who conducted the study.</p>
             </div>
 
             <div class="info-tile">
-              <strong>Secondary</strong><br />
-              Summaries or analyses of primary research for scientists, policymakers, funders, and sometimes public
-              audiences.
+              <h3>Secondary</h3>
+              <p>Summaries or analyses of primary research for scientists, policymakers, funders, and sometimes public
+                audiences.</p>
             </div>
 
             <div class="info-tile">
-              <strong>Tertiary</strong><br />
-              Provides a broad overview, context, or quick facts about a topic to the public.
+              <h3>Tertiary</h3>
+              <p>Provides a broad overview, context, or quick facts about a topic to the public.</p>
             </div>
           </div>
           <!-- Sentence Builder Activity -->
           <div class="sentence-builder" data-required-group="sentenceBuilder">
-            <p class="callout teal">Fill in the blanks to make each statement accurate.</p>
+            <p class="callout teal" id="sentenceBuilderGroupLabel">Fill in the blanks to make each statement accurate.</p>
 
-            <div class="sentences">
+            <div class="sentences" role="group" aria-labelledby="sentenceBuilderGroupLabel">
               <p class="sentence-item">
                 To quickly learn about how cells use DNA to make proteins, a student may use a biology textbook, which
                 is a
-                <label class="screen-reader-only" for="sourceSentence1">
-                  Choose the source type for the biology textbook example.
-                </label>
-                <select id="sourceSentence1" class="inline-select sentence-select" name="sourceSentence1"
-                  data-required>
+                <select id="sourceSentence1" class="inline-select sentence-select" name="sourceSentence1" data-required
+                  aria-label="Choose the source type for the biology textbook example."
+                  aria-describedby="sourceSentence1Status">
                   <option value="">Choose...</option>
                   <option value="Primary">
                     primary
@@ -175,16 +209,15 @@
                     tertiary
                   </option>
                 </select> source.
+                <span id="sourceSentence1Status" class="answer-status-icon" role="img" hidden></span>
 
               </p>
 
               <p class="sentence-item">
                 A journal article written by the biologist who tested how a gene affects plant growth is a
-                <label class="screen-reader-only" for="sourceSentence2">
-                  Choose the source type for the journal article example.
-                </label>
-                <select id="sourceSentence2" class="inline-select sentence-select" name="sourceSentence2"
-                  data-required>
+                <select id="sourceSentence2" class="inline-select sentence-select" name="sourceSentence2" data-required
+                  aria-label="Choose the source type for the journal article example."
+                  aria-describedby="sourceSentence2Status">
                   <option value="">Choose...</option>
                   <option value="primary" data-correct="true">
                     primary
@@ -197,16 +230,15 @@
                   </option>
                 </select>
                 source.
+                <span id="sourceSentence2Status" class="answer-status-icon" role="img" hidden></span>
               </p>
 
               <p class="sentence-item">
                 A science writer reads a research study on antibiotic resistance and writes an article explaining the
                 findings. This article is a
-                <label class="screen-reader-only" for="sourceSentence3">
-                  Choose the source type for the science news article example.
-                </label>
-                <select id="sourceSentence3" class="inline-select sentence-select" name="sourceSentence3"
-                  data-required>
+                <select id="sourceSentence3" class="inline-select sentence-select" name="sourceSentence3" data-required
+                  aria-label="Choose the source type for the science news article example."
+                  aria-describedby="sourceSentence3Status">
                   <option value="">Choose...</option>
                   <option value="Primary">
                     primary
@@ -219,6 +251,7 @@
                   </option>
                 </select>
                 source.
+                <span id="sourceSentence3Status" class="answer-status-icon" role="img" hidden></span>
               </p>
               <div class="sentence-check-row">
                 <button type="button" class="secondary-button" id="checkSentenceBuilder">
@@ -269,11 +302,12 @@
                   </div>
 
                   <div class="drop-zone-card">
-                    <div class="drop-zone" data-target="matchResearch" data-correct="Primary" tabindex="0"
+                    <div class="drop-zone" data-target="matchResearch" data-correct="Primary" tabindex="0" role="button"
                       aria-label="Drop source type for the original research article"
-                      aria-describedby="sourceMatchingKeyboardInstructions">
+                      aria-describedby="sourceMatchingKeyboardInstructions matchResearchStatus">
                       <span class="drop-zone-text">Drop type here</span>
                       <input type="hidden" id="matchResearch" name="matchResearch" data-required />
+                      <span id="matchResearchStatus" class="answer-status-icon" role="img" hidden></span>
                     </div>
                   </div>
                 </div>
@@ -284,11 +318,12 @@
                   </div>
 
                   <div class="drop-zone-card">
-                    <div class="drop-zone" data-target="matchNewsArticle" data-correct="Secondary" tabindex="0"
+                    <div class="drop-zone" data-target="matchNewsArticle" data-correct="Secondary" tabindex="0" role="button"
                       aria-label="Drop source type for the Science News Explores article"
-                      aria-describedby="sourceMatchingKeyboardInstructions">
+                      aria-describedby="sourceMatchingKeyboardInstructions matchNewsArticleStatus">
                       <span class="drop-zone-text">Drop type here</span>
                       <input type="hidden" id="matchNewsArticle" name="matchNewsArticle" data-required />
+                      <span id="matchNewsArticleStatus" class="answer-status-icon" role="img" hidden></span>
                     </div>
                   </div>
                 </div>
@@ -299,11 +334,12 @@
                   </div>
 
                   <div class="drop-zone-card">
-                    <div class="drop-zone" data-target="matchStudentSummary" data-correct="Tertiary" tabindex="0"
+                    <div class="drop-zone" data-target="matchStudentSummary" data-correct="Tertiary" tabindex="0" role="button"
                       aria-label="Drop source type for your summary"
-                      aria-describedby="sourceMatchingKeyboardInstructions">
+                      aria-describedby="sourceMatchingKeyboardInstructions matchStudentSummaryStatus">
                       <span class="drop-zone-text">Drop type here</span>
                       <input type="hidden" id="matchStudentSummary" name="matchStudentSummary" data-required />
+                      <span id="matchStudentSummaryStatus" class="answer-status-icon" role="img" hidden></span>
                     </div>
                   </div>
                 </div>
@@ -706,16 +742,16 @@
             <table class="rubric" aria-label="AI summary grading rubric">
               <thead>
                 <tr>
-                  <th>Criteria</th>
-                  <th>3 - Excellent</th>
-                  <th>2 - Good</th>
-                  <th>1 - Some Issues</th>
-                  <th>0 - Needs Work</th>
+                  <th scope="col">Criteria</th>
+                  <th scope="col">3 - Excellent</th>
+                  <th scope="col">2 - Good</th>
+                  <th scope="col">1 - Some Issues</th>
+                  <th scope="col">0 - Needs Work</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td class="criteria">Covers the main ideas of the article</td>
+                  <th scope="row" class="criteria">Covers the main ideas of the article</th>
                   <td class="rubric-choice">
                     <label>
                       <input type="radio" name="rubric1" value="3" />
@@ -743,7 +779,7 @@
                 </tr>
 
                 <tr>
-                  <td class="criteria">Clear and easy to read</td>
+                  <th scope="row" class="criteria">Clear and easy to read</th>
                   <td class="rubric-choice">
                     <label>
                       <input type="radio" name="rubric2" value="3" />
@@ -772,7 +808,7 @@
                 </tr>
 
                 <tr>
-                  <td class="criteria">Summary length</td>
+                  <th scope="row" class="criteria">Summary length</th>
                   <td class="rubric-choice">
                     <label>
                       <input type="radio" name="rubric3" value="3" />
@@ -800,7 +836,7 @@
                 </tr>
 
                 <tr>
-                  <td class="criteria">Use of evidence</td>
+                  <th scope="row" class="criteria">Use of evidence</th>
                   <td class="rubric-choice">
                     <label>
                       <input type="radio" name="rubric4" value="3" />
@@ -828,7 +864,7 @@
                 </tr>
 
                 <tr>
-                  <td class="criteria">Source reliability</td>
+                  <th scope="row" class="criteria">Source reliability</th>
                   <td class="rubric-choice">
                     <label>
                       <input type="radio" name="rubric5" value="3" />
@@ -1107,7 +1143,8 @@
             placeholder="Paste the suggestions…"></textarea>
 
           <div class="check-answer-row">
-            <button type="button" id="checkChatbotSuggestions" class="secondary-button check-answer-button">
+            <button type="button" id="checkChatbotSuggestions" class="secondary-button check-answer-button"
+              data-check-answer-for="chatbotSuggestions">
               Check My Answer
             </button>
 
@@ -1127,7 +1164,8 @@
           </div>
 
           <div class="revision-check-row">
-            <button type="button" id="checkFinalSummaryRevision" class="secondary-button check-answer-button">
+            <button type="button" id="checkFinalSummaryRevision" class="secondary-button check-answer-button"
+              data-check-answer-for="finalSummaryRevision">
               Check My Answer
             </button>
 

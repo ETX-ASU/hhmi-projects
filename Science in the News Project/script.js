@@ -97,6 +97,10 @@ function initializeScreenReaderQuestionLabels() {
         const existingLegend = fieldset.querySelector("legend");
         if (existingLegend) return existingLegend;
 
+        const internalQuestion = [...fieldset.children]
+            .find(element => element.matches(questionSelector));
+        if (internalQuestion) return internalQuestion;
+
         let sibling = fieldset.previousElementSibling;
         while (sibling) {
             if (sibling.matches(questionSelector)) return sibling;
@@ -217,6 +221,16 @@ function clearValidationAnnouncement() {
     if (region) region.textContent = "";
 }
 
+function getCheckAnswerQuestion(button) {
+    const fieldset = button.closest("fieldset");
+    if (fieldset) return getRequirementText(fieldset);
+
+    const controlId = button.dataset.checkAnswerFor;
+    const control = controlId && document.getElementById(controlId);
+
+    return control ? getRequirementText(control) : "";
+}
+
 // Add concise, state-aware descriptions without replacing visible button names.
 function getButtonDescription(button) {
     const tabIndex = Number(button.dataset.tabButton);
@@ -296,6 +310,11 @@ function initializeButtonDescriptions() {
     document.body.appendChild(descriptionContainer);
 
     buttons.forEach((button, index) => {
+        if (button.classList.contains("check-answer-button")) {
+            const question = getCheckAnswerQuestion(button);
+            if (question) button.setAttribute("aria-label", `Check My Answer for: ${question}`);
+        }
+
         const description = document.createElement("span");
         description.id = `button-description-${index + 1}`;
         description.textContent = getButtonDescription(button);
@@ -699,6 +718,41 @@ function showTab(index, shouldScroll = true) {
     Source Matching Activity
   ============================================================ */
 
+const ANSWER_STATUS_CONFIG = {
+    correct: {
+        symbol: "✓",
+        label: "Correct answer, indicated by a green check mark."
+    },
+    incorrect: {
+        symbol: "✕",
+        label: "Wrong answer, indicated by a red X."
+    },
+    needsAnswer: {
+        symbol: "!",
+        label: "Still needs an answer, indicated by an orange exclamation mark."
+    }
+};
+
+function setAnswerStatus(container, state = "") {
+    const icon = container?.querySelector(".answer-status-icon");
+    const config = ANSWER_STATUS_CONFIG[state];
+
+    if (!icon) return;
+
+    if (!config) {
+        icon.hidden = true;
+        icon.textContent = "";
+        icon.removeAttribute("aria-label");
+        delete icon.dataset.status;
+        return;
+    }
+
+    icon.hidden = false;
+    icon.textContent = config.symbol;
+    icon.setAttribute("aria-label", config.label);
+    icon.dataset.status = state;
+}
+
 function initializeSourceMatching() {
     const tokens = [...document.querySelectorAll(".drag-token")];
     const zones = [...document.querySelectorAll(".drop-zone")];
@@ -723,6 +777,7 @@ function initializeSourceMatching() {
     function clearSourceMatchingFeedback() {
         zones.forEach(zone => {
             zone.classList.remove("correct", "incorrect", "needs-answer");
+            setAnswerStatus(zone);
         });
 
         if (feedback) {
@@ -850,14 +905,17 @@ function initializeSourceMatching() {
             if (!value) {
                 unansweredCount += 1;
                 zone.classList.add("needs-answer");
+                setAnswerStatus(zone, "needsAnswer");
                 return;
             }
 
             if (value === zone.dataset.correct) {
                 correctCount += 1;
                 zone.classList.add("correct");
+                setAnswerStatus(zone, "correct");
             } else {
                 zone.classList.add("incorrect");
+                setAnswerStatus(zone, "incorrect");
             }
         });
 
@@ -910,7 +968,11 @@ function initializeSentenceBuilderFeedback() {
 
     function clearSentenceFeedback() {
         selects.forEach(select => {
+            const sentenceItem = select.closest(".sentence-item");
+
             select.classList.remove("correct", "incorrect", "needs-answer");
+            sentenceItem?.classList.remove("is-correct", "is-incorrect", "needs-answer");
+            setAnswerStatus(sentenceItem);
         });
 
         feedback.textContent = "";
@@ -937,6 +999,7 @@ function initializeSentenceBuilderFeedback() {
                 unansweredCount += 1;
                 select.classList.add("needs-answer");
                 sentenceItem?.classList.add("needs-answer");
+                setAnswerStatus(sentenceItem, "needsAnswer");
                 return;
             }
 
@@ -944,9 +1007,11 @@ function initializeSentenceBuilderFeedback() {
                 correctCount += 1;
                 select.classList.add("correct");
                 sentenceItem?.classList.add("is-correct");
+                setAnswerStatus(sentenceItem, "correct");
             } else {
                 select.classList.add("incorrect");
                 sentenceItem?.classList.add("is-incorrect");
+                setAnswerStatus(sentenceItem, "incorrect");
             }
         });
 
@@ -1324,7 +1389,7 @@ const CHECK_ANSWER_CONFIG = {
         correct: ["Clear evidence", "Reliable sources", "Easy to understand"],
         correctFeedback: "Nice work. Credibility comes from clear evidence, reliable sources, and writing that is easy to understand. This is your goal. Now, can AI do this?",
         missingFeedback: {
-            "Clear evidence": "Your summary needs specific, accurate details from the research.",
+            "Clear evidence": "Your summary needs specifics, accurate details from the research.",
             "Reliable sources": "Credibility depends on which sources the information comes from.",
             "Easy to understand": "A credible summary should be clear and well-written."
         },
@@ -1482,6 +1547,8 @@ const CHECK_ANSWER_NO_KEY_FEEDBACK = "Good to know!";
 function initializeCheckAnswerButtons() {
     if (!form) return;
 
+    const feedbackAnnouncementTimers = new WeakMap();
+
     const groupedNames = [
         ...new Set(
             [...form.querySelectorAll('input[type="radio"], input[type="checkbox"]')]
@@ -1509,28 +1576,37 @@ function initializeCheckAnswerButtons() {
         return selected.every((value, index) => value === correct[index]);
     }
 
-    function clearGroupFeedback(fieldset) {
-        fieldset.classList.remove(
-            "answer-correct",
-            "answer-incorrect",
-            "answer-needs-answer",
-            "answer-neutral",
-            "answer-warning"
+    function addFeedbackDescription(element, feedbackId) {
+        const ids = new Set(
+            String(element.getAttribute("aria-describedby") || "")
+                .split(/\s+/)
+                .filter(Boolean)
         );
 
-        fieldset.querySelector(".check-answer-feedback")?.remove();
+        ids.add(feedbackId);
+        element.setAttribute("aria-describedby", [...ids].join(" "));
     }
 
-    function addGroupFeedback(fieldset, type, message) {
-        clearGroupFeedback(fieldset);
-        fieldset.classList.add(`answer-${type}`);
+    function ensureGroupFeedback(fieldset) {
+        let feedback = fieldset.querySelector(".check-answer-feedback");
+        if (feedback) return feedback;
 
-        const feedback = document.createElement("span");
-        feedback.className = `check-answer-feedback ${type}`;
-        feedback.setAttribute("role", "status");
-        feedback.textContent = message;
-
+        const rawGroupName =
+            fieldset.dataset.requiredGroup ||
+            fieldset.querySelector('input[type="radio"], input[type="checkbox"]')?.name ||
+            "group";
+        const groupName = rawGroupName.replace(/[^a-zA-Z0-9_-]/g, "-");
         const button = fieldset.querySelector(".check-answer-button");
+
+        feedback = document.createElement("span");
+        feedback.id = `check-answer-feedback-${groupName}`;
+        feedback.className = "check-answer-feedback";
+        feedback.setAttribute("role", "status");
+        feedback.setAttribute("aria-live", "polite");
+        feedback.setAttribute("aria-atomic", "true");
+
+        [fieldset, ...fieldset.querySelectorAll('input[type="radio"], input[type="checkbox"]')]
+            .forEach(element => addFeedbackDescription(element, feedback.id));
 
         if (button) {
             let row = fieldset.querySelector(".check-answer-row");
@@ -1546,6 +1622,44 @@ function initializeCheckAnswerButtons() {
         } else {
             fieldset.appendChild(feedback);
         }
+
+        return feedback;
+    }
+
+    function clearGroupFeedback(fieldset) {
+        fieldset.classList.remove(
+            "answer-correct",
+            "answer-incorrect",
+            "answer-needs-answer",
+            "answer-neutral",
+            "answer-warning"
+        );
+
+        const feedback = fieldset.querySelector(".check-answer-feedback");
+        const pendingAnnouncement = feedback && feedbackAnnouncementTimers.get(feedback);
+
+        if (pendingAnnouncement) window.clearTimeout(pendingAnnouncement);
+
+        if (feedback) {
+            feedbackAnnouncementTimers.delete(feedback);
+            feedback.className = "check-answer-feedback";
+            feedback.textContent = "";
+        }
+    }
+
+    function addGroupFeedback(fieldset, type, message) {
+        clearGroupFeedback(fieldset);
+        fieldset.classList.add(`answer-${type}`);
+
+        const feedback = ensureGroupFeedback(fieldset);
+        feedback.className = `check-answer-feedback ${type}`;
+
+        const announcementTimer = window.setTimeout(() => {
+            feedback.textContent = message;
+            feedbackAnnouncementTimers.delete(feedback);
+        }, 10);
+
+        feedbackAnnouncementTimers.set(feedback, announcementTimer);
     }
 
     groupedNames.forEach(name => {
@@ -1570,11 +1684,19 @@ function initializeCheckAnswerButtons() {
             const config = CHECK_ANSWER_CONFIG[name];
 
             if (selectedValues.length === 0) {
-                const blankMessage =
-                    config?.noSelectionFeedback ||
-                    (name === "sentenceWeakness"
-                        ? "Even if the summary is really strong, if you had to pick a category to work on, what would it be?"
-                        : "Please answer the question.");
+                const questionText = getRequirementText(fieldset);
+                let blankInstruction = config?.noSelectionFeedback;
+
+                if (!blankInstruction && name === "sentenceWeakness") {
+                    blankInstruction =
+                        "Even if the summary is really strong, if you had to pick a category to work on, what would it be?";
+                } else if (!blankInstruction) {
+                    blankInstruction = inputs[0].type === "checkbox"
+                        ? "Select at least one answer."
+                        : "Select an answer.";
+                }
+
+                const blankMessage = `${questionText} ${blankInstruction}`;
 
                 const blankType = config?.noSelectionFeedbackType || "needs-answer";
 
@@ -1645,6 +1767,7 @@ function initializeCheckAnswerButtons() {
         });
 
         fieldset.appendChild(button);
+        ensureGroupFeedback(fieldset);
     });
 }
 
@@ -2068,17 +2191,48 @@ function resizeVisibleTextareas() {
     });
 }
 
+function getTextareaLayoutSignature(textarea) {
+    const styles = window.getComputedStyle(textarea);
+
+    return [
+        textarea.getBoundingClientRect().width,
+        styles.fontFamily,
+        styles.fontSize,
+        styles.fontWeight,
+        styles.lineHeight,
+        styles.letterSpacing,
+        styles.wordSpacing,
+        styles.paddingTop,
+        styles.paddingRight,
+        styles.paddingBottom,
+        styles.paddingLeft
+    ].join("|");
+}
+
 function initializeAutoResizeTextareas() {
     const textareas = [...document.querySelectorAll("textarea")];
 
     if (!textareas.length) return;
 
+    let resizeRequest = null;
+    const layoutSignatures = new WeakMap();
+
     function resizeAllTextareas() {
         textareas.forEach(resizeTextareaToFit);
     }
 
+    function resizeAfterViewportChange() {
+        if (resizeRequest) cancelAnimationFrame(resizeRequest);
+
+        resizeRequest = requestAnimationFrame(() => {
+            resizeRequest = null;
+            resizeVisibleTextareas();
+        });
+    }
+
     textareas.forEach(textarea => {
         resizeTextareaToFit(textarea);
+        layoutSignatures.set(textarea, getTextareaLayoutSignature(textarea));
 
         textarea.addEventListener("input", () => {
             resizeTextareaToFit(textarea);
@@ -2088,6 +2242,44 @@ function initializeAutoResizeTextareas() {
             resizeTextareaToFit(textarea);
         });
     });
+
+    const layoutCheckInterval = window.setInterval(() => {
+        if (document.hidden) return;
+
+        textareas.forEach(textarea => {
+            if (textarea.offsetParent === null) return;
+
+            const signature = getTextareaLayoutSignature(textarea);
+            if (layoutSignatures.get(textarea) === signature) return;
+
+            layoutSignatures.set(textarea, signature);
+            resizeTextareaToFit(textarea);
+        });
+    }, 500);
+
+    window.addEventListener("pagehide", event => {
+        if (!event.persisted) window.clearInterval(layoutCheckInterval);
+    }, { once: true });
+
+    if ("ResizeObserver" in window) {
+        const measuredWidths = new WeakMap();
+        const textareaResizeObserver = new ResizeObserver(entries => {
+            entries.forEach(entry => {
+                const width = entry.target.getBoundingClientRect().width;
+                const previousWidth = measuredWidths.get(entry.target);
+
+                if (previousWidth !== undefined && Math.abs(previousWidth - width) < 0.5) return;
+
+                measuredWidths.set(entry.target, width);
+                resizeTextareaToFit(entry.target);
+            });
+        });
+
+        textareas.forEach(textarea => textareaResizeObserver.observe(textarea));
+    }
+
+    window.addEventListener("resize", resizeAfterViewportChange);
+    window.visualViewport?.addEventListener("resize", resizeAfterViewportChange);
 
     setTimeout(resizeAllTextareas, 100);
     setTimeout(resizeAllTextareas, 500);
