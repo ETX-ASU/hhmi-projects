@@ -41,6 +41,7 @@ let state = {
 };
 
 let genaiPlayer;
+let genaiControlUi;
 let videoProgressTimer;
 let requiredWatchTimer;
 let remainingWatchSeconds = VIDEO_CONFIG.requiredWatchSeconds;
@@ -1085,7 +1086,12 @@ function initializeAccessibleVideoFocus() {
     wrapper.setAttribute("aria-labelledby", "videoKeyboardInstructions");
 
     if (videoStatus) {
-        wrapper.setAttribute("aria-describedby", "videoStatus");
+        const descriptions = ["videoStatus"];
+        if (document.getElementById("genaiVideoControlStatus")) {
+            descriptions.push("genaiVideoControlStatus");
+        }
+
+        wrapper.setAttribute("aria-describedby", descriptions.join(" "));
         videoStatus.setAttribute("role", "status");
         videoStatus.setAttribute("aria-live", "polite");
         videoStatus.setAttribute("aria-atomic", "true");
@@ -1094,11 +1100,14 @@ function initializeAccessibleVideoFocus() {
     wrapper.addEventListener("keydown", event => {
         if (event.key !== "Enter" && event.key !== " ") return;
 
+        const firstCustomControl = wrapper.querySelector(
+            ".local-video-controls:not([hidden]) button, .local-video-controls:not([hidden]) input"
+        );
         const iframe = wrapper.querySelector("iframe");
 
-        if (iframe) {
+        if (firstCustomControl || iframe) {
             event.preventDefault();
-            iframe.focus();
+            (firstCustomControl || iframe).focus();
         }
     });
 
@@ -1323,6 +1332,288 @@ function initializeLocalVideoControls() {
     updateFullscreenButton();
 }
 
+function initializeYouTubeCustomControls(player) {
+    const controls = document.getElementById("genaiVideoControls");
+    const playButton = document.getElementById("genaiVideoPlay");
+    const restartButton = document.getElementById("genaiVideoRestart");
+    const seek = document.getElementById("genaiVideoSeek");
+    const currentTime = document.getElementById("genaiVideoCurrentTime");
+    const duration = document.getElementById("genaiVideoDuration");
+    const muteButton = document.getElementById("genaiVideoMute");
+    const volume = document.getElementById("genaiVideoVolume");
+    const speedControl = document.getElementById("genaiVideoSpeed");
+    const speedSummary = document.getElementById("genaiVideoSpeedSummary");
+    const speedValue = document.getElementById("genaiVideoSpeedValue");
+    const speedInputs = [...document.querySelectorAll('input[name="genaiVideoPlaybackRate"]')];
+    const fullscreenButton = document.getElementById("genaiVideoFullscreen");
+    const playerContainer = document.getElementById("genaiVideoPlayer");
+    const controlStatus = document.getElementById("genaiVideoControlStatus");
+
+    if (
+        !player ||
+        !controls ||
+        !playButton ||
+        !restartButton ||
+        !seek ||
+        !currentTime ||
+        !duration ||
+        !muteButton ||
+        !volume ||
+        !speedControl ||
+        !speedSummary ||
+        !speedValue ||
+        !speedInputs.length ||
+        !fullscreenButton ||
+        !playerContainer
+    ) {
+        return null;
+    }
+
+    let progressTimer = null;
+    let lastAudibleVolume = Math.max(player.getVolume?.() || 100, 1);
+
+    function announce(message) {
+        if (!controlStatus) return;
+
+        controlStatus.textContent = "";
+        window.setTimeout(() => {
+            controlStatus.textContent = message;
+        }, 10);
+    }
+
+    function formatTime(seconds) {
+        if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+
+        const totalSeconds = Math.floor(seconds);
+        const minutes = Math.floor(totalSeconds / 60);
+        const remainingSeconds = String(totalSeconds % 60).padStart(2, "0");
+
+        return `${minutes}:${remainingSeconds}`;
+    }
+
+    function describeTime(seconds) {
+        if (!Number.isFinite(seconds) || seconds < 0) return "0 seconds";
+
+        const totalSeconds = Math.floor(seconds);
+        const minutes = Math.floor(totalSeconds / 60);
+        const remainingSeconds = totalSeconds % 60;
+        const parts = [];
+
+        if (minutes) parts.push(`${minutes} ${minutes === 1 ? "minute" : "minutes"}`);
+        parts.push(`${remainingSeconds} ${remainingSeconds === 1 ? "second" : "seconds"}`);
+
+        return parts.join(" ");
+    }
+
+    function updateProgress() {
+        const videoDuration = Number(player.getDuration?.()) || 0;
+        const videoCurrentTime = Number(player.getCurrentTime?.()) || 0;
+        const progress = videoDuration ? (videoCurrentTime / videoDuration) * 100 : 0;
+
+        seek.max = String(videoDuration);
+        seek.value = String(videoCurrentTime);
+        seek.style.setProperty("--seek-progress", `${progress}%`);
+        seek.setAttribute(
+            "aria-valuetext",
+            `${describeTime(videoCurrentTime)} of ${describeTime(videoDuration)}`
+        );
+        currentTime.textContent = formatTime(videoCurrentTime);
+        duration.textContent = formatTime(videoDuration);
+    }
+
+    function updatePlayButton() {
+        const isPlaying = player.getPlayerState?.() === YT.PlayerState.PLAYING;
+
+        playButton.classList.toggle("is-playing", isPlaying);
+        playButton.setAttribute("aria-label", isPlaying ? "Pause video" : "Play video");
+        playButton.title = isPlaying ? "Pause" : "Play";
+    }
+
+    function updatePlaybackRate() {
+        const playbackRate = Number(player.getPlaybackRate?.()) || 1;
+        const selectedInput = speedInputs.find(input => Number(input.value) === playbackRate);
+        const visibleRate = `${playbackRate}×`;
+        const spokenRate = playbackRate === 1 ? "normal" : `${playbackRate} times`;
+
+        if (selectedInput) selectedInput.checked = true;
+        speedValue.textContent = visibleRate;
+        speedSummary.setAttribute("aria-label", `Playback speed, ${spokenRate}`);
+    }
+
+    function updateAvailablePlaybackRates() {
+        const availableRates = player.getAvailablePlaybackRates?.() || [];
+        if (!availableRates.length) return;
+
+        speedInputs.forEach(input => {
+            input.disabled = !availableRates.includes(Number(input.value));
+        });
+    }
+
+    function updateVolume() {
+        const playerVolume = Math.round(Number(player.getVolume?.()) || 0);
+        const isMuted = Boolean(player.isMuted?.()) || playerVolume === 0;
+        const visibleVolume = isMuted ? 0 : playerVolume;
+
+        if (!isMuted && playerVolume > 0) {
+            lastAudibleVolume = playerVolume;
+        }
+
+        volume.value = String(visibleVolume);
+        volume.style.setProperty("--volume-level", `${visibleVolume}%`);
+        volume.setAttribute(
+            "aria-valuetext",
+            isMuted ? "Muted" : `Volume ${playerVolume} percent`
+        );
+
+        muteButton.classList.toggle("is-muted", isMuted);
+        muteButton.setAttribute("aria-label", isMuted ? "Unmute video" : "Mute video");
+        muteButton.title = isMuted ? "Unmute" : "Mute";
+    }
+
+    function updateFullscreenButton() {
+        const isFullscreen = document.fullscreenElement === playerContainer;
+
+        fullscreenButton.classList.toggle("is-fullscreen", isFullscreen);
+        fullscreenButton.setAttribute(
+            "aria-label",
+            isFullscreen ? "Exit full screen" : "Enter full screen"
+        );
+        fullscreenButton.title = isFullscreen ? "Exit full screen" : "Full screen";
+    }
+
+    function startProgressUpdates() {
+        if (progressTimer) return;
+        progressTimer = window.setInterval(updateProgress, 250);
+    }
+
+    function stopProgressUpdates() {
+        if (progressTimer) {
+            window.clearInterval(progressTimer);
+            progressTimer = null;
+        }
+
+        updateProgress();
+    }
+
+    playButton.addEventListener("click", () => {
+        if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+            player.pauseVideo();
+        } else {
+            player.playVideo();
+        }
+    });
+
+    restartButton.addEventListener("click", () => {
+        player.seekTo(0, true);
+        player.playVideo();
+        updateProgress();
+    });
+
+    seek.addEventListener("input", () => {
+        player.seekTo(Number(seek.value), true);
+        updateProgress();
+    });
+
+    muteButton.addEventListener("click", () => {
+        if (player.isMuted() || player.getVolume() === 0) {
+            if (player.getVolume() === 0) {
+                player.setVolume(lastAudibleVolume || 50);
+            }
+            player.unMute();
+        } else {
+            lastAudibleVolume = player.getVolume();
+            player.mute();
+        }
+
+        updateVolume();
+        announce(player.isMuted() ? "Video muted." : "Video unmuted.");
+    });
+
+    volume.addEventListener("input", () => {
+        const nextVolume = Number(volume.value);
+
+        player.setVolume(nextVolume);
+        if (nextVolume === 0) {
+            player.mute();
+        } else {
+            lastAudibleVolume = nextVolume;
+            player.unMute();
+        }
+
+        updateVolume();
+    });
+
+    volume.addEventListener("change", () => {
+        announce(volume.value === "0" ? "Video muted." : `Volume ${volume.value} percent.`);
+    });
+
+    speedInputs.forEach(input => {
+        input.addEventListener("input", event => {
+            event.stopPropagation();
+        });
+
+        input.addEventListener("change", event => {
+            event.stopPropagation();
+            if (!input.checked || input.disabled) return;
+
+            player.setPlaybackRate(Number(input.value));
+            window.setTimeout(updatePlaybackRate, 150);
+        });
+    });
+
+    speedControl.addEventListener("keydown", event => {
+        if (event.key !== "Escape" || !speedControl.open) return;
+
+        event.preventDefault();
+        speedControl.removeAttribute("open");
+        speedSummary.focus();
+    });
+
+    document.addEventListener("click", event => {
+        if (speedControl.open && !speedControl.contains(event.target)) {
+            speedControl.removeAttribute("open");
+        }
+    });
+
+    fullscreenButton.addEventListener("click", () => {
+        if (document.fullscreenElement === playerContainer) {
+            document.exitFullscreen?.().catch(() => { });
+        } else {
+            playerContainer.requestFullscreen?.().catch(() => { });
+        }
+    });
+
+    document.addEventListener("fullscreenchange", updateFullscreenButton);
+
+    if (!document.fullscreenEnabled || typeof playerContainer.requestFullscreen !== "function") {
+        fullscreenButton.hidden = true;
+    }
+
+    const iframe = player.getIframe?.();
+    if (iframe) {
+        iframe.setAttribute("tabindex", "-1");
+        iframe.setAttribute("title", "Generative AI overview video");
+    }
+
+    controls.hidden = false;
+    updateProgress();
+    updatePlayButton();
+    updatePlaybackRate();
+    updateAvailablePlaybackRates();
+    updateVolume();
+    updateFullscreenButton();
+
+    return {
+        announce,
+        startProgressUpdates,
+        stopProgressUpdates,
+        updatePlayButton,
+        updateAvailablePlaybackRates,
+        updatePlaybackRate,
+        updateProgress
+    };
+}
+
 function initializeYouTubeVideoGate() {
     const videoInput = document.getElementById("watchedVideo");
     const timerInput = document.getElementById("videoTimerComplete");
@@ -1346,27 +1637,51 @@ function initializeYouTubeVideoGate() {
         genaiPlayer = new YT.Player("genaiVideo", {
             videoId: VIDEO_CONFIG.youtubeId,
             playerVars: {
+                cc_load_policy: 1,
+                controls: 0,
+                disablekb: 1,
+                playsinline: 1,
                 rel: 0,
                 modestbranding: 1
             },
             events: {
-                onStateChange: handleGenAIVideoStateChange
+                onReady: event => {
+                    genaiControlUi = initializeYouTubeCustomControls(event.target);
+                },
+                onStateChange: handleGenAIVideoStateChange,
+                onPlaybackRateChange: event => {
+                    genaiControlUi?.updatePlaybackRate();
+                    const spokenRate = event.data === 1 ? "normal" : `${event.data} times`;
+                    genaiControlUi?.announce(`Playback speed ${spokenRate}.`);
+                }
             }
         });
     };
 }
 
 function handleGenAIVideoStateChange(event) {
+    genaiControlUi?.updatePlayButton();
+    genaiControlUi?.updateAvailablePlaybackRates();
+    genaiControlUi?.updateProgress();
+
     if (event.data === YT.PlayerState.PLAYING) {
+        genaiControlUi?.startProgressUpdates();
+        genaiControlUi?.announce("Video is playing.");
         startVideoProgressCheck();
         startRequiredWatchTimer();
         return;
     }
 
+    genaiControlUi?.stopProgressUpdates();
     stopVideoProgressCheck();
     stopRequiredWatchTimer();
 
+    if (event.data === YT.PlayerState.PAUSED) {
+        genaiControlUi?.announce("Video is paused.");
+    }
+
     if (event.data === YT.PlayerState.ENDED) {
+        genaiControlUi?.announce("Video has ended.");
         markVideoProgressComplete();
     }
 }

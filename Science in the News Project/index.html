@@ -451,8 +451,107 @@
           <p class="callout teal">Watch this video to get an overview of GenAI, then answer the
             questions below.</p>
 
-          <div class="video-embed">
-            <div id="genaiVideo"></div>
+          <div class="video-accessible-wrapper genai-video-accessible-wrapper" tabindex="0" role="group"
+            aria-labelledby="videoKeyboardInstructions" aria-describedby="videoStatus genaiVideoControlStatus">
+            <p id="videoKeyboardInstructions" class="video-accessible-instructions">
+              Video: an overview of generative AI. Use the controls below the video.
+            </p>
+            <p id="genaiVideoControlStatus" class="screen-reader-only" role="status" aria-live="polite"
+              aria-atomic="true">
+              Video is stopped.
+            </p>
+
+            <div class="video-wrap youtube-video-wrap" id="genaiVideoPlayer">
+              <div class="video-embed">
+                <div id="genaiVideo"></div>
+              </div>
+
+              <div class="local-video-controls" id="genaiVideoControls" hidden>
+                <button type="button" class="local-video-control-button" id="genaiVideoPlay"
+                  aria-controls="genaiVideo" aria-label="Play video" title="Play">
+                  <svg class="local-video-icon local-video-play-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 5v14l11-7z"></path>
+                  </svg>
+                  <svg class="local-video-icon local-video-pause-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 5h4v14H6zm8 0h4v14h-4z"></path>
+                  </svg>
+                </button>
+
+                <button type="button" class="local-video-control-button" id="genaiVideoRestart"
+                  aria-controls="genaiVideo" aria-label="Restart video" title="Restart">
+                  <svg class="local-video-icon local-video-outline-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 4v6h6"></path>
+                    <path d="M5.7 15a7 7 0 1 0 .5-7.5L4 10"></path>
+                  </svg>
+                </button>
+
+                <div class="local-video-seek">
+                  <label for="genaiVideoSeek" class="screen-reader-only">Video progress</label>
+                  <input type="range" id="genaiVideoSeek" min="0" max="0" value="0" step="0.1"
+                    aria-controls="genaiVideo" aria-valuetext="0 seconds of 0 seconds" />
+                </div>
+
+                <div class="local-video-time" aria-label="Video time">
+                  <span id="genaiVideoCurrentTime">0:00</span>
+                  <span aria-hidden="true"> / </span>
+                  <span class="screen-reader-only">of</span>
+                  <span id="genaiVideoDuration">0:00</span>
+                </div>
+
+                <button type="button" class="local-video-control-button" id="genaiVideoMute"
+                  aria-controls="genaiVideo" aria-label="Mute video" title="Mute">
+                  <svg class="local-video-icon local-video-outline-icon local-video-volume-on-icon"
+                    viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 9v6h4l5 4V5L8 9H4z"></path>
+                    <path d="M16 8.5a5 5 0 0 1 0 7"></path>
+                    <path d="M18.5 6a8.5 8.5 0 0 1 0 12"></path>
+                  </svg>
+                  <svg class="local-video-icon local-video-outline-icon local-video-volume-off-icon"
+                    viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 9v6h4l5 4V5L8 9H4z"></path>
+                    <path d="m17 9 5 5m0-5-5 5"></path>
+                  </svg>
+                </button>
+
+                <div class="local-video-volume">
+                  <label for="genaiVideoVolume" class="screen-reader-only">Video volume</label>
+                  <input type="range" id="genaiVideoVolume" min="0" max="100" value="100" step="1"
+                    aria-controls="genaiVideo" aria-valuetext="Volume 100 percent" />
+                </div>
+
+                <details class="local-video-speed" id="genaiVideoSpeed">
+                  <summary id="genaiVideoSpeedSummary" aria-label="Playback speed, normal" title="Playback speed">
+                    <span id="genaiVideoSpeedValue" aria-hidden="true">1×</span>
+                    <svg class="local-video-speed-chevron" viewBox="0 0 12 8" aria-hidden="true">
+                      <path d="m1 1 5 5 5-5"></path>
+                    </svg>
+                  </summary>
+
+                  <div class="local-video-speed-options" role="radiogroup"
+                    aria-labelledby="genaiVideoSpeedLabel">
+                    <span class="local-video-speed-options-title" id="genaiVideoSpeedLabel">Playback speed</span>
+                    <label><input type="radio" name="genaiVideoPlaybackRate" value="0.5">0.5×</label>
+                    <label><input type="radio" name="genaiVideoPlaybackRate" value="0.75">0.75×</label>
+                    <label><input type="radio" name="genaiVideoPlaybackRate" value="1" checked>Normal</label>
+                    <label><input type="radio" name="genaiVideoPlaybackRate" value="1.25">1.25×</label>
+                    <label><input type="radio" name="genaiVideoPlaybackRate" value="1.5">1.5×</label>
+                    <label><input type="radio" name="genaiVideoPlaybackRate" value="2">2×</label>
+                  </div>
+                </details>
+
+                <button type="button" class="local-video-control-button" id="genaiVideoFullscreen"
+                  aria-controls="genaiVideo" aria-label="Enter full screen" title="Full screen">
+                  <svg class="local-video-icon local-video-outline-icon local-video-enter-fullscreen-icon"
+                    viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"></path>
+                  </svg>
+                  <svg class="local-video-icon local-video-outline-icon local-video-exit-fullscreen-icon"
+                    viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="video-status" id="videoStatus">
@@ -1336,7 +1435,7 @@
 
             <div class="question-image-wrap">
               <img src="./assets/5_Verify the Output.png"
-                alt="Illustration titled “Verify the Output” showing three steps: check claims, trace evidence, and question output."
+                alt="" aria-hidden="true"
                 class="question-image wide-image" />
             </div>
           </div>
@@ -1463,7 +1562,7 @@
             </div>
             <div class="end-image">
               <img src="./assets/6_You Are The Expert.png"
-                alt="Graphic of text “You are the expert. You are the one responsible.”" />
+                alt="" aria-hidden="true" />
             </div>
             <button class="print-button" type="button">
               Print to PDF

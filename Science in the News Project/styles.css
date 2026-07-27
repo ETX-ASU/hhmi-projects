@@ -963,12 +963,18 @@ fieldset.answer-warning {
     14. Video and Keyboard Helpers
    ============================================================ */
 
-.local-video-accessible-wrapper {
+.local-video-accessible-wrapper,
+.genai-video-accessible-wrapper {
     max-width: 560px;
     margin-top: 1rem;
 }
 
-.local-video-accessible-wrapper:focus {
+.genai-video-accessible-wrapper {
+    max-width: none;
+}
+
+.local-video-accessible-wrapper:focus,
+.video-accessible-wrapper:focus {
     outline: 5px solid var(--teal);
     outline-offset: 6px;
     border-radius: 12px;
@@ -1002,6 +1008,15 @@ fieldset.answer-warning {
     overflow: hidden;
     border-radius: 12px;
     background: #000;
+}
+
+.youtube-video-wrap {
+    max-width: none;
+    margin: 16px 0;
+}
+
+.youtube-video-wrap .video-embed {
+    margin: 0;
 }
 
 video {
@@ -1045,12 +1060,17 @@ video {
     cursor: pointer;
 }
 
+.local-video-control-button[hidden] {
+    display: none;
+}
+
 .local-video-control-button:hover {
     background: #3b474e;
 }
 
 .local-video-control-button:focus-visible,
 .local-video-seek input:focus-visible,
+.local-video-volume input:focus-visible,
 .local-video-speed summary:focus-visible {
     outline: 3px solid var(--teal);
     outline-offset: 2px;
@@ -1069,6 +1089,7 @@ video {
     vector-effect: non-scaling-stroke;
 }
 
+.local-video-outline-icon,
 #howToVideoRestart .local-video-icon,
 #howToVideoFullscreen .local-video-icon {
     fill: none;
@@ -1079,13 +1100,16 @@ video {
 }
 
 .local-video-pause-icon,
+.local-video-volume-off-icon,
 .local-video-exit-fullscreen-icon,
 .local-video-control-button.is-playing .local-video-play-icon,
+.local-video-control-button.is-muted .local-video-volume-on-icon,
 .local-video-control-button.is-fullscreen .local-video-enter-fullscreen-icon {
     display: none;
 }
 
 .local-video-control-button.is-playing .local-video-pause-icon,
+.local-video-control-button.is-muted .local-video-volume-off-icon,
 .local-video-control-button.is-fullscreen .local-video-exit-fullscreen-icon {
     display: block;
 }
@@ -1149,6 +1173,72 @@ video {
 }
 
 .local-video-seek input::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #111619;
+    border-radius: 50%;
+    background: #fff;
+}
+
+.local-video-volume {
+    display: flex;
+    flex: 0 1 92px;
+    align-items: center;
+    min-width: 64px;
+    min-height: 44px;
+}
+
+.local-video-volume input {
+    width: 100%;
+    height: 44px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.local-video-volume input::-webkit-slider-runnable-track {
+    height: 8px;
+    border: 1px solid #dce5e9;
+    border-radius: 999px;
+    background:
+        linear-gradient(to right,
+            var(--green) 0,
+            var(--green) var(--volume-level, 100%),
+            #dce5e9 var(--volume-level, 100%),
+            #dce5e9 100%);
+}
+
+.local-video-volume input::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    margin-top: -7px;
+    border: 2px solid #111619;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 0 1px #fff;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.local-video-volume input::-moz-range-track {
+    height: 8px;
+    border: 1px solid #dce5e9;
+    border-radius: 5px;
+    background: #dce5e9;
+}
+
+.local-video-volume input::-moz-range-progress {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--green);
+}
+
+.local-video-volume input::-moz-range-thumb {
     width: 18px;
     height: 18px;
     border: 2px solid #111619;
@@ -1254,6 +1344,13 @@ video {
     background: #e7f2f3;
 }
 
+.local-video-speed-options label:has(input:disabled) {
+    color: var(--muted);
+    background: transparent;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
 .local-video-speed-options label:has(input:checked) {
     color: #fff;
     background: var(--teal-interactive);
@@ -1310,6 +1407,14 @@ video {
     flex: 1 1 auto;
     min-height: 0;
     object-fit: contain;
+}
+
+.youtube-video-wrap:fullscreen .video-embed {
+    flex: 1 1 auto;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding-bottom: 0;
 }
 
 .video-wrap:fullscreen .local-video-controls {
