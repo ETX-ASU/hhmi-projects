@@ -274,6 +274,10 @@ function getButtonDescription(button) {
         return "Select this button to clear saved testing progress and reload the activity.";
     }
 
+    if (button.classList.contains("local-video-control-button")) {
+        return "Controls the split-screen demonstration video.";
+    }
+
     if (button.id === "clearSourceMatches") {
         return "Select this button to clear all source-matching answers.";
     }
@@ -1128,6 +1132,195 @@ function initializeLocalVideoAnnouncements() {
     video.addEventListener("ended", () => {
         announce("Video has ended.");
     });
+}
+
+function initializeLocalVideoControls() {
+    const video = document.getElementById("howToVideo");
+    const controls = document.getElementById("howToVideoControls");
+    const playButton = document.getElementById("howToVideoPlay");
+    const restartButton = document.getElementById("howToVideoRestart");
+    const seek = document.getElementById("howToVideoSeek");
+    const currentTime = document.getElementById("howToVideoCurrentTime");
+    const duration = document.getElementById("howToVideoDuration");
+    const speedControl = document.getElementById("howToVideoSpeed");
+    const speedSummary = document.getElementById("howToVideoSpeedSummary");
+    const speedValue = document.getElementById("howToVideoSpeedValue");
+    const speedInputs = [...document.querySelectorAll('input[name="howToVideoPlaybackRate"]')];
+    const fullscreenButton = document.getElementById("howToVideoFullscreen");
+    const player = video?.closest(".video-wrap");
+
+    if (
+        !video ||
+        !controls ||
+        !playButton ||
+        !restartButton ||
+        !seek ||
+        !currentTime ||
+        !duration ||
+        !speedControl ||
+        !speedSummary ||
+        !speedValue ||
+        !speedInputs.length ||
+        !fullscreenButton ||
+        !player
+    ) {
+        return;
+    }
+
+    function formatTime(seconds) {
+        if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+
+        const totalSeconds = Math.floor(seconds);
+        const minutes = Math.floor(totalSeconds / 60);
+        const remainingSeconds = String(totalSeconds % 60).padStart(2, "0");
+
+        return `${minutes}:${remainingSeconds}`;
+    }
+
+    function describeTime(seconds) {
+        if (!Number.isFinite(seconds) || seconds < 0) return "0 seconds";
+
+        const totalSeconds = Math.floor(seconds);
+        const minutes = Math.floor(totalSeconds / 60);
+        const remainingSeconds = totalSeconds % 60;
+        const parts = [];
+
+        if (minutes) parts.push(`${minutes} ${minutes === 1 ? "minute" : "minutes"}`);
+        parts.push(`${remainingSeconds} ${remainingSeconds === 1 ? "second" : "seconds"}`);
+
+        return parts.join(" ");
+    }
+
+    function updateDuration() {
+        const videoDuration = Number.isFinite(video.duration) ? video.duration : 0;
+
+        seek.max = String(videoDuration);
+        duration.textContent = formatTime(videoDuration);
+        updateProgress();
+    }
+
+    function updateProgress() {
+        const videoDuration = Number.isFinite(video.duration) ? video.duration : 0;
+        const videoCurrentTime = Number.isFinite(video.currentTime) ? video.currentTime : 0;
+        const progress = videoDuration ? (videoCurrentTime / videoDuration) * 100 : 0;
+
+        seek.value = String(videoCurrentTime);
+        seek.style.setProperty("--seek-progress", `${progress}%`);
+        seek.setAttribute(
+            "aria-valuetext",
+            `${describeTime(videoCurrentTime)} of ${describeTime(videoDuration)}`
+        );
+        currentTime.textContent = formatTime(videoCurrentTime);
+    }
+
+    function updatePlayButton() {
+        const isPaused = video.paused;
+
+        playButton.classList.toggle("is-playing", !isPaused);
+        playButton.setAttribute("aria-label", isPaused ? "Play video" : "Pause video");
+        playButton.title = isPaused ? "Play" : "Pause";
+    }
+
+    function updatePlaybackRate() {
+        const rate = video.playbackRate;
+        const selectedInput = speedInputs.find(input => Number(input.value) === rate);
+        const visibleRate = `${rate}×`;
+        const spokenRate = rate === 1 ? "normal" : `${rate} times`;
+
+        if (selectedInput) selectedInput.checked = true;
+        speedValue.textContent = visibleRate;
+        speedSummary.setAttribute("aria-label", `Playback speed, ${spokenRate}`);
+    }
+
+    function updateFullscreenButton() {
+        const isFullscreen = document.fullscreenElement === player;
+
+        fullscreenButton.classList.toggle("is-fullscreen", isFullscreen);
+        fullscreenButton.setAttribute(
+            "aria-label",
+            isFullscreen ? "Exit full screen" : "Enter full screen"
+        );
+        fullscreenButton.title = isFullscreen ? "Exit full screen" : "Full screen";
+    }
+
+    playButton.addEventListener("click", () => {
+        if (video.paused) {
+            video.play().catch(() => { });
+        } else {
+            video.pause();
+        }
+    });
+
+    restartButton.addEventListener("click", () => {
+        video.currentTime = 0;
+        video.play().catch(() => { });
+    });
+
+    seek.addEventListener("input", () => {
+        video.currentTime = Number(seek.value);
+        updateProgress();
+    });
+
+    speedInputs.forEach(input => {
+        input.addEventListener("input", event => {
+            event.stopPropagation();
+        });
+
+        input.addEventListener("change", event => {
+            event.stopPropagation();
+            if (!input.checked) return;
+
+            const playbackRate = Number(input.value);
+
+            video.defaultPlaybackRate = playbackRate;
+            video.playbackRate = playbackRate;
+        });
+    });
+
+    speedControl.addEventListener("keydown", event => {
+        if (event.key !== "Escape" || !speedControl.open) return;
+
+        event.preventDefault();
+        speedControl.removeAttribute("open");
+        speedSummary.focus();
+    });
+
+    document.addEventListener("click", event => {
+        if (speedControl.open && !speedControl.contains(event.target)) {
+            speedControl.removeAttribute("open");
+        }
+    });
+
+    fullscreenButton.addEventListener("click", () => {
+        if (document.fullscreenElement === player) {
+            document.exitFullscreen?.().catch(() => { });
+        } else {
+            player.requestFullscreen?.().catch(() => { });
+        }
+    });
+
+    video.addEventListener("loadedmetadata", updateDuration);
+    video.addEventListener("durationchange", updateDuration);
+    video.addEventListener("timeupdate", updateProgress);
+    video.addEventListener("play", updatePlayButton);
+    video.addEventListener("pause", updatePlayButton);
+    video.addEventListener("ended", updatePlayButton);
+    video.addEventListener("ratechange", updatePlaybackRate);
+    document.addEventListener("fullscreenchange", updateFullscreenButton);
+
+    if (!document.fullscreenEnabled || typeof player.requestFullscreen !== "function") {
+        fullscreenButton.hidden = true;
+    }
+
+    // Keep native controls as the no-JavaScript fallback, then replace them
+    // only after every custom control has initialized successfully.
+    video.controls = false;
+    controls.hidden = false;
+
+    updateDuration();
+    updatePlayButton();
+    updatePlaybackRate();
+    updateFullscreenButton();
 }
 
 function initializeYouTubeVideoGate() {
@@ -2484,6 +2677,7 @@ function initializeLesson() {
     // Video, text sizing, and print helpers.
     initializeYouTubeVideoGate();
     initializeLocalVideoAnnouncements();
+    initializeLocalVideoControls();
     initializeWordCounts();
     initializeAutoResizeTextareas();
     initializePrintTextareaCopies();

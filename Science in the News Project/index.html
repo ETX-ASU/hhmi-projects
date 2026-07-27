@@ -577,8 +577,7 @@
             <div class="toggle-panel" id="helpPanel">
               <p>
                 Watch this short demo. It loops automatically, and you can pause or
-                scrub it with the
-                built-in controls.
+                scrub it with the controls below the video.
               </p>
               <div class="local-video-accessible-wrapper" tabindex="0" role="group" aria-labelledby="howToVideoLabel"
                 aria-describedby="howToVideoStatus">
@@ -596,6 +595,71 @@
                     <source src="./assets/drag_example.mov" type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
+
+                  <div class="local-video-controls" id="howToVideoControls" hidden>
+                    <button type="button" class="local-video-control-button" id="howToVideoPlay"
+                      aria-controls="howToVideo" aria-label="Play video" title="Play">
+                      <svg class="local-video-icon local-video-play-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M8 5v14l11-7z"></path>
+                      </svg>
+                      <svg class="local-video-icon local-video-pause-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M6 5h4v14H6zm8 0h4v14h-4z"></path>
+                      </svg>
+                    </button>
+
+                    <button type="button" class="local-video-control-button" id="howToVideoRestart"
+                      aria-controls="howToVideo" aria-label="Restart video" title="Restart">
+                      <svg class="local-video-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 4v6h6"></path>
+                        <path d="M5.7 15a7 7 0 1 0 .5-7.5L4 10"></path>
+                      </svg>
+                    </button>
+
+                    <div class="local-video-seek">
+                      <label for="howToVideoSeek" class="screen-reader-only">Video progress</label>
+                      <input type="range" id="howToVideoSeek" min="0" max="0" value="0" step="0.01"
+                        aria-controls="howToVideo" aria-valuetext="0 seconds of 0 seconds" />
+                    </div>
+
+                    <div class="local-video-time" aria-label="Video time">
+                      <span id="howToVideoCurrentTime">0:00</span>
+                      <span aria-hidden="true"> / </span>
+                      <span class="screen-reader-only">of</span>
+                      <span id="howToVideoDuration">0:00</span>
+                    </div>
+
+                    <details class="local-video-speed" id="howToVideoSpeed">
+                      <summary id="howToVideoSpeedSummary" aria-label="Playback speed, normal" title="Playback speed">
+                        <span id="howToVideoSpeedValue" aria-hidden="true">1×</span>
+                        <svg class="local-video-speed-chevron" viewBox="0 0 12 8" aria-hidden="true">
+                          <path d="m1 1 5 5 5-5"></path>
+                        </svg>
+                      </summary>
+
+                      <div class="local-video-speed-options" role="radiogroup"
+                        aria-labelledby="howToVideoSpeedLabel">
+                        <span class="local-video-speed-options-title" id="howToVideoSpeedLabel">Playback speed</span>
+                        <label><input type="radio" name="howToVideoPlaybackRate" value="0.5">0.5×</label>
+                        <label><input type="radio" name="howToVideoPlaybackRate" value="0.75">0.75×</label>
+                        <label><input type="radio" name="howToVideoPlaybackRate" value="1" checked>Normal</label>
+                        <label><input type="radio" name="howToVideoPlaybackRate" value="1.25">1.25×</label>
+                        <label><input type="radio" name="howToVideoPlaybackRate" value="1.5">1.5×</label>
+                        <label><input type="radio" name="howToVideoPlaybackRate" value="2">2×</label>
+                      </div>
+                    </details>
+
+                    <button type="button" class="local-video-control-button" id="howToVideoFullscreen"
+                      aria-controls="howToVideo" aria-label="Enter full screen" title="Full screen">
+                      <svg class="local-video-icon local-video-enter-fullscreen-icon" viewBox="0 0 24 24"
+                        aria-hidden="true">
+                        <path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"></path>
+                      </svg>
+                      <svg class="local-video-icon local-video-exit-fullscreen-icon" viewBox="0 0 24 24"
+                        aria-hidden="true">
+                        <path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"></path>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
