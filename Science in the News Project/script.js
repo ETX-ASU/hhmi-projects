@@ -29,6 +29,8 @@ const form = document.getElementById("lessonForm");
 const tabButtons = [...document.querySelectorAll("[data-tab-button]")];
 const tabPanels = [...document.querySelectorAll("[data-tab]")];
 const statusBoxes = [...document.querySelectorAll("[data-status]")];
+const supportingInfoModal = document.getElementById("supportingInfoModal");
+const openSupportingInfoButton = document.getElementById("openSupportingInfo");
 
 /* ============================================================
     Global State
@@ -273,6 +275,14 @@ function getButtonDescription(button) {
 
     if (button.classList.contains("reset-testing-button")) {
         return "Select this button to clear saved testing progress and reload the activity.";
+    }
+
+    if (button.id === "openSupportingInfo") {
+        return "Select this button to open supporting information for this resource.";
+    }
+
+    if (button.matches("[data-close-supporting-info]")) {
+        return "Select this button to close the supporting information dialog.";
     }
 
     if (button.classList.contains("local-video-control-button")) {
@@ -2951,6 +2961,107 @@ function initializeBackToTopButtons() {
     });
 }
 
+function initializeSupportingInformationModal() {
+    if (!supportingInfoModal || !openSupportingInfoButton) return;
+
+    const panel = supportingInfoModal.querySelector(".supporting-info-panel");
+    const closeButtons = [...supportingInfoModal.querySelectorAll("[data-close-supporting-info]")];
+    let lastFocusedElement = null;
+
+    function getFocusableElements() {
+        return [...supportingInfoModal.querySelectorAll(
+            'a[href], button:not([disabled]), summary, input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )].filter(element => {
+            const style = window.getComputedStyle(element);
+            return style.display !== "none" && style.visibility !== "hidden";
+        });
+    }
+
+    function openModal() {
+        lastFocusedElement = document.activeElement;
+        supportingInfoModal.hidden = false;
+        document.body.classList.add("supporting-info-open");
+
+        requestAnimationFrame(() => {
+            supportingInfoModal.querySelector(".supporting-info-close")?.focus();
+        });
+    }
+
+    function closeModal() {
+        supportingInfoModal.hidden = true;
+        document.body.classList.remove("supporting-info-open");
+
+        if (lastFocusedElement && document.contains(lastFocusedElement)) {
+            lastFocusedElement.focus();
+        } else {
+            openSupportingInfoButton.focus();
+        }
+    }
+
+    openSupportingInfoButton.addEventListener("click", openModal);
+
+    closeButtons.forEach(button => {
+        button.addEventListener("click", closeModal);
+    });
+
+    supportingInfoModal.addEventListener("click", event => {
+        if (event.target === panel || panel?.contains(event.target)) return;
+        closeModal();
+    });
+
+    supportingInfoModal.addEventListener("keydown", event => {
+        if (supportingInfoModal.hidden) return;
+
+        if (event.key === "Escape") {
+            event.preventDefault();
+            closeModal();
+            return;
+        }
+
+        if (event.key !== "Tab") return;
+
+        const focusableElements = getFocusableElements();
+        if (!focusableElements.length) return;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (event.shiftKey && document.activeElement === firstElement) {
+            event.preventDefault();
+            lastElement.focus();
+        } else if (!event.shiftKey && document.activeElement === lastElement) {
+            event.preventDefault();
+            firstElement.focus();
+        }
+    });
+}
+
+function initializeResourceVersion() {
+    const versionOutput = document.getElementById("resourceVersion");
+    const updatedOutput = document.getElementById("resourceUpdated");
+
+    if (!versionOutput && !updatedOutput) return;
+
+    fetch("./assets/resource-version.json", { cache: "no-store" })
+        .then(response => {
+            if (!response.ok) throw new Error("Version metadata is unavailable.");
+            return response.json();
+        })
+        .then(metadata => {
+            if (metadata.version && versionOutput) {
+                versionOutput.textContent = metadata.version;
+            }
+
+            if (metadata.updated && updatedOutput) {
+                updatedOutput.textContent = metadata.updated;
+            }
+        })
+        .catch(() => {
+            // Keep the authored fallback values visible when local file access
+            // or older deployments cannot load the generated metadata file.
+        });
+}
+
 /* ============================================================
     Startup
   ============================================================ */
@@ -2965,6 +3076,8 @@ function initializeLesson() {
     initializeFormListeners();
     initializeTogglePanels();
     initializeBackToTopButtons();
+    initializeSupportingInformationModal();
+    initializeResourceVersion();
 
     // Activities and their feedback controls.
     initializeSentenceBuilderFeedback();
