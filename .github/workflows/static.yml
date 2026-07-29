@@ -31,6 +31,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Update Science in the News version metadata
+        run: |
+          UPDATED="$(date -u '+%B %Y')"
+          VERSION="1.0.${GITHUB_RUN_NUMBER}"
+          printf '{\n  "version": "%s",\n  "updated": "%s"\n}\n' "$VERSION" "$UPDATED" > "Science in the News Project/assets/resource-version.json"
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

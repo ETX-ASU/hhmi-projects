@@ -1576,6 +1576,146 @@
       </article>
     </form>
   </main>
+
+  <footer class="resource-footer" aria-label="Resource information">
+    <button class="supporting-info-button" type="button" id="openSupportingInfo"
+      aria-haspopup="dialog" aria-controls="supportingInfoModal">
+      Supporting Information
+    </button>
+
+    <a class="biointeractive-logo-link" href="https://www.biointeractive.org/" target="_blank" rel="noopener">
+      <img src="./assets/hhmi_bio_logo.svg" alt="HHMI BioInteractive" />
+    </a>
+  </footer>
+
+  <div class="supporting-info-modal" id="supportingInfoModal" role="dialog" aria-modal="true"
+    aria-labelledby="supportingInfoTitle" hidden>
+    <div class="supporting-info-backdrop" data-close-supporting-info></div>
+
+    <section class="supporting-info-panel" aria-describedby="supportingInfoSummary">
+      <div class="supporting-info-header">
+        <h2 id="supportingInfoTitle">Supporting Information</h2>
+        <button class="supporting-info-close" type="button" aria-label="Close Supporting Information"
+          data-close-supporting-info>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="supporting-info-content">
+        <section class="supporting-info-section" aria-labelledby="supportingInfoSummaryHeading">
+          <h3 id="supportingInfoSummaryHeading">Summary</h3>
+          <p id="supportingInfoSummary">
+            This interactive explores how generative artificial intelligence (GenAI) can support science writing without
+            replacing human judgment. It includes activities for identifying scientific source types, writing effective
+            prompts, evaluating and verifying an AI-generated science summary, and using AI feedback to revise original
+            writing. A previously selected <em>Science News Explores</em> article and a written summary of that article
+            are needed to complete the interactive. Additional information can be found on this resource's webpage.
+          </p>
+        </section>
+
+        <details class="supporting-info-section" open>
+          <summary>Instructions for Use</summary>
+          <div class="supporting-info-section-body">
+            <p>
+              Navigate by scrolling or selecting unlocked tabs in the top navigation menu. Complete the required
+              activities in each tab to unlock the next tab. Responses are saved in the browser and can be printed or
+              saved as a PDF after completion.
+            </p>
+            <p>
+              Some activities require a GenAI chatbot. Google Chrome is recommended for split-screen use. When using
+              another browser or a mobile device, open the chatbot in a separate tab.
+            </p>
+            <p>The main tabs are as follows:</p>
+            <ul>
+              <li><strong>You Are the Editor:</strong> Introduces primary, secondary, and tertiary scientific sources and
+                explores characteristics that make science writing credible.</li>
+              <li><strong>What Is GenAI?:</strong> Provides an introduction to artificial intelligence, generative AI, and
+                the role of prompts in guiding AI-generated output.</li>
+              <li><strong>Effective Writing with GenAI:</strong> Guides the creation of an AI-generated science summary.
+                Includes activities for reviewing sources, verifying claims, evaluating the summary with a rubric, and
+                comparing it with an original summary.</li>
+              <li><strong>AI as a Tool:</strong> Explores how a chatbot can provide feedback that supports revision
+                without replacing the writer's own ideas and decisions.</li>
+              <li><strong>Final Thoughts:</strong> Reviews responsible uses of AI, strategies for evaluating
+                AI-generated information, and the importance of maintaining control over the writing and revision
+                process.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="supporting-info-section" open>
+          <summary>Compatibility and Accessibility</summary>
+          <div class="supporting-info-section-body">
+            <p>
+              This resource is designed for use on computers and mobile devices. Google Chrome is recommended,
+              particularly for the split-screen activity. It is also supported by the most recent versions of Firefox,
+              Microsoft Edge, and Safari web browsers.
+            </p>
+            <p>
+              This resource has been designed, optimized, and tested for
+              <a href="https://www.biointeractive.org/commitment-accessibility" target="_blank" rel="noopener">accessibility</a>
+              compliance
+              (<a href="https://www.w3.org/WAI/standards-guidelines/wcag/" target="_blank" rel="noopener">WCAG</a>
+              Level 2.1 AA Success Criteria).
+            </p>
+            <p>
+              Submit comments, questions, or feedback about this resource via email to
+              <a href="mailto:biointeractive@hhmi.org">biointeractive@hhmi.org</a>.
+            </p>
+          </div>
+        </details>
+
+        <details class="supporting-info-section" open>
+          <summary>Credits</summary>
+          <div class="supporting-info-section-body">
+            <dl class="credits-list">
+              <div>
+                <dt>Producers</dt>
+                <dd>Unknown</dd>
+              </div>
+              <div>
+                <dt>Reviewer</dt>
+                <dd>Unknown</dd>
+              </div>
+              <div>
+                <dt>Additional Research, Writing, and Editing</dt>
+                <dd>Unknown</dd>
+              </div>
+              <div>
+                <dt>Learning Design</dt>
+                <dd>Melanie Narish, ETX<br />Diana Hunsley, ETX</dd>
+              </div>
+              <div>
+                <dt>Development</dt>
+                <dd>Austin Brunkhorst, SonoranByte</dd>
+              </div>
+              <div>
+                <dt>Video</dt>
+                <dd>Unknown</dd>
+              </div>
+            </dl>
+          </div>
+        </details>
+
+        <details class="supporting-info-section" open>
+          <summary>Terms of Use</summary>
+          <div class="supporting-info-section-body">
+            <p>
+              &copy; 2024 Howard Hughes Medical Institute. Please see the
+              <a href="https://www.hhmi.org/terms-of-use" target="_blank" rel="noopener">Terms of Use</a>
+              for information on how this resource can be used.
+            </p>
+          </div>
+        </details>
+
+        <div class="supporting-info-version" aria-label="Resource version information">
+          <span>Version <span id="resourceVersion">1.0</span></span>
+          <span aria-hidden="true">|</span>
+          <span>Updated <span id="resourceUpdated">July 2026</span></span>
+        </div>
+      </div>
+    </section>
+  </div>
 </body>
 
 </html>
