@@ -231,7 +231,7 @@ header.hero {
 }
 
 .tab-button.locked {
-    color: var(--muted);
+    color: var(--muted); 
     cursor: not-allowed;
 }
 
